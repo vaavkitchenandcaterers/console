@@ -1,0 +1,17 @@
+# Security headers for Apache / cPanel static hosting.
+# Use this file if the site is hosted on Apache (typical Indian shared hosting);
+# use _headers instead on Netlify / Cloudflare Pages.
+<IfModule mod_headers.c>
+  Header always set Content-Security-Policy "default-src 'self'; base-uri 'self'; object-src 'none'; img-src 'self' data:; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; script-src 'self'; frame-src https://www.google.com https://maps.google.com; connect-src 'self'; form-action 'self'; frame-ancestors 'self'; upgrade-insecure-requests"
+  Header always set X-Frame-Options "SAMEORIGIN"
+  Header always set X-Content-Type-Options "nosniff"
+  Header always set Referrer-Policy "strict-origin-when-cross-origin"
+  Header always set Permissions-Policy "geolocation=(), microphone=(), camera=(), payment=()"
+  Header always set Strict-Transport-Security "max-age=31536000; includeSubDomains"
+  Header always set Cross-Origin-Opener-Policy "same-origin"
+</IfModule>
+
+# Block access to source/config files if ever uploaded to the web root.
+<FilesMatch "(^\.htaccess|\.md|server\.js|launch\.json)$">
+  Require all denied
+</FilesMatch>
