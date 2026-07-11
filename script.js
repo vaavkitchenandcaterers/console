@@ -352,3 +352,58 @@ const VAAV_REVIEWS = [
   document.addEventListener('vaav:shortlistchange', sync);
   sync();
 })();
+
+// --- shortlist: drawer / bottom-sheet shell ---
+(function () {
+  const S = window.VaavShortlist;
+  if (!S) return;
+  const backdrop = document.createElement('div');
+  backdrop.id = 'vaav-sl-backdrop'; backdrop.className = 'vaav-sl-backdrop';
+  const drawer = document.createElement('div');
+  drawer.id = 'vaav-sl-drawer'; drawer.className = 'vaav-sl-drawer';
+  drawer.setAttribute('role', 'dialog');
+  drawer.setAttribute('aria-modal', 'true');
+  drawer.setAttribute('aria-labelledby', 'vaav-sl-title');
+  drawer.innerHTML =
+    '<div class="vaav-sl-head"><h2 id="vaav-sl-title">Your shortlist</h2>' +
+    '<button type="button" class="vaav-sl-close" aria-label="Close shortlist"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12"/></svg></button></div>' +
+    '<div id="vaav-sl-body" class="vaav-sl-body"></div>';
+  document.body.appendChild(backdrop);
+  document.body.appendChild(drawer);
+
+  let lastFocus = null;
+  function focusables() {
+    return drawer.querySelectorAll('button, [href], input, textarea, select, [tabindex]:not([tabindex="-1"])');
+  }
+  function onKeydown(e) {
+    if (e.key === 'Escape') { e.preventDefault(); close(); return; }
+    if (e.key !== 'Tab') return;
+    const f = [...focusables()].filter(el => el.offsetParent !== null);
+    if (!f.length) return;
+    const first = f[0], last = f[f.length - 1];
+    if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+    else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+  }
+  function open() {
+    lastFocus = document.activeElement;
+    document.body.classList.add('vaav-sl-open');
+    backdrop.classList.add('open'); drawer.classList.add('open');
+    const pill = document.getElementById('vaav-sl-pill');
+    if (pill) pill.setAttribute('aria-expanded', 'true');
+    document.addEventListener('keydown', onKeydown);
+    const closeBtn = drawer.querySelector('.vaav-sl-close');
+    if (closeBtn) closeBtn.focus();
+  }
+  function close() {
+    document.body.classList.remove('vaav-sl-open');
+    backdrop.classList.remove('open'); drawer.classList.remove('open');
+    const pill = document.getElementById('vaav-sl-pill');
+    if (pill) pill.setAttribute('aria-expanded', 'false');
+    document.removeEventListener('keydown', onKeydown);
+    if (lastFocus && lastFocus.focus) lastFocus.focus();
+  }
+  backdrop.addEventListener('click', close);
+  drawer.querySelector('.vaav-sl-close').addEventListener('click', close);
+  document.addEventListener('vaav:shortlistopen', open);
+  S.openDrawer = open; S.closeDrawer = close;
+})();
