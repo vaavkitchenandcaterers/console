@@ -286,7 +286,7 @@ const VAAV_REVIEWS = [
     html += `<div class="count"><b>${total}</b> dishes in this set</div>`;
     const slId = curCat + ':' + menu.name;
     const inList = window.VaavShortlist && window.VaavShortlist.has(slId);
-    html += '<div class="rail-cta"><a href="#contact" class="btn y">Book this menu</a>';
+    html += '<div class="rail-cta"><a href="/contact/" class="btn y">Book this menu</a>';
     html += '<button type="button" class="mc-add' + (inList ? ' added' : '') + '" data-id="' + slId + '" aria-pressed="' + (inList ? 'true' : 'false') + '">' +
       '<span class="mc-add-txt">' + (inList ? '✓ Added' : '+ Add to shortlist') + '</span></button>';
     html += '<p class="rail-note">Mix and match across any set — we’ll tailor it to your event.</p></div>';
