@@ -312,6 +312,22 @@ section{padding:90px 0}
 @media(max-width:900px){.review-grid{grid-template-columns:1fr 1fr}.reviews-summary{flex-wrap:wrap}}
 @media(max-width:620px){.review-grid{grid-template-columns:1fr;min-height:680px}}
 
+/* breadcrumb (spoke pages) */
+.breadcrumb{font-family:'Catamaran',sans-serif;font-size:.82rem;font-weight:600;color:var(--muted);margin-bottom:14px}
+.breadcrumb a{color:var(--green-deep);text-decoration:none}
+.breadcrumb a:hover,.breadcrumb a:focus-visible{text-decoration:underline}
+.breadcrumb span[aria-current]{color:var(--muted)}
+
+/* services page list */
+.svc-list{list-style:none;margin:8px 0 0;padding:0;display:grid;gap:20px}
+.svc-item{display:flex;gap:22px;align-items:flex-start;background:#fff;border:1px solid #e2d9c1;border-radius:20px;padding:28px 30px;box-shadow:0 14px 34px -30px rgba(20,61,29,.5)}
+.svc-item .card-ic{flex-shrink:0;margin-top:2px}
+.svc-item-body{flex:1}
+.svc-item h2{font-size:1.55rem;color:var(--green-deep);margin-bottom:8px}
+.svc-item p{color:var(--muted);line-height:1.6;margin:0 0 18px}
+.svc-item .btn{min-height:44px}
+@media(max-width:620px){.svc-item{flex-direction:column;gap:14px;padding:24px}}
+
 /* home trust band */
 .trust-band{background:var(--cream-deep);padding:30px 24px}
 .trust-band .stat-row{max-width:900px;margin:0 auto;justify-content:space-around;gap:32px;flex-wrap:wrap}
