@@ -454,6 +454,15 @@ const VAAV_REVIEWS = [
       .forEach(function (pair) {
         body.querySelector('#' + pair[1]).addEventListener('input', function (e) { S.setEventField(pair[0], e.target.value); });
       });
+
+    const send = body.querySelector('.vaav-sl-send');
+    if (send) {
+      const refresh = function () { send.href = waLink(S.buildMessage()); };
+      refresh();
+      send.addEventListener('mousedown', refresh);
+      send.addEventListener('touchstart', refresh, { passive: true });
+      send.addEventListener('focus', refresh);
+    }
   }
 
   document.addEventListener('vaav:shortlistchange', render);
