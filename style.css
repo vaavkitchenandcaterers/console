@@ -312,6 +312,22 @@ section{padding:90px 0}
 @media(max-width:900px){.review-grid{grid-template-columns:1fr 1fr}.reviews-summary{flex-wrap:wrap}}
 @media(max-width:620px){.review-grid{grid-template-columns:1fr;min-height:680px}}
 
+/* section CTA (teaser → spoke page) */
+.section-cta{text-align:center;margin-top:32px;margin-bottom:0}
+
+/* home final CTA band */
+#home-cta{background:var(--green-deep);color:var(--cream);text-align:center}
+#home-cta .eyebrow{color:var(--yellow)}
+#home-cta h2{color:#fff;font-size:clamp(2rem,4vw,2.9rem);margin:10px 0 14px}
+.home-cta-inner{max-width:620px;margin:0 auto}
+.home-cta-inner > p{color:rgba(247,243,231,.85);font-size:1.05rem;line-height:1.6;margin-bottom:26px}
+.home-cta-actions{display:flex;gap:14px;justify-content:center;align-items:center;flex-wrap:wrap;margin-bottom:16px}
+.home-cta-actions .wa-big{width:auto}
+.home-cta-actions .btn{background:var(--yellow);color:var(--green-ink)}
+.home-cta-actions .btn:hover,.home-cta-actions .btn:focus-visible{background:var(--yellow-deep)}
+#home-cta .wa-call{color:rgba(247,243,231,.85)}
+#home-cta .wa-call:hover,#home-cta .wa-call:focus-visible{color:var(--yellow)}
+
 /* contact */
 #contact{background:var(--green-deep);color:var(--cream)}
 #contact .eyebrow{color:var(--yellow)}
