@@ -321,3 +321,34 @@ const VAAV_REVIEWS = [
   }, { threshold: .2, rootMargin: '0px 0px -40px 0px' });
   cards.forEach(c => io.observe(c));
 })();
+
+// --- shortlist: floating count pill (injected on every page) ---
+(function () {
+  const S = window.VaavShortlist;
+  if (!S) return;
+  const pill = document.createElement('button');
+  pill.type = 'button';
+  pill.id = 'vaav-sl-pill';
+  pill.className = 'vaav-sl-pill';
+  pill.setAttribute('aria-haspopup', 'dialog');
+  pill.setAttribute('aria-expanded', 'false');
+  pill.setAttribute('aria-controls', 'vaav-sl-drawer');
+  pill.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2"/><rect x="9" y="3" width="6" height="4" rx="1"/><path d="M9 12h6M9 16h4"/></svg><span class="vaav-sl-pill-label"></span>';
+  const live = document.createElement('div');
+  live.className = 'vh'; live.setAttribute('aria-live', 'polite');
+  document.body.appendChild(pill);
+  document.body.appendChild(live);
+
+  function sync() {
+    const n = S.count();
+    pill.style.display = n > 0 ? 'inline-flex' : 'none';
+    pill.querySelector('.vaav-sl-pill-label').textContent = 'Shortlist (' + n + ')';
+    pill.setAttribute('aria-label', 'Review shortlist, ' + n + (n === 1 ? ' menu' : ' menus'));
+    live.textContent = n > 0 ? (n + (n === 1 ? ' menu' : ' menus') + ' in shortlist') : '';
+  }
+  pill.addEventListener('click', function () {
+    document.dispatchEvent(new CustomEvent('vaav:shortlistopen'));
+  });
+  document.addEventListener('vaav:shortlistchange', sync);
+  sync();
+})();

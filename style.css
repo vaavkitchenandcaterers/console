@@ -461,3 +461,13 @@ footer .fb{font-family:'Catamaran',sans-serif;font-weight:800;color:var(--yellow
   .hd svg{animation:none}
   .medallion::before{animation:none}
 }
+
+/* ---------- Menu shortlist ---------- */
+.vaav-sl-pill{position:fixed;right:20px;bottom:78px;z-index:81;display:none;align-items:center;gap:8px;
+  background:var(--cream);color:var(--green-deep);border:1.5px solid var(--green-deep);
+  font-family:'Catamaran',sans-serif;font-weight:700;font-size:.95rem;padding:11px 18px;border-radius:50px;
+  box-shadow:0 10px 26px rgba(0,0,0,.22);cursor:pointer;min-height:44px}
+.vaav-sl-pill svg{width:20px;height:20px}
+.vaav-sl-pill:hover{background:var(--cream-deep)}
+@media(max-width:760px){.vaav-sl-pill{right:16px;bottom:76px}}
+body.vaav-sl-open .vaav-sl-pill,body.vaav-sl-open .wa-float,body.vaav-sl-open .mobile-actionbar{display:none !important}
