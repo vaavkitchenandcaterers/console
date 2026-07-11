@@ -284,7 +284,11 @@ const VAAV_REVIEWS = [
     html += `<div class="mc-kicker">${data.label} menu</div>`;
     html += `<h3>${menu.name}</h3>`;
     html += `<div class="count"><b>${total}</b> dishes in this set</div>`;
+    const slId = curCat + ':' + menu.name;
+    const inList = window.VaavShortlist && window.VaavShortlist.has(slId);
     html += '<div class="rail-cta"><a href="#contact" class="btn y">Book this menu</a>';
+    html += '<button type="button" class="mc-add' + (inList ? ' added' : '') + '" data-id="' + slId + '" aria-pressed="' + (inList ? 'true' : 'false') + '">' +
+      '<span class="mc-add-txt">' + (inList ? '✓ Added' : '+ Add to shortlist') + '</span></button>';
     html += '<p class="rail-note">Mix and match across any set — we’ll tailor it to your event.</p></div>';
     html += '</div><div class="mc-body"><div class="mc-groups">';
     let n = 0;
@@ -302,6 +306,16 @@ const VAAV_REVIEWS = [
     cardEl.className = 'menu-card';
     cardEl.setAttribute('aria-labelledby', `mp-${curIdx}`);
     cardEl.innerHTML = html;
+    const addBtn = cardEl.querySelector('.mc-add');
+    if (addBtn && window.VaavShortlist) {
+      addBtn.setAttribute('aria-label', (window.VaavShortlist.has(addBtn.dataset.id) ? 'Remove ' : 'Add ') + menu.name + (window.VaavShortlist.has(addBtn.dataset.id) ? ' from shortlist' : ' to shortlist'));
+      addBtn.addEventListener('click', function () {
+        const S = window.VaavShortlist;
+        if (S.has(addBtn.dataset.id)) S.remove(addBtn.dataset.id);
+        else S.add({ id: addBtn.dataset.id, cat: data.label, name: menu.name, groups: menu.groups });
+        render();
+      });
+    }
   }
   render();
 })();
