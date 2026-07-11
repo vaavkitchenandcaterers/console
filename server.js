@@ -24,7 +24,10 @@ http.createServer((req, res) => {
   }
 
   let requested = decodeURIComponent(req.url.split('?')[0].split('#')[0]);
-  if (requested === '/' || requested === '') requested = '/index.html';
+  if (requested === '' ) requested = '/';
+  // Directory requests (root or any /path/) resolve to that folder's index.html — mirrors
+  // Netlify/Apache clean-URL behaviour so /services/ works in local preview.
+  if (requested.endsWith('/')) requested += 'index.html';
 
   // Resolve against root and confirm the result stays inside root (blocks ../ traversal).
   const file = path.resolve(root, '.' + requested);

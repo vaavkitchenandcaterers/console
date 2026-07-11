@@ -26,6 +26,14 @@ const waMsg = "Hello VAAV Kitchen, I'd like to enquire about catering for my eve
   if (el) { el.href = waLink(waMsg); el.target = "_blank"; el.rel = "noopener noreferrer"; }
 });
 
+// --- Per-page context CTAs: any [data-wa-context] pre-fills WhatsApp with that page's context ---
+document.querySelectorAll('[data-wa-context]').forEach(a => {
+  const ctx = a.dataset.waContext;
+  if (!ctx) return;
+  a.href = waLink(`Hello VAAV Kitchen, I'd like to enquire about ${ctx}.`);
+  a.target = "_blank"; a.rel = "noopener noreferrer";
+});
+
 // --- Package CTAs: deep-link straight to WhatsApp with the package name pre-filled ---
 document.querySelectorAll('.pkg-enquire').forEach(a => {
   const pkgName = a.dataset.pkg;
@@ -102,6 +110,7 @@ const VAAV_REVIEWS = [
   if (!M) return;
   const order = ['tiffin', 'lunch', 'dinner'];
   const tabsEl = document.getElementById('catTabs');
+  if (!tabsEl) return; // menu explorer only exists on /menu/
   const panelEl = document.getElementById('catPanel');
   const noteEl = document.getElementById('catNote');
   const pickEl = document.getElementById('menuPicker');
@@ -216,23 +225,8 @@ const VAAV_REVIEWS = [
   render();
 })();
 
-// --- scroll-spy: highlight the nav link for the section in view ---
-(function () {
-  const links = [...document.querySelectorAll('.nav-links a[href^="#"]')].filter(a => a.getAttribute('href').length > 1);
-  if (!links.length || !('IntersectionObserver' in window)) return;
-  const map = {};
-  links.forEach(a => { map[a.getAttribute('href').slice(1)] = a; });
-  const sections = Object.keys(map).map(id => document.getElementById(id)).filter(Boolean);
-  const spy = new IntersectionObserver(entries => {
-    entries.forEach(e => {
-      if (e.isIntersecting) {
-        links.forEach(a => a.classList.remove('active'));
-        if (map[e.target.id]) map[e.target.id].classList.add('active');
-      }
-    });
-  }, { rootMargin: '-45% 0px -50% 0px', threshold: 0 });
-  sections.forEach(s => spy.observe(s));
-})();
+// Nav active-state is now static per page (aria-current="page" in each page's HTML),
+// so the old scroll-spy is removed — multipage nav links point to other pages, not #anchors.
 
 // --- scroll-triggered reveal for service cards ---
 (function () {

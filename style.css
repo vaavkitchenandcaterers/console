@@ -72,8 +72,8 @@ nav.scrolled{box-shadow:0 8px 26px -16px rgba(20,61,29,.45);background:rgba(247,
 .nav-links a:not(.nav-wa)::after{content:"";position:absolute;left:0;right:0;bottom:-6px;height:2px;background:var(--yellow-deep);transform:scaleX(0);transform-origin:left;transition:transform .2s}
 .nav-links a:not(.nav-wa):hover{color:var(--green-deep)}
 .nav-links a:not(.nav-wa):hover::after{transform:scaleX(1)}
-.nav-links a.active:not(.nav-wa){color:var(--green-deep)}
-.nav-links a.active:not(.nav-wa)::after{transform:scaleX(1)}
+.nav-links a.active:not(.nav-wa),.nav-links a[aria-current="page"]:not(.nav-wa){color:var(--green-deep)}
+.nav-links a.active:not(.nav-wa)::after,.nav-links a[aria-current="page"]:not(.nav-wa)::after{transform:scaleX(1)}
 .menu-toggle{display:none;background:none;border:none;cursor:pointer;color:var(--green-deep);padding:6px}
 .menu-toggle svg{width:28px;height:28px}
 
