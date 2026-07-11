@@ -24,21 +24,22 @@ Convert the existing single-page site (`index.html`, ~15 mobile screens) into a 
 
 ## 2. Architecture
 
-### File structure
+### File structure — folder-per-page → clean URLs (no `.html`), Services as pillar
 ```
-index.html      → Home (hub)
-services.html   → Services
-menu.html       → Menu & Packages
-about.html      → About
-contact.html    → Contact
-style.css       → shared by all 5 pages (single source of truth for styling)
-script.js       → shared by all 5 pages (behaviour + centralized contact constants)
-menu-data.js    → loaded ONLY by menu.html
-logo.png, favicon-64.png
-sitemap.xml     → NEW
-robots.txt      → NEW
-_headers, .htaccess → carried over (security headers apply to all pages)
+index.html             → Home             served at  /
+services/index.html    → Services         served at  /services/    ← SEO PILLAR
+menu/index.html        → Menu & Packages  served at  /menu/
+about/index.html       → About            served at  /about/
+contact/index.html     → Contact          served at  /contact/
+style.css              → shared; referenced root-absolute as /style.css
+script.js              → shared; /script.js  (contact constants centralized here)
+menu-data.js           → loaded ONLY by /menu/  (as /menu-data.js)
+logo.png, favicon-64.png → /logo.png, /favicon-64.png
+sitemap.xml, robots.txt  → NEW (site root)
+_headers, .htaccess      → carried over (headers apply to all pages)
 ```
+**Why folders + `index.html`:** clean URLs (`/services/`, not `/services.html`) on Netlify, Apache **and** GitHub Pages with **no rewrite rules**; future service pages nest as `/services/wedding-catering-chennai/`, making **Services a pillar** (cluster pages link up to it; it links down to them). Serves the "SEO is main focus" goal and avoids a later `.html`→clean migration (which would cost 301s).
+**Asset paths are root-absolute** (`/style.css`, `/script.js`, `/logo.png`) so they resolve identically from `/` and `/services/`. Local preview `server.js` is updated to serve `<dir>/index.html` for directory requests.
 
 ### Shared-code / anti-drift strategy
 - **`style.css` and `script.js` are single external files** linked by all 5 pages → styling and behaviour never duplicate; the browser caches them after the first page.
@@ -47,8 +48,8 @@ _headers, .htaccess → carried over (security headers apply to all pages)
 
 ### Speed strategy (mobile-first)
 - After the first page load, `style.css` + `script.js` + Google Fonts are cached → subsequent page navigations download only the page's HTML (~15–30 KB) = near-instant.
-- `<link rel="prefetch">` on each page for the likely-next pages (e.g. Home prefetches `menu.html` and `contact.html`) so a tapped link is already in cache.
-- `menu-data.js` (~19 KB) loads **only** on `menu.html`.
+- `<link rel="prefetch">` on each page for the likely-next pages (e.g. Home prefetches `/menu/` and `/contact/`) so a tapped link is already in cache.
+- `menu-data.js` (~19 KB) loads **only** on `/menu/`.
 - Per-page HTML kept lean; no page re-includes data it doesn't render.
 - Carry over existing perf work: trimmed font weights, optimized 14 KB logo, `decoding="async"`, lazy below-fold images, reserved `min-height` on JS-populated containers (CLS).
 
@@ -74,42 +75,55 @@ _headers, .htaccess → carried over (security headers apply to all pages)
 
 ## 4. Page-by-page specification
 
-Each page: one `<h1>`, unique `<title>` + meta description, self-referencing canonical, OG/Twitter tags, breadcrumb (spokes), and an end-of-page enquiry CTA.
+Each page: one `<h1>`, unique `<title>` + meta description, self-referencing canonical (clean URL), OG/Twitter tags, breadcrumb (spokes), and an end-of-page enquiry CTA.
 
-### 4.1 Home — `index.html`
+**Keyword-intent split (anti-cannibalization).** To stop Home, Services and About competing for the same "pure veg catering chennai" term, each page owns a **distinct** primary intent:
+- **Home** → brand + hyperlocal (*vaav kitchen and caterers*, *caterers in Perungalathur*) — does **not** chase the "catering chennai" head term.
+- **Services** → the **commercial** money term (*pure veg / wedding catering chennai*).
+- **About** → brand story/trust — no money keyword.
+- **Menu & Packages** → menu / packages / prices.
+- **Contact** → transactional / near-me / book.
+
+### 4.1 Home — `index.html` (`/`)
 - **H1:** "The feast your guests won't stop talking about." (hero, retained)
 - **Sections (teasers that link to full pages):** hero → trust strip → *What we do* (service highlights → Services) → *Featured packages* (→ Menu & Packages) → *Why choose us* → *Reviews snippet* (→ About) → Google rating → primary CTA.
-- **Intent:** conversion hub; shorter than today's page. Each teaser links to its spoke.
-- **Title:** `VAAV Kitchen and Caterers — Pure Veg Tamil Catering in Chennai`
-- **Meta:** `Authentic South Indian pure-veg catering for weddings, upanayanams & corporate events across Chennai. 66 menus, 4.9★ on Google. Book on WhatsApp.`
+- **Intent:** conversion hub + brand/hyperlocal; shorter than today's page. Each teaser links to its spoke.
+- **Title:** `VAAV Kitchen and Caterers — Pure Veg Caterers in Perungalathur, Chennai`
+- **Meta:** `VAAV Kitchen and Caterers — authentic Tamil pure-veg caterers in Perungalathur, serving all of Chennai. Weddings, upanayanams & corporate events. 4.9★ on Google.`
+- **Canonical:** `https://vaavkitchenandcaterers.com/`
 - **Schema:** `FoodEstablishment` (full), `WebSite`.
 
-### 4.2 Services — `services.html`
-- **H1:** "Catering for every Tamil celebration"
+### 4.2 Services — `services/index.html` (`/services/`) — SEO PILLAR
+- **H1:** "Pure veg catering for every Tamil celebration in Chennai"
 - **Sections:** all 6 event types (Weddings & receptions, Housewarming & seemantham, Corporate & bulk meals, Pujas & prasadam, Birthday & anniversary, Temple & community) — each its own `<h2>` with a fuller description + per-service enquiry CTA (WhatsApp pre-filled with that service).
-- **Title:** `Catering Services — Weddings, Corporate & Functions | VAAV Kitchen, Chennai`
-- **Meta:** `Pure-veg wedding, corporate, seemantham, upanayanam & temple catering across Chennai. Fully staffed, fully customisable. Enquire on WhatsApp.`
+- **Title:** `Pure Veg Wedding, Corporate & Function Catering in Chennai | VAAV Kitchen`
+- **Meta:** `Pure-veg wedding, corporate, seemantham, upanayanam & temple catering across Chennai — fully staffed and customisable. Enquire on WhatsApp.`
+- **Canonical:** `https://vaavkitchenandcaterers.com/services/`
+- **Pillar note:** future dedicated service pages nest here (`/services/wedding-catering-chennai/`) and link up to this page; this page links down to them.
 - **Schema:** `FoodEstablishment`, `BreadcrumbList`, `Service` items.
 
-### 4.3 Menu & Packages — `menu.html`
+### 4.3 Menu & Packages — `menu/index.html` (`/menu/`)
 - **H1:** "Menu & Packages"
 - **Sections:** interactive 66-menu explorer (Tiffin/Lunch/Dinner tablists — carried over intact) + the 3 packages (Tiffin Spread, Virundhu Sappadu, Grand Kalyana). Loads `menu-data.js`.
-- **Title:** `Menu & Packages — 66 Pure Veg Set Menus | VAAV Kitchen, Chennai`
+- **Title:** `Menu & Packages — 66 Pure Veg Set Menus & Prices | VAAV Kitchen`
 - **Meta:** `Browse 66 customisable pure-veg Tamil menus and three catering packages — tiffin, virundhu sappadu and a grand wedding feast. Get a quote on WhatsApp.`
+- **Canonical:** `https://vaavkitchenandcaterers.com/menu/`
 - **Schema:** `FoodEstablishment`, `Menu`, `BreadcrumbList`.
 
-### 4.4 About — `about.html`
+### 4.4 About — `about/index.html` (`/about/`)
 - **H1:** "Pure vegetarian, cooked like home."
 - **Sections:** story (retained copy), pure-veg positioning, stats, full reviews/testimonials (all Google reviews), Google rating badge, trust.
-- **Title:** `About VAAV Kitchen and Caterers — Pure Veg Home Food, Chennai`
-- **Meta:** `VAAV is a pure-vegetarian caterer for weddings, upanayanams and corporate events across Chennai — organic ingredients, traditional Pure Vegetarian Home Food. 4.9★ on Google.`
+- **Title:** `About VAAV Kitchen and Caterers — Our Pure Veg Home-Food Story`
+- **Meta:** `The story behind VAAV Kitchen and Caterers — traditional Pure Vegetarian Home Food made with organic ingredients, cooked fresh for every celebration. 4.9★ on Google.`
+- **Canonical:** `https://vaavkitchenandcaterers.com/about/`
 - **Schema:** `FoodEstablishment`, `AggregateRating` + `Review` (the 3 real reviews), `BreadcrumbList`.
 
-### 4.5 Contact — `contact.html`
+### 4.5 Contact — `contact/index.html` (`/contact/`)
 - **H1:** "Message us — we reply within the hour."
 - **Sections:** full contact info (address, phone, email, hours), Google Maps embed, "Open in Google Maps" (CID link), WhatsApp CTA card, **service areas** (across Chennai), **FAQ** (accordion), Google rating.
-- **Title:** `Contact VAAV Kitchen and Caterers — Book Catering in Chennai`
+- **Title:** `Contact & Book VAAV Kitchen and Caterers — Catering in Chennai`
 - **Meta:** `Call or WhatsApp +91 96553 56333 to book pure-veg catering across Chennai. Kitchen in Perungalathur. See hours, map and FAQ.`
+- **Canonical:** `https://vaavkitchenandcaterers.com/contact/`
 - **Schema:** `FoodEstablishment` (with `geo`, `hasMap`, `openingHoursSpecification`), `BreadcrumbList`, `FAQPage` (once FAQ content is provided).
 
 ---
@@ -126,17 +140,19 @@ Each page: one `<h1>`, unique `<title>` + meta description, self-referencing can
 
 ## 6. SEO & discoverability
 
-- Per-page unique `<title>`, meta description, single `<h1>`, self-canonical (`https://vaavkitchenandcaterers.com/<page>`), OG + Twitter tags with per-page URL/description.
-- **`sitemap.xml`** listing all 5 URLs; **`robots.txt`** allowing all + pointing to the sitemap.
-- Keyword→page map:
+- Per-page unique `<title>`, meta description, single `<h1>`, self-canonical (**clean URLs**, e.g. `https://vaavkitchenandcaterers.com/services/`), OG + Twitter tags with per-page URL/description.
+- **`sitemap.xml`** listing the 5 clean URLs; **`robots.txt`** allowing all + pointing to the sitemap.
+- Keyword→page map (one intent per page — no overlap):
 
-| Page | Target searches |
-|---|---|
-| Home | vaav kitchen and caterers, catering perungalathur |
-| Services | wedding / corporate / seemantham / upanayanam catering chennai |
-| Menu & Packages | pure veg catering menu, banana leaf sappadu, catering packages chennai price |
-| About | pure veg caterer chennai |
-| Contact | catering near me, catering chennai contact |
+| Page | URL | Primary intent / target searches |
+|---|---|---|
+| Home | `/` | brand + hyperlocal — *vaav kitchen and caterers, caterers in perungalathur* |
+| Services | `/services/` | commercial — *pure veg / wedding / corporate / seemantham / upanayanam catering chennai* |
+| Menu & Packages | `/menu/` | *pure veg catering menu, banana leaf sappadu, catering packages price* |
+| About | `/about/` | brand story/trust — *pure veg home food, our story* |
+| Contact | `/contact/` | transactional — *catering near me, catering chennai contact / book* |
+
+- **Growth path:** Services is a pillar; dedicated cluster pages (`/services/wedding-catering-chennai/`, `/services/corporate-catering-chennai/`) can be added later to capture each service's head term without a restructure.
 
 - JSON-LD `@id` shared business node reused across pages; `BreadcrumbList` on spokes.
 - All URLs use the real domain `vaavkitchenandcaterers.com`.
@@ -172,7 +188,7 @@ For **each** of the 5 pages:
 - No horizontal scroll at 375px; body ≥16px; primary CTAs ≥44px.
 - Per-page `<title>`, meta description, canonical, single `<h1>` are unique and correct.
 - JSON-LD parses (valid); `sitemap.xml` lists all 5 URLs.
-- Cross-page navigation is instant on repeat visits (cached assets); `menu-data.js` loads only on `menu.html`.
+- Cross-page navigation is instant on repeat visits (cached assets); `menu-data.js` loads only on `/menu/`.
 - Contrast sweep passes (no regressions from the existing WCAG state).
 
 ---
