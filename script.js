@@ -49,6 +49,87 @@ document.querySelectorAll('.js-greviews').forEach(a => {
 });
 
 /* ============================================================
+   MENU SHORTLIST — customer collects set menus, sends one
+   WhatsApp enquiry. State persists in localStorage; pill +
+   drawer are injected here so no HTML file has to change.
+   ============================================================ */
+window.VaavShortlist = (function () {
+  const KEY = "vaav_shortlist_v1";
+  const CAP = 20;
+  const EMPTY = () => ({ v: 1, items: [], notes: "", event: { name: "", occasion: "", guests: "", date: "" } });
+  let mem = null;          // in-memory fallback if localStorage is unavailable
+  let usingMem = false;
+
+  function read() {
+    if (usingMem) return mem;
+    try {
+      const raw = localStorage.getItem(KEY);
+      if (!raw) return EMPTY();
+      const obj = JSON.parse(raw);
+      if (!obj || typeof obj !== "object" || !Array.isArray(obj.items)) return EMPTY();
+      return Object.assign(EMPTY(), obj, { event: Object.assign(EMPTY().event, obj.event || {}) });
+    } catch (e) { return EMPTY(); }   // corrupt data → reset
+  }
+  function write(state) {
+    if (usingMem) { mem = state; return; }
+    try { localStorage.setItem(KEY, JSON.stringify(state)); }
+    catch (e) { usingMem = true; mem = state; }   // blocked/quota → in-memory for session
+  }
+  function emit() { document.dispatchEvent(new CustomEvent("vaav:shortlistchange")); }
+
+  let state = read();
+
+  return {
+    KEY: KEY, CAP: CAP,
+    getState: function () { return state; },
+    has: function (id) { return state.items.some(function (i) { return i.id === id; }); },
+    add: function (item) {
+      if (!item || !item.id) return false;
+      if (this.has(item.id)) return false;
+      if (state.items.length >= CAP) return false;
+      state.items.push({ id: item.id, cat: item.cat, name: item.name, groups: item.groups });
+      write(state); emit(); return true;
+    },
+    remove: function (id) {
+      state.items = state.items.filter(function (i) { return i.id !== id; });
+      write(state); emit();
+    },
+    clear: function () { state = EMPTY(); write(state); emit(); },
+    count: function () { return state.items.length; },
+    setNotes: function (str) { state.notes = str || ""; write(state); },
+    setEventField: function (key, val) {
+      if (!(key in state.event)) return;
+      state.event[key] = val || ""; write(state);
+    },
+    buildMessage: function () {
+      const parts = [];
+      parts.push("Hello VAAV Kitchen,");
+      parts.push("I'd like to enquire about catering. Here's my shortlist:");
+      state.items.forEach(function (it, i) {
+        const lines = ["*" + (i + 1) + ". " + it.name + "* (" + it.cat + ")"];
+        (it.groups || []).forEach(function (g) {
+          const label = g[0], dishes = g[1] || [];
+          if (label && label.trim().toLowerCase() !== "items") lines.push(label + ": " + dishes.join(", "));
+          else lines.push(dishes.join(", "));
+        });
+        parts.push(lines.join("\n"));
+      });
+      const notes = (state.notes || "").trim();
+      if (notes) parts.push("*Special requests:* " + notes);
+      const ev = state.event || {};
+      const evLines = [];
+      if ((ev.name || "").trim()) evLines.push("• Name: " + ev.name.trim());
+      if ((ev.occasion || "").trim()) evLines.push("• Occasion: " + ev.occasion.trim());
+      if ((ev.guests || "").trim()) evLines.push("• Guests: " + ev.guests.trim());
+      if ((ev.date || "").trim()) evLines.push("• Date: " + ev.date.trim());
+      if (evLines.length) parts.push("*Event details:*\n" + evLines.join("\n"));
+      parts.push("Please share a quote. Thank you!");
+      return parts.join("\n\n");
+    },
+  };
+})();
+
+/* ============================================================
    TESTIMONIALS — paste your real Google reviews here.
    Each: { name, text, rating (1-5), when }.  Keep 3–6 for a tidy grid.
    ============================================================ */
@@ -203,7 +284,11 @@ const VAAV_REVIEWS = [
     html += `<div class="mc-kicker">${data.label} menu</div>`;
     html += `<h3>${menu.name}</h3>`;
     html += `<div class="count"><b>${total}</b> dishes in this set</div>`;
+    const slId = curCat + ':' + menu.name;
+    const inList = window.VaavShortlist && window.VaavShortlist.has(slId);
     html += '<div class="rail-cta"><a href="#contact" class="btn y">Book this menu</a>';
+    html += '<button type="button" class="mc-add' + (inList ? ' added' : '') + '" data-id="' + slId + '" aria-pressed="' + (inList ? 'true' : 'false') + '">' +
+      '<span class="mc-add-txt">' + (inList ? '✓ Added' : '+ Add to shortlist') + '</span></button>';
     html += '<p class="rail-note">Mix and match across any set — we’ll tailor it to your event.</p></div>';
     html += '</div><div class="mc-body"><div class="mc-groups">';
     let n = 0;
@@ -221,6 +306,16 @@ const VAAV_REVIEWS = [
     cardEl.className = 'menu-card';
     cardEl.setAttribute('aria-labelledby', `mp-${curIdx}`);
     cardEl.innerHTML = html;
+    const addBtn = cardEl.querySelector('.mc-add');
+    if (addBtn && window.VaavShortlist) {
+      addBtn.setAttribute('aria-label', (window.VaavShortlist.has(addBtn.dataset.id) ? 'Remove ' : 'Add ') + menu.name + (window.VaavShortlist.has(addBtn.dataset.id) ? ' from shortlist' : ' to shortlist'));
+      addBtn.addEventListener('click', function () {
+        const S = window.VaavShortlist;
+        if (S.has(addBtn.dataset.id)) S.remove(addBtn.dataset.id);
+        else S.add({ id: addBtn.dataset.id, cat: data.label, name: menu.name, groups: menu.groups });
+        render();
+      });
+    }
   }
   render();
 })();
@@ -239,4 +334,152 @@ const VAAV_REVIEWS = [
     });
   }, { threshold: .2, rootMargin: '0px 0px -40px 0px' });
   cards.forEach(c => io.observe(c));
+})();
+
+// --- shortlist: floating count pill (injected on every page) ---
+(function () {
+  const S = window.VaavShortlist;
+  if (!S) return;
+  const pill = document.createElement('button');
+  pill.type = 'button';
+  pill.id = 'vaav-sl-pill';
+  pill.className = 'vaav-sl-pill';
+  pill.setAttribute('aria-haspopup', 'dialog');
+  pill.setAttribute('aria-expanded', 'false');
+  pill.setAttribute('aria-controls', 'vaav-sl-drawer');
+  pill.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2"/><rect x="9" y="3" width="6" height="4" rx="1"/><path d="M9 12h6M9 16h4"/></svg><span class="vaav-sl-pill-label"></span>';
+  const live = document.createElement('div');
+  live.className = 'vh'; live.setAttribute('aria-live', 'polite');
+  document.body.appendChild(pill);
+  document.body.appendChild(live);
+
+  function sync() {
+    const n = S.count();
+    pill.style.display = n > 0 ? 'inline-flex' : 'none';
+    pill.querySelector('.vaav-sl-pill-label').textContent = 'Shortlist (' + n + ')';
+    pill.setAttribute('aria-label', 'Review shortlist, ' + n + (n === 1 ? ' menu' : ' menus'));
+    live.textContent = n > 0 ? (n + (n === 1 ? ' menu' : ' menus') + ' in shortlist') : '';
+  }
+  pill.addEventListener('click', function () {
+    document.dispatchEvent(new CustomEvent('vaav:shortlistopen'));
+  });
+  document.addEventListener('vaav:shortlistchange', sync);
+  sync();
+})();
+
+// --- shortlist: drawer / bottom-sheet shell ---
+(function () {
+  const S = window.VaavShortlist;
+  if (!S) return;
+  const backdrop = document.createElement('div');
+  backdrop.id = 'vaav-sl-backdrop'; backdrop.className = 'vaav-sl-backdrop';
+  const drawer = document.createElement('div');
+  drawer.id = 'vaav-sl-drawer'; drawer.className = 'vaav-sl-drawer';
+  drawer.setAttribute('role', 'dialog');
+  drawer.setAttribute('aria-modal', 'true');
+  drawer.setAttribute('aria-labelledby', 'vaav-sl-title');
+  drawer.innerHTML =
+    '<div class="vaav-sl-head"><h2 id="vaav-sl-title">Your shortlist</h2>' +
+    '<button type="button" class="vaav-sl-close" aria-label="Close shortlist"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12"/></svg></button></div>' +
+    '<div id="vaav-sl-body" class="vaav-sl-body"></div>';
+  document.body.appendChild(backdrop);
+  document.body.appendChild(drawer);
+
+  let lastFocus = null;
+  function focusables() {
+    return drawer.querySelectorAll('button, [href], input, textarea, select, [tabindex]:not([tabindex="-1"])');
+  }
+  function onKeydown(e) {
+    if (e.key === 'Escape') { e.preventDefault(); close(); return; }
+    if (e.key !== 'Tab') return;
+    const f = [...focusables()].filter(el => el.offsetParent !== null);
+    if (!f.length) return;
+    const first = f[0], last = f[f.length - 1];
+    if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+    else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+  }
+  function open() {
+    lastFocus = document.activeElement;
+    document.body.classList.add('vaav-sl-open');
+    backdrop.classList.add('open'); drawer.classList.add('open');
+    const pill = document.getElementById('vaav-sl-pill');
+    if (pill) pill.setAttribute('aria-expanded', 'true');
+    document.addEventListener('keydown', onKeydown);
+    const closeBtn = drawer.querySelector('.vaav-sl-close');
+    if (closeBtn) closeBtn.focus();
+  }
+  function close() {
+    document.body.classList.remove('vaav-sl-open');
+    backdrop.classList.remove('open'); drawer.classList.remove('open');
+    const pill = document.getElementById('vaav-sl-pill');
+    if (pill) pill.setAttribute('aria-expanded', 'false');
+    document.removeEventListener('keydown', onKeydown);
+    if (lastFocus && lastFocus.focus) lastFocus.focus();
+  }
+  backdrop.addEventListener('click', close);
+  drawer.querySelector('.vaav-sl-close').addEventListener('click', close);
+  document.addEventListener('vaav:shortlistopen', open);
+  S.openDrawer = open; S.closeDrawer = close;
+})();
+
+// --- shortlist: drawer content render ---
+(function () {
+  const S = window.VaavShortlist;
+  const body = document.getElementById('vaav-sl-body');
+  if (!S || !body) return;
+
+  function esc(s) { return String(s).replace(/[&<>"]/g, function (c) {
+    return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
+
+  function render() {
+    const st = S.getState();
+    if (!st.items.length) {
+      body.innerHTML = '<p class="vaav-sl-empty">Your shortlist is empty. Add set menus from the menu explorer to send them to us together.</p>';
+      return;
+    }
+    let h = '<div class="vaav-sl-list">';
+    st.items.forEach(function (it) {
+      const total = (it.groups || []).reduce(function (s, g) { return s + (g[1] ? g[1].length : 0); }, 0);
+      h += '<div class="vaav-sl-item"><div><div class="vaav-sl-item-name">' + esc(it.name) + '</div>' +
+        '<div class="vaav-sl-item-meta">' + esc(it.cat) + ' · ' + total + ' dishes</div></div>' +
+        '<button type="button" class="vaav-sl-remove" data-id="' + esc(it.id) + '" aria-label="Remove ' + esc(it.name) + '">' +
+        '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 6h18M8 6V4h8v2M19 6l-1 14H6L5 6"/></svg></button></div>';
+    });
+    h += '</div>';
+    h += '<label class="vaav-sl-fieldlabel" for="vaav-sl-notes">Special requests</label>' +
+      '<textarea id="vaav-sl-notes" class="vaav-sl-notes" placeholder="No onion or garlic, extra sweet…">' + esc(st.notes) + '</textarea>';
+    h += '<div class="vaav-sl-event"><div class="vaav-sl-fieldlabel">Event details (optional)</div>' +
+      '<input id="vaav-sl-ev-name" placeholder="Your name" value="' + esc(st.event.name) + '">' +
+      '<input id="vaav-sl-ev-occasion" placeholder="Occasion (wedding, seemantham…)" value="' + esc(st.event.occasion) + '">' +
+      '<div class="vaav-sl-row2"><input id="vaav-sl-ev-guests" inputmode="numeric" placeholder="Guests" value="' + esc(st.event.guests) + '">' +
+      '<input id="vaav-sl-ev-date" placeholder="Event date" value="' + esc(st.event.date) + '"></div></div>';
+    h += '<a class="vaav-sl-send" href="#" target="_blank" rel="noopener noreferrer">' +
+      '<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M.057 24l1.687-6.163a11.867 11.867 0 01-1.587-5.946C.16 5.335 5.495 0 12.05 0a11.82 11.82 0 018.413 3.488 11.82 11.82 0 013.48 8.414c-.003 6.557-5.338 11.892-11.893 11.892a11.9 11.9 0 01-5.688-1.448L.057 24z"/></svg>Send enquiry on WhatsApp</a>';
+    h += '<button type="button" class="vaav-sl-clear">Clear all</button>';
+    h += '<p class="vaav-sl-help">Opens WhatsApp with your menus prefilled. No account needed.</p>';
+    body.innerHTML = h;
+
+    body.querySelectorAll('.vaav-sl-remove').forEach(function (b) {
+      b.addEventListener('click', function () { S.remove(b.dataset.id); });
+    });
+    body.querySelector('.vaav-sl-clear').addEventListener('click', function () { S.clear(); });
+    body.querySelector('#vaav-sl-notes').addEventListener('input', function (e) { S.setNotes(e.target.value); });
+    [['name', 'vaav-sl-ev-name'], ['occasion', 'vaav-sl-ev-occasion'], ['guests', 'vaav-sl-ev-guests'], ['date', 'vaav-sl-ev-date']]
+      .forEach(function (pair) {
+        body.querySelector('#' + pair[1]).addEventListener('input', function (e) { S.setEventField(pair[0], e.target.value); });
+      });
+
+    const send = body.querySelector('.vaav-sl-send');
+    if (send) {
+      const refresh = function () { send.href = waLink(S.buildMessage()); };
+      refresh();
+      send.addEventListener('mousedown', refresh);
+      send.addEventListener('touchstart', refresh, { passive: true });
+      send.addEventListener('focus', refresh);
+    }
+  }
+
+  document.addEventListener('vaav:shortlistchange', render);
+  document.addEventListener('vaav:shortlistopen', render);
+  render();
 })();

@@ -461,3 +461,57 @@ footer .fb{font-family:'Catamaran',sans-serif;font-weight:800;color:var(--yellow
   .hd svg{animation:none}
   .medallion::before{animation:none}
 }
+
+/* ---------- Menu shortlist ---------- */
+.vaav-sl-pill{position:fixed;right:20px;bottom:78px;z-index:81;display:none;align-items:center;gap:8px;
+  background:var(--cream);color:var(--green-deep);border:1.5px solid var(--green-deep);
+  font-family:'Catamaran',sans-serif;font-weight:700;font-size:.95rem;padding:11px 18px;border-radius:50px;
+  box-shadow:0 10px 26px rgba(0,0,0,.22);cursor:pointer;min-height:44px}
+.vaav-sl-pill svg{width:20px;height:20px}
+.vaav-sl-pill:hover{background:var(--cream-deep)}
+@media(max-width:760px){.vaav-sl-pill{right:16px;bottom:76px}}
+body.vaav-sl-open .vaav-sl-pill,body.vaav-sl-open .wa-float,body.vaav-sl-open .mobile-actionbar{display:none !important}
+.vaav-sl-backdrop{position:fixed;inset:0;z-index:150;background:rgba(20,61,29,.45);opacity:0;visibility:hidden;transition:opacity .25s}
+.vaav-sl-backdrop.open{opacity:1;visibility:visible}
+.vaav-sl-drawer{position:fixed;top:0;right:0;z-index:151;width:min(380px,92vw);height:100%;background:var(--cream);
+  display:flex;flex-direction:column;transform:translateX(100%);transition:transform .28s ease;box-shadow:-16px 0 40px rgba(0,0,0,.22)}
+.vaav-sl-drawer.open{transform:translateX(0)}
+.vaav-sl-head{display:flex;align-items:center;justify-content:space-between;padding:18px 20px;border-bottom:1px solid var(--cream-deep)}
+.vaav-sl-head h2{font-family:'Cormorant',serif;font-size:1.6rem;color:var(--green-ink)}
+.vaav-sl-close{width:44px;height:44px;display:flex;align-items:center;justify-content:center;background:transparent;border:0;cursor:pointer;color:var(--muted)}
+.vaav-sl-close svg{width:22px;height:22px}
+.vaav-sl-body{padding:18px 20px;overflow-y:auto;flex:1;display:flex;flex-direction:column;gap:18px}
+@media(max-width:760px){
+  .vaav-sl-drawer{top:auto;bottom:0;right:0;left:0;width:100%;height:auto;max-height:88vh;border-radius:18px 18px 0 0;
+    transform:translateY(100%)}
+  .vaav-sl-drawer.open{transform:translateY(0)}
+  .vaav-sl-drawer{box-shadow:0 -16px 40px rgba(0,0,0,.24)}
+}
+@media(prefers-reduced-motion:reduce){
+  .vaav-sl-drawer,.vaav-sl-backdrop{transition:none}
+}
+.vaav-sl-empty{color:var(--muted);line-height:1.6}
+.vaav-sl-list{display:flex;flex-direction:column;gap:8px}
+.vaav-sl-item{display:flex;align-items:center;justify-content:space-between;gap:10px;background:var(--cream-deep);border-radius:12px;padding:10px 14px}
+.vaav-sl-item-name{font-family:'Catamaran',sans-serif;font-weight:700;color:var(--green-ink)}
+.vaav-sl-item-meta{font-size:.85rem;color:var(--muted)}
+.vaav-sl-remove{width:44px;height:44px;flex-shrink:0;display:flex;align-items:center;justify-content:center;background:transparent;border:0;cursor:pointer;color:var(--kumkum)}
+.vaav-sl-remove svg{width:20px;height:20px}
+.vaav-sl-fieldlabel{display:block;font-family:'Catamaran',sans-serif;font-weight:700;font-size:.82rem;color:var(--muted);margin-bottom:6px}
+.vaav-sl-notes,.vaav-sl-event input{width:100%;font-family:'Mukta',sans-serif;font-size:1rem;color:var(--ink);
+  background:#fff;border:1px solid var(--cream-deep);border-radius:10px;padding:11px 13px}
+.vaav-sl-notes{min-height:56px;resize:vertical}
+.vaav-sl-event{display:flex;flex-direction:column;gap:10px}
+.vaav-sl-row2{display:flex;gap:10px}
+.vaav-sl-row2 input{width:100%}
+.vaav-sl-send{display:flex;align-items:center;justify-content:center;gap:9px;background:var(--green-deep);color:#fff;
+  text-decoration:none;font-family:'Catamaran',sans-serif;font-weight:800;font-size:1rem;padding:14px;border-radius:12px;min-height:44px}
+.vaav-sl-send svg{width:20px;height:20px}
+.vaav-sl-send:hover{background:var(--green-ink)}
+.vaav-sl-clear{background:transparent;border:0;color:var(--muted);font-family:'Catamaran',sans-serif;font-weight:700;text-decoration:underline;cursor:pointer;padding:6px;align-self:center;min-height:44px}
+.vaav-sl-help{font-size:.8rem;color:var(--muted);text-align:center}
+.mc-add{margin-top:10px;width:100%;display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:44px;
+  background:transparent;border:1.5px solid var(--green-deep);color:var(--green-deep);
+  font-family:'Catamaran',sans-serif;font-weight:800;font-size:.92rem;border-radius:10px;padding:10px 14px;cursor:pointer;transition:background .15s}
+.mc-add:hover{background:var(--cream-deep)}
+.mc-add.added{background:var(--green-deep);color:#fff}
