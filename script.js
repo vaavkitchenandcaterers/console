@@ -407,3 +407,56 @@ const VAAV_REVIEWS = [
   document.addEventListener('vaav:shortlistopen', open);
   S.openDrawer = open; S.closeDrawer = close;
 })();
+
+// --- shortlist: drawer content render ---
+(function () {
+  const S = window.VaavShortlist;
+  const body = document.getElementById('vaav-sl-body');
+  if (!S || !body) return;
+
+  function esc(s) { return String(s).replace(/[&<>"]/g, function (c) {
+    return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
+
+  function render() {
+    const st = S.getState();
+    if (!st.items.length) {
+      body.innerHTML = '<p class="vaav-sl-empty">Your shortlist is empty. Add set menus from the menu explorer to send them to us together.</p>';
+      return;
+    }
+    let h = '<div class="vaav-sl-list">';
+    st.items.forEach(function (it) {
+      const total = (it.groups || []).reduce(function (s, g) { return s + (g[1] ? g[1].length : 0); }, 0);
+      h += '<div class="vaav-sl-item"><div><div class="vaav-sl-item-name">' + esc(it.name) + '</div>' +
+        '<div class="vaav-sl-item-meta">' + esc(it.cat) + ' · ' + total + ' dishes</div></div>' +
+        '<button type="button" class="vaav-sl-remove" data-id="' + esc(it.id) + '" aria-label="Remove ' + esc(it.name) + '">' +
+        '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 6h18M8 6V4h8v2M19 6l-1 14H6L5 6"/></svg></button></div>';
+    });
+    h += '</div>';
+    h += '<label class="vaav-sl-fieldlabel" for="vaav-sl-notes">Special requests</label>' +
+      '<textarea id="vaav-sl-notes" class="vaav-sl-notes" placeholder="No onion or garlic, extra sweet…">' + esc(st.notes) + '</textarea>';
+    h += '<div class="vaav-sl-event"><div class="vaav-sl-fieldlabel">Event details (optional)</div>' +
+      '<input id="vaav-sl-ev-name" placeholder="Your name" value="' + esc(st.event.name) + '">' +
+      '<input id="vaav-sl-ev-occasion" placeholder="Occasion (wedding, seemantham…)" value="' + esc(st.event.occasion) + '">' +
+      '<div class="vaav-sl-row2"><input id="vaav-sl-ev-guests" inputmode="numeric" placeholder="Guests" value="' + esc(st.event.guests) + '">' +
+      '<input id="vaav-sl-ev-date" placeholder="Event date" value="' + esc(st.event.date) + '"></div></div>';
+    h += '<a class="vaav-sl-send" href="#" target="_blank" rel="noopener noreferrer">' +
+      '<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M.057 24l1.687-6.163a11.867 11.867 0 01-1.587-5.946C.16 5.335 5.495 0 12.05 0a11.82 11.82 0 018.413 3.488 11.82 11.82 0 013.48 8.414c-.003 6.557-5.338 11.892-11.893 11.892a11.9 11.9 0 01-5.688-1.448L.057 24z"/></svg>Send enquiry on WhatsApp</a>';
+    h += '<button type="button" class="vaav-sl-clear">Clear all</button>';
+    h += '<p class="vaav-sl-help">Opens WhatsApp with your menus prefilled. No account needed.</p>';
+    body.innerHTML = h;
+
+    body.querySelectorAll('.vaav-sl-remove').forEach(function (b) {
+      b.addEventListener('click', function () { S.remove(b.dataset.id); });
+    });
+    body.querySelector('.vaav-sl-clear').addEventListener('click', function () { S.clear(); });
+    body.querySelector('#vaav-sl-notes').addEventListener('input', function (e) { S.setNotes(e.target.value); });
+    [['name', 'vaav-sl-ev-name'], ['occasion', 'vaav-sl-ev-occasion'], ['guests', 'vaav-sl-ev-guests'], ['date', 'vaav-sl-ev-date']]
+      .forEach(function (pair) {
+        body.querySelector('#' + pair[1]).addEventListener('input', function (e) { S.setEventField(pair[0], e.target.value); });
+      });
+  }
+
+  document.addEventListener('vaav:shortlistchange', render);
+  document.addEventListener('vaav:shortlistopen', render);
+  render();
+})();

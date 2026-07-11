@@ -490,3 +490,23 @@ body.vaav-sl-open .vaav-sl-pill,body.vaav-sl-open .wa-float,body.vaav-sl-open .m
 @media(prefers-reduced-motion:reduce){
   .vaav-sl-drawer,.vaav-sl-backdrop{transition:none}
 }
+.vaav-sl-empty{color:var(--muted);line-height:1.6}
+.vaav-sl-list{display:flex;flex-direction:column;gap:8px}
+.vaav-sl-item{display:flex;align-items:center;justify-content:space-between;gap:10px;background:var(--cream-deep);border-radius:12px;padding:10px 14px}
+.vaav-sl-item-name{font-family:'Catamaran',sans-serif;font-weight:700;color:var(--green-ink)}
+.vaav-sl-item-meta{font-size:.85rem;color:var(--muted)}
+.vaav-sl-remove{width:44px;height:44px;flex-shrink:0;display:flex;align-items:center;justify-content:center;background:transparent;border:0;cursor:pointer;color:var(--kumkum)}
+.vaav-sl-remove svg{width:20px;height:20px}
+.vaav-sl-fieldlabel{display:block;font-family:'Catamaran',sans-serif;font-weight:700;font-size:.82rem;color:var(--muted);margin-bottom:6px}
+.vaav-sl-notes,.vaav-sl-event input{width:100%;font-family:'Mukta',sans-serif;font-size:1rem;color:var(--ink);
+  background:#fff;border:1px solid var(--cream-deep);border-radius:10px;padding:11px 13px}
+.vaav-sl-notes{min-height:56px;resize:vertical}
+.vaav-sl-event{display:flex;flex-direction:column;gap:10px}
+.vaav-sl-row2{display:flex;gap:10px}
+.vaav-sl-row2 input{width:100%}
+.vaav-sl-send{display:flex;align-items:center;justify-content:center;gap:9px;background:var(--green-deep);color:#fff;
+  text-decoration:none;font-family:'Catamaran',sans-serif;font-weight:800;font-size:1rem;padding:14px;border-radius:12px;min-height:44px}
+.vaav-sl-send svg{width:20px;height:20px}
+.vaav-sl-send:hover{background:var(--green-ink)}
+.vaav-sl-clear{background:transparent;border:0;color:var(--muted);font-family:'Catamaran',sans-serif;font-weight:700;text-decoration:underline;cursor:pointer;padding:6px;align-self:center;min-height:44px}
+.vaav-sl-help{font-size:.8rem;color:var(--muted);text-align:center}
