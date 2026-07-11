@@ -280,7 +280,7 @@ section{padding:90px 0}
 
 /* about */
 #about .about-grid{display:grid;grid-template-columns:1fr 1fr;gap:60px;align-items:center}
-#about h2{font-size:clamp(2rem,4vw,2.9rem);color:var(--green-deep);margin:10px 0 18px}
+#about h1,#about h2{font-size:clamp(2rem,4vw,2.9rem);color:var(--green-deep);margin:10px 0 18px}
 .about-lede{color:var(--muted);font-size:1.05rem;line-height:1.6}
 .stat-row{display:flex;gap:40px;margin-top:30px;list-style:none;padding:0}
 .stat-row > li{margin:0}
