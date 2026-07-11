@@ -49,6 +49,62 @@ document.querySelectorAll('.js-greviews').forEach(a => {
 });
 
 /* ============================================================
+   MENU SHORTLIST — customer collects set menus, sends one
+   WhatsApp enquiry. State persists in localStorage; pill +
+   drawer are injected here so no HTML file has to change.
+   ============================================================ */
+window.VaavShortlist = (function () {
+  const KEY = "vaav_shortlist_v1";
+  const CAP = 20;
+  const EMPTY = () => ({ v: 1, items: [], notes: "", event: { name: "", occasion: "", guests: "", date: "" } });
+  let mem = null;          // in-memory fallback if localStorage is unavailable
+  let usingMem = false;
+
+  function read() {
+    if (usingMem) return mem;
+    try {
+      const raw = localStorage.getItem(KEY);
+      if (!raw) return EMPTY();
+      const obj = JSON.parse(raw);
+      if (!obj || typeof obj !== "object" || !Array.isArray(obj.items)) return EMPTY();
+      return Object.assign(EMPTY(), obj, { event: Object.assign(EMPTY().event, obj.event || {}) });
+    } catch (e) { return EMPTY(); }   // corrupt data → reset
+  }
+  function write(state) {
+    if (usingMem) { mem = state; return; }
+    try { localStorage.setItem(KEY, JSON.stringify(state)); }
+    catch (e) { usingMem = true; mem = state; }   // blocked/quota → in-memory for session
+  }
+  function emit() { document.dispatchEvent(new CustomEvent("vaav:shortlistchange")); }
+
+  let state = read();
+
+  return {
+    KEY: KEY, CAP: CAP,
+    getState: function () { return state; },
+    has: function (id) { return state.items.some(function (i) { return i.id === id; }); },
+    add: function (item) {
+      if (!item || !item.id) return false;
+      if (this.has(item.id)) return false;
+      if (state.items.length >= CAP) return false;
+      state.items.push({ id: item.id, cat: item.cat, name: item.name, groups: item.groups });
+      write(state); emit(); return true;
+    },
+    remove: function (id) {
+      state.items = state.items.filter(function (i) { return i.id !== id; });
+      write(state); emit();
+    },
+    clear: function () { state = EMPTY(); write(state); emit(); },
+    count: function () { return state.items.length; },
+    setNotes: function (str) { state.notes = str || ""; write(state); },
+    setEventField: function (key, val) {
+      if (!(key in state.event)) return;
+      state.event[key] = val || ""; write(state);
+    }
+  };
+})();
+
+/* ============================================================
    TESTIMONIALS — paste your real Google reviews here.
    Each: { name, text, rating (1-5), when }.  Keep 3–6 for a tidy grid.
    ============================================================ */
