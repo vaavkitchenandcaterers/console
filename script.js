@@ -100,7 +100,32 @@ window.VaavShortlist = (function () {
     setEventField: function (key, val) {
       if (!(key in state.event)) return;
       state.event[key] = val || ""; write(state);
-    }
+    },
+    buildMessage: function () {
+      const parts = [];
+      parts.push("Hello VAAV Kitchen,");
+      parts.push("I'd like to enquire about catering. Here's my shortlist:");
+      state.items.forEach(function (it, i) {
+        const lines = ["*" + (i + 1) + ". " + it.name + "* (" + it.cat + ")"];
+        (it.groups || []).forEach(function (g) {
+          const label = g[0], dishes = g[1] || [];
+          if (label && label.trim().toLowerCase() !== "items") lines.push(label + ": " + dishes.join(", "));
+          else lines.push(dishes.join(", "));
+        });
+        parts.push(lines.join("\n"));
+      });
+      const notes = (state.notes || "").trim();
+      if (notes) parts.push("*Special requests:* " + notes);
+      const ev = state.event || {};
+      const evLines = [];
+      if ((ev.name || "").trim()) evLines.push("• Name: " + ev.name.trim());
+      if ((ev.occasion || "").trim()) evLines.push("• Occasion: " + ev.occasion.trim());
+      if ((ev.guests || "").trim()) evLines.push("• Guests: " + ev.guests.trim());
+      if ((ev.date || "").trim()) evLines.push("• Date: " + ev.date.trim());
+      if (evLines.length) parts.push("*Event details:*\n" + evLines.join("\n"));
+      parts.push("Please share a quote. Thank you!");
+      return parts.join("\n\n");
+    },
   };
 })();
 
