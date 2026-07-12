@@ -133,6 +133,8 @@ window.Studio = (function () {
       document.getElementById('btn-new').addEventListener('click', function(){ if (confirm('Start a new blank quote? The current draft will be cleared.')) newQuote(); });
       S.Output.mount();
       document.getElementById('btn-save').addEventListener('click', function(){ const n=S.History.save(); S.App.touch(); alert('Saved as '+n); });
+      document.getElementById('btn-print-m').addEventListener('click',function(){ document.getElementById('btn-print').click(); });
+      document.getElementById('btn-send-m').addEventListener('click',function(){ document.getElementById('btn-send').click(); });
       S.History.mount(); S.Backup.mount();
     }
     return { start:start, state:state, touch:touch, renderBuilder:renderBuilder, setQuote:setQuote, esc:esc };
