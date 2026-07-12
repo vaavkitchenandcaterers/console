@@ -66,3 +66,11 @@ button{cursor:pointer}
 .d-total{display:flex;justify-content:space-between;align-items:center;background:var(--cream-deep);border-radius:8px;padding:10px 12px;margin-top:10px;font-weight:700;font-size:1.1rem;color:var(--green-ink)}
 .d-notes{font-size:.82rem;color:var(--muted);margin-top:10px;border-top:1px solid var(--line);padding-top:8px}
 .d-empty{color:var(--muted);font-style:italic;padding:10px 0}
+@media print{
+  .topbar,.builder,.gate,.modal,#add-menu-sel{display:none !important}
+  .workspace{display:block}.preview-wrap{padding:0;background:#fff}
+  .doc{border:0;max-width:100%;padding:0}
+  body{background:#fff}
+  .d-menu,.d-total{break-inside:avoid}
+  *{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+}

@@ -131,6 +131,7 @@ window.Studio = (function () {
       renderBuilder(); touch();
       (function(){ const dl=document.createElement('datalist'); dl.id='addon-list'; S.Library.load().addons.forEach(function(a){ const o=document.createElement('option'); o.value=a.name; dl.appendChild(o); }); document.body.appendChild(dl); })();
       document.getElementById('btn-new').addEventListener('click', function(){ if (confirm('Start a new blank quote? The current draft will be cleared.')) newQuote(); });
+      S.Output.mount();
     }
     return { start:start, state:state, touch:touch, renderBuilder:renderBuilder, setQuote:setQuote, esc:esc };
   })();
@@ -233,5 +234,38 @@ window.Studio = (function () {
     }
     return { render:render };
   })();
+  S.buildSummary = function (q) {
+    const t = S.Quote.computeTotals(q); const c = q.customer; const parts = [];
+    parts.push('*VAAV Kitchen and Caterers — Quotation*'); parts.push('No. '+(q.number||'(draft)')+' · '+(q.createdAt||new Date().toISOString().slice(0,10)));
+    const who = 'Hi '+(c.name||'there')+", here's your quote"+(c.eventType?' for '+c.eventType:'')+(c.eventDate?' on '+c.eventDate:'')+':';
+    parts.push(who);
+    q.menus.forEach(function(m,i){ let s='*'+m.name+'* — '+S.fmtNum(m.guests)+' × '+S.fmt(m.rate)+' = '+S.fmt(t.menus[i].lineTotal);
+      t.menus[i].addonLines.forEach(function(a){ s+='\n'+a.name+' — '+S.fmtNum(a.qty)+' × '+S.fmt(a.mrp)+' = '+S.fmt(a.total); }); parts.push(s); });
+    const charges = q.charges.filter(function(x){return x.label||x.amount;}); if(charges.length) parts.push(charges.map(function(x){return (x.label||'Charge')+' — '+S.fmt(x.amount);}).join('\n'));
+    if (t.included.length) parts.push('Included (complimentary): '+t.included.join(', '));
+    parts.push('*Total: '+S.fmt(t.grandTotal)+'*');
+    if (q.notes) parts.push('Notes: '+q.notes);
+    return parts.join('\n\n');
+  };
+  S.waCustomerLink = function (q) {
+    const text = S.buildSummary(q); let digits = (q.customer.phone||'').replace(/\D/g,'');
+    if (digits.length===10) digits = '91'+digits;
+    const valid = digits.length>=11 && digits.length<=15;
+    return { text:text, needsClipboard:!valid, href: valid ? 'https://wa.me/'+digits+'?text='+encodeURIComponent(text) : 'https://wa.me/?text='+encodeURIComponent(text) };
+  };
+  S.Output = { mount: function () {
+    document.getElementById('btn-print').addEventListener('click', function () {
+      const q=S.App.state.quote; const prev=document.title; document.title=(q.number||'Quote')+' '+(q.customer.name||'');
+      function restore(){ document.title=prev; window.removeEventListener('afterprint',restore); }
+      window.addEventListener('afterprint', restore); window.print();
+    });
+    document.getElementById('btn-send').addEventListener('click', function () {
+      const q=S.App.state.quote; if(!q.menus.length){ alert('Add at least one menu first.'); return; }
+      const link=S.waCustomerLink(q);
+      if (link.needsClipboard && navigator.clipboard) { navigator.clipboard.writeText(link.text).catch(function(){}); alert('No valid customer phone — the quote text is copied. Pick the contact in WhatsApp and paste. Remember to attach the saved PDF.'); }
+      else { alert('Opening WhatsApp with the summary. Remember to attach the saved PDF.'); }
+      const a=document.createElement('a'); a.href=link.href; a.target='_blank'; a.rel='noopener noreferrer'; document.body.appendChild(a); a.click(); a.remove();
+    });
+  } };
   return S;
 })();
