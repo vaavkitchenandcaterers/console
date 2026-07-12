@@ -71,5 +71,12 @@ window.Studio = (function () {
         const hit=d.addons.find(function(x){return x.name.toLowerCase()===name;}); return hit?{mrp:hit.mrp,free:hit.free}:null; }
     };
   })();
+  S.Numbering = {
+    next: function (year) {
+      const st = S.Store.get(S.KEYS.SETTINGS, {v:1,counters:{}}); st.counters = st.counters || {};
+      const y = String(year); const n = (st.counters[y] || 0) + 1; st.counters[y] = n; S.Store.set(S.KEYS.SETTINGS, st);
+      return 'VAAV-' + y + '-' + String(n).padStart(3, '0');
+    }
+  };
   return S;
 })();
