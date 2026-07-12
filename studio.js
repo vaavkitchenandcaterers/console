@@ -5,6 +5,7 @@ window.Studio = (function () {
     S._boot && S._boot();
   });
   S.KEYS = { QUOTES:'vaav_studio_quotes', DRAFT:'vaav_studio_draft', ITEMS:'vaav_studio_items', SETTINGS:'vaav_studio_settings' };
+  S.KEYS.REQUESTS = 'vaav_studio_requests';
   const mem = {}; let usingMem = false;
   S.Store = {
     get usingMemory(){ return usingMem; },
@@ -136,6 +137,7 @@ window.Studio = (function () {
       document.getElementById('btn-print-m').addEventListener('click',function(){ document.getElementById('btn-print').click(); });
       document.getElementById('btn-send-m').addEventListener('click',function(){ document.getElementById('btn-send').click(); });
       S.History.mount(); S.Backup.mount();
+      S.Requests.mount();
     }
     return { start:start, state:state, touch:touch, renderBuilder:renderBuilder, setQuote:setQuote, esc:esc };
   })();
@@ -284,7 +286,9 @@ window.Studio = (function () {
     function save(){ const q=S.App.state.quote; const list=all();
       if(!q.number){ q.number=S.Numbering.next(new Date().getFullYear()); q.createdAt=new Date().toISOString().slice(0,10); }
       q.updatedAt=new Date().toISOString().slice(0,10); const i=list.findIndex(function(x){return x.id===q.id;});
-      if(i>=0) list[i]=JSON.parse(JSON.stringify(q)); else list.push(JSON.parse(JSON.stringify(q))); S.Store.set(S.KEYS.QUOTES,list); return q.number; }
+      if(i>=0) list[i]=JSON.parse(JSON.stringify(q)); else list.push(JSON.parse(JSON.stringify(q))); S.Store.set(S.KEYS.QUOTES,list);
+      if (q.fromRequest && S.Requests) { S.Requests.markQuoted(q.fromRequest, q.number); if (S.Requests.refreshBadge) S.Requests.refreshBadge(); }
+      return q.number; }
     function open(id){ const q=all().find(function(x){return x.id===id;}); if(q){ S.App.setQuote(JSON.parse(JSON.stringify(q))); S._closeModal&&S._closeModal(); } }
     function duplicate(id){ const q=all().find(function(x){return x.id===id;}); if(q){ const copy=JSON.parse(JSON.stringify(q)); copy.id='q_'+Date.now()+'_'+Math.random().toString(36).slice(2,7); copy.number=''; copy.createdAt=''; S.App.setQuote(copy); S._closeModal&&S._closeModal(); } }
     function remove(id){ if(!confirm('Delete this quote?'))return; S.Store.set(S.KEYS.QUOTES, all().filter(function(x){return x.id!==id;})); mount(true); }
@@ -302,9 +306,10 @@ window.Studio = (function () {
     return { save:save, open:open, duplicate:duplicate, remove:remove, list:all, mount:mountBtns, openModal:openModal };
   })();
   S.Backup = (function () {
-    function exportData(){ return JSON.stringify({ quotes:S.Store.get(S.KEYS.QUOTES,[]), items:S.Store.get(S.KEYS.ITEMS,{v:1,dishes:[],addons:[]}), settings:S.Store.get(S.KEYS.SETTINGS,{v:1,counters:{}}) }); }
+    function exportData(){ return JSON.stringify({ quotes:S.Store.get(S.KEYS.QUOTES,[]), items:S.Store.get(S.KEYS.ITEMS,{v:1,dishes:[],addons:[]}), settings:S.Store.get(S.KEYS.SETTINGS,{v:1,counters:{}}), requests:S.Store.get(S.KEYS.REQUESTS,[]) }); }
     function importData(json){ try{ const d=JSON.parse(json); if(!d||!Array.isArray(d.quotes)) return false;
       S.Store.set(S.KEYS.QUOTES,d.quotes); if(d.items)S.Store.set(S.KEYS.ITEMS,d.items);
+      if(d.requests)S.Store.set(S.KEYS.REQUESTS,d.requests);
       const cur=S.Store.get(S.KEYS.SETTINGS,{v:1,counters:{}}); if(d.settings&&d.settings.counters){ cur.counters=d.settings.counters; S.Store.set(S.KEYS.SETTINGS,cur);} return true; }catch(e){ return false; } }
     function mountBtns(){ document.getElementById('btn-backup').addEventListener('click', function(){
       S.modal('<h2>Backup</h2><p class="d-meta">Export your quotes + item library to a file, or import to restore / move to another device.</p><div class="q-acts"><button type="button" id="bk-exp">Export file</button><label class="bk-imp">Import file<input type="file" id="bk-imp" accept="application/json" hidden></label></div>');
@@ -312,6 +317,81 @@ window.Studio = (function () {
       document.getElementById('bk-imp').addEventListener('change',function(e){ const f=e.target.files[0]; if(!f)return; const r=new FileReader(); r.onload=function(){ if(importData(r.result)){ alert('Restored.'); S._closeModal&&S._closeModal(); } else alert('That file could not be read.'); }; r.readAsText(f); });
     }); }
     return { exportData:exportData, importData:importData, mount:mountBtns };
+  })();
+  S.Requests = (function () {
+    const menuHdr = /^\*\s*\d+\.\s*(.+?)\s*\*\s*\((.+?)\)\s*$/;
+    function findSet(name){ const M=window.VAAV_MENUS||{}; name=(name||'').trim().toLowerCase(); let res=null;
+      Object.keys(M).forEach(function(cat){ (M[cat].menus||[]).forEach(function(mn){ if(mn.name.toLowerCase()===name) res={cat:cat,label:M[cat].label,groups:mn.groups}; }); }); return res; }
+    function parse(text){
+      text=String(text||''); const lines=text.split(/\r?\n/);
+      const menus=[]; let notes=''; const cust={name:'',eventType:'',eventDate:'',guests:0};
+      for (let i=0;i<lines.length;i++){
+        const line=lines[i].trim();
+        const hm=line.match(menuHdr);
+        if (hm){ const nm=hm[1], catRaw=hm[2]; const set=findSet(nm); let groups;
+          if (set){ groups=set.groups.map(function(g){return [g[0],g[1].slice()];}); }
+          else { groups=[]; for (let j=i+1;j<lines.length;j++){ const dl=lines[j].trim(); if(!dl||dl.charAt(0)==='*') break;
+              const lm=dl.match(/^([^,:]{1,24}):\s*(.+)$/);
+              if (lm) groups.push([lm[1].trim(), lm[2].split(',').map(function(s){return s.trim();}).filter(Boolean)]);
+              else groups.push(['Items', dl.split(',').map(function(s){return s.trim();}).filter(Boolean)]); }
+            if(!groups.length) groups=[['Items',[]]]; }
+          menus.push({ name:nm, cat:set?set.label:catRaw, groups:groups }); continue; }
+        const sr=line.match(/^\*Special requests:\*\s*(.+)$/i); if(sr){ notes=sr[1].trim(); continue; }
+        const ev=line.match(/^[•\-\*]\s*(Name|Occasion|Guests|Date):\s*(.+)$/i);
+        if (ev){ const k=ev[1].toLowerCase(), v=ev[2].trim();
+          if(k==='name')cust.name=v; else if(k==='occasion')cust.eventType=v; else if(k==='date')cust.eventDate=v; else if(k==='guests')cust.guests=parseInt(v.replace(/\D/g,''),10)||0; }
+      }
+      const any = menus.length || cust.name || cust.eventType || cust.eventDate || cust.guests;
+      if (!any) return { customer:{name:'',eventType:'',eventDate:'',guests:0}, menus:[], notes:text.trim(), unparsed:true };
+      return { customer:cust, menus:menus, notes:notes, unparsed:false };
+    }
+    return { parse:parse };
+  })();
+  (function () {
+    const R = S.Requests;
+    R.add = function (text) { const parsed=R.parse(text);
+      const req={ id:'r_'+Date.now()+'_'+Math.random().toString(36).slice(2,6), receivedAt:new Date().toISOString().slice(0,10), raw:String(text||''), parsed:parsed, status:'new', number:'' };
+      const list=S.Store.get(S.KEYS.REQUESTS,[]); list.push(req); S.Store.set(S.KEYS.REQUESTS,list); return req; };
+    R.list = function () { const l=S.Store.get(S.KEYS.REQUESTS,[]);
+      const news=l.filter(function(r){return r.status==='new';}).reverse();
+      const q=l.filter(function(r){return r.status!=='new';}).reverse(); return news.concat(q); };
+    R.remove = function (id) { S.Store.set(S.KEYS.REQUESTS, S.Store.get(S.KEYS.REQUESTS,[]).filter(function(r){return r.id!==id;})); };
+    R.newCount = function () { return S.Store.get(S.KEYS.REQUESTS,[]).filter(function(r){return r.status==='new';}).length; };
+    R.markQuoted = function (id, number) { const l=S.Store.get(S.KEYS.REQUESTS,[]); const r=l.find(function(x){return x.id===id;}); if(r){ r.status='quoted'; r.number=number; S.Store.set(S.KEYS.REQUESTS,l); } };
+    R.toQuote = function (id) { const l=S.Store.get(S.KEYS.REQUESTS,[]); const r=l.find(function(x){return x.id===id;}); if(!r) return; const p=r.parsed;
+      const q=S.Quote.blank(); q.customer.name=p.customer.name||''; q.customer.eventType=p.customer.eventType||''; q.customer.eventDate=p.customer.eventDate||''; q.defaultGuests=p.customer.guests||0; q.notes=p.notes||'';
+      const M=window.VAAV_MENUS||{};
+      (p.menus||[]).forEach(function(m){ let sourceCat=null, groups=m.groups;
+        Object.keys(M).forEach(function(cat){ (M[cat].menus||[]).forEach(function(mn){ if(mn.name.toLowerCase()===(m.name||'').toLowerCase()){ sourceCat=cat; groups=mn.groups.map(function(g){return [g[0],g[1].slice()];}); } }); });
+        q.menus.push({ id:'m_'+Date.now()+'_'+Math.random().toString(36).slice(2,6), name:m.name, sourceCat:sourceCat, groups:(groups&&groups.length)?groups:[['Items',[]]], guests:q.defaultGuests||0, rate:0, addons:[] }); });
+      q.fromRequest=id; S.App.setQuote(q); if(S._closeModal) S._closeModal(); };
+  })();
+  (function () {
+    const R = S.Requests, esc = function(s){ return S.App.esc(s); };
+    R.refreshBadge = function () { const b=document.getElementById('req-badge'); const btn=document.getElementById('btn-requests'); if(!b||!btn) return;
+      const n=R.newCount(); b.textContent=n; b.hidden=(n===0); btn.setAttribute('aria-label','Requests, '+n+' new'); };
+    R.openModal = function () {
+      const reqs=R.list();
+      const cards = reqs.length ? reqs.map(function(r){ const p=r.parsed;
+        const menuNames=(p.menus||[]).map(function(m){return m.name;}).join(', ');
+        const ev=[p.customer.eventType, p.customer.guests?p.customer.guests+' guests':'', p.customer.eventDate].filter(Boolean).join(' · ');
+        if (r.status==='quoted') return '<div class="req-card quoted"><div><span class="d-strong">'+esc(p.customer.name||'Customer')+'</span> <span class="req-q">quoted · '+esc(r.number)+'</span><div class="req-meta">'+esc([ev,menuNames].filter(Boolean).join(' · '))+'</div></div><button type="button" class="icon-btn" data-del="'+r.id+'" aria-label="Delete request">×</button></div>';
+        return '<div class="req-card new"><div><span class="d-strong">'+esc(p.customer.name||'Customer')+'</span> <span class="req-new">new</span>'+(p.unparsed?' <span class="req-warn">needs review</span>':'')
+          +'<div class="req-meta">'+esc(ev||'—')+'</div>'
+          +'<div class="req-menus">'+esc(menuNames||(p.unparsed?'(couldn’t read menus — see text)':'—'))+(p.notes?' · “'+esc(p.notes.slice(0,40))+'”':'')+'</div></div>'
+          +'<div class="req-acts"><button type="button" class="req-make" data-make="'+r.id+'">Make quote</button><button type="button" data-view="'+r.id+'">View text</button><button type="button" class="icon-btn" data-del="'+r.id+'" aria-label="Dismiss">×</button></div></div>';
+      }).join('') : '<p class="d-meta">No requests yet. Paste a customer’s WhatsApp enquiry above.</p>';
+      S.modal('<h2>New requests</h2><div class="req-paste"><label class="vh" for="req-input">Paste enquiry</label>'
+        +'<textarea id="req-input" rows="3" placeholder="Paste the customer’s WhatsApp enquiry here…"></textarea>'
+        +'<button type="button" id="req-import" class="req-import">Import request</button><p id="req-msg" class="req-msg" role="status"></p></div>'
+        +'<div class="req-list">'+cards+'</div>');
+      const box=document.querySelector('.modal-box');
+      box.querySelector('#req-import').addEventListener('click',function(){ const t=document.getElementById('req-input').value; if(!t.trim()){ document.getElementById('req-msg').textContent='Paste a message first.'; return; } R.add(t); R.refreshBadge(); R.openModal(); });
+      box.querySelectorAll('[data-make]').forEach(function(b){ b.addEventListener('click',function(){ R.toQuote(b.dataset.make); }); });
+      box.querySelectorAll('[data-del]').forEach(function(b){ b.addEventListener('click',function(){ if(confirm('Remove this request?')){ R.remove(b.dataset.del); R.refreshBadge(); R.openModal(); } }); });
+      box.querySelectorAll('[data-view]').forEach(function(b){ b.addEventListener('click',function(){ const r=R.list().find(function(x){return x.id===b.dataset.view;}); alert(r?r.raw:''); }); });
+    };
+    R.mount = function () { const btn=document.getElementById('btn-requests'); if(!btn) return; btn.addEventListener('click', R.openModal); R.refreshBadge(); };
   })();
   return S;
 })();
