@@ -208,5 +208,30 @@ window.Studio = (function () {
       host.querySelectorAll('.ch-amt').forEach(function(inp){ inp.addEventListener('input',function(){ q().charges[+inp.dataset.i].amount=Math.max(0,parseInt(inp.value,10)||0); S.App.touch(); }); });
     };
   })();
+  S.Preview = (function () {
+    const esc = S.App.esc;
+    function render(q){
+      const doc=document.getElementById('doc'); if(!doc) return; const t=S.Quote.computeTotals(q);
+      const c=q.customer;
+      let menus = q.menus.map(function(m,i){
+        const dishes = m.groups.map(function(g){ return g[1].join(', '); }).filter(Boolean).join(', ');
+        let rows = '<div class="d-line"><span>'+esc(m.name)+' — '+S.fmtNum(m.guests)+' × '+S.fmt(m.rate)+'</span><span>'+S.fmt(t.menus[i].lineTotal)+'</span></div>';
+        if (dishes) rows += '<div class="d-dishes">'+esc(dishes)+'</div>';
+        t.menus[i].addonLines.forEach(function(a){ rows += '<div class="d-sub"><span>'+esc(a.name)+' — '+S.fmtNum(a.qty)+' × '+S.fmt(a.mrp)+'</span><span>'+S.fmt(a.total)+'</span></div>'; });
+        return '<div class="d-menu">'+rows+'</div>';
+      }).join('');
+      let charges = q.charges.filter(function(c){return c.label||c.amount;}).map(function(c){ return '<div class="d-sub"><span>'+esc(c.label||'Charge')+'</span><span>'+S.fmt(c.amount)+'</span></div>'; }).join('');
+      let included = t.included.length ? '<div class="d-incl"><span>Included: '+t.included.map(esc).join(', ')+'</span><span>Complimentary</span></div>' : '';
+      doc.innerHTML =
+        '<div class="d-head"><div class="d-logo">V</div><div><div class="d-biz">VAAV Kitchen and Caterers</div><div class="d-meta">Pure-veg catering · Perungalathur, Chennai · +91 96553 56333</div></div></div>'
+        + '<div class="d-title-row"><div><div class="d-title">Quotation</div><div class="d-meta">'+esc(q.number||'(unsaved)')+' · '+esc(q.createdAt||new Date().toISOString().slice(0,10))+'</div></div>'
+        + '<div class="d-cust"><div class="d-strong">'+esc(c.name||'Customer')+'</div><div class="d-meta">'+[c.eventType,c.eventDate].filter(Boolean).map(esc).join(' · ')+'</div><div class="d-meta">'+esc(c.venue||'')+'</div></div></div>'
+        + (menus||'<div class="d-empty">Add a menu to build the quote.</div>')
+        + charges + included
+        + '<div class="d-total"><span>Total</span><span>'+S.fmt(t.grandTotal)+'</span></div>'
+        + (q.notes?'<div class="d-notes"><span class="d-strong">Notes.</span> '+esc(q.notes)+'</div>':'');
+    }
+    return { render:render };
+  })();
   return S;
 })();

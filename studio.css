@@ -52,3 +52,17 @@ button{cursor:pointer}
 .a-qty,.a-mrp,.ch-amt{width:66px;min-height:36px;border:1px solid var(--line);border-radius:6px;padding:4px 8px;font-size:16px}
 .a-free{display:flex;align-items:center;gap:4px;font-size:.8rem;color:var(--muted);white-space:nowrap}
 .link-btn{border:0;background:transparent;color:var(--green-deep);font-family:'Catamaran',sans-serif;font-weight:700;font-size:.85rem;min-height:40px;text-align:left}
+.d-head{display:flex;align-items:center;gap:10px;border-bottom:2px solid var(--green-deep);padding-bottom:10px;margin-bottom:12px}
+.d-logo{width:34px;height:34px;border-radius:50%;background:var(--green-deep);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700}
+.d-biz{font-family:'Cormorant',serif;font-weight:700;font-size:1.2rem;color:var(--green-ink)}
+.d-meta{font-size:.72rem;color:var(--muted)}
+.d-title-row{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:12px}
+.d-title{font-family:'Cormorant',serif;font-size:1.4rem;font-weight:700}.d-cust{text-align:right}.d-strong{font-weight:700}
+.d-menu{border:1px solid var(--line);border-radius:8px;padding:8px 10px;margin-bottom:8px;break-inside:avoid}
+.d-line{display:flex;justify-content:space-between;font-weight:700}
+.d-dishes{font-size:.78rem;color:var(--muted);margin:4px 0}
+.d-sub{display:flex;justify-content:space-between;font-size:.85rem;color:var(--muted);padding:2px 0}
+.d-incl{display:flex;justify-content:space-between;font-size:.85rem;color:var(--green-deep);padding:6px 2px;border-top:1px solid var(--line);margin-top:6px}
+.d-total{display:flex;justify-content:space-between;align-items:center;background:var(--cream-deep);border-radius:8px;padding:10px 12px;margin-top:10px;font-weight:700;font-size:1.1rem;color:var(--green-ink)}
+.d-notes{font-size:.82rem;color:var(--muted);margin-top:10px;border-top:1px solid var(--line);padding-top:8px}
+.d-empty{color:var(--muted);font-style:italic;padding:10px 0}
