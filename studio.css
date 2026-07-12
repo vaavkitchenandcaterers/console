@@ -45,3 +45,10 @@ button{cursor:pointer}
 .mult{padding-bottom:8px;color:var(--muted)}.line-total{margin-left:auto;font-weight:700;font-size:1.05rem}
 .add-menu-row{display:flex;gap:8px}.add-menu-row select{flex:1;min-height:40px;border:1px solid var(--line);border-radius:8px;padding:6px 8px;font-size:16px}
 .add-menu-row button{min-height:40px;padding:8px 14px;border:1px solid var(--green-deep);background:var(--green-deep);color:#fff;border-radius:8px;font-weight:700}
+.addon-h,.charge-row+.link-btn{margin-top:6px}
+.addon-h{font-family:'Catamaran',sans-serif;font-weight:700;font-size:.72rem;text-transform:uppercase;letter-spacing:.05em;color:var(--muted)}
+.addon-row,.charge-row{display:flex;gap:6px;align-items:center;margin-top:6px}
+.addon-row .a-name,.charge-row .ch-label{flex:1;min-height:36px;border:1px solid var(--line);border-radius:6px;padding:4px 8px;font-size:16px}
+.a-qty,.a-mrp,.ch-amt{width:66px;min-height:36px;border:1px solid var(--line);border-radius:6px;padding:4px 8px;font-size:16px}
+.a-free{display:flex;align-items:center;gap:4px;font-size:.8rem;color:var(--muted);white-space:nowrap}
+.link-btn{border:0;background:transparent;color:var(--green-deep);font-family:'Catamaran',sans-serif;font-weight:700;font-size:.85rem;min-height:40px;text-align:left}

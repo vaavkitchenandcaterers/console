@@ -129,6 +129,7 @@ window.Studio = (function () {
       const draft = S.Store.get(S.KEYS.DRAFT, null);
       state.quote = (draft && draft.menus) ? draft : S.Quote.blank();
       renderBuilder(); touch();
+      (function(){ const dl=document.createElement('datalist'); dl.id='addon-list'; S.Library.load().addons.forEach(function(a){ const o=document.createElement('option'); o.value=a.name; dl.appendChild(o); }); document.body.appendChild(dl); })();
       document.getElementById('btn-new').addEventListener('click', function(){ if (confirm('Start a new blank quote? The current draft will be cleared.')) newQuote(); });
     }
     return { start:start, state:state, touch:touch, renderBuilder:renderBuilder, setQuote:setQuote, esc:esc };
@@ -173,6 +174,39 @@ window.Studio = (function () {
       document.querySelectorAll('.m-rate').forEach(function(inp){ inp.addEventListener('input',function(){ findMenu(inp.dataset.m).rate=Math.max(0,parseInt(inp.value,10)||0); updateLineTotals(); S.App.touch(); }); });
     }
     return { renderMenus:render, renderCharges:function(){}, addMenu:addMenu, findMenu:findMenu, updateLineTotals:updateLineTotals };
+  })();
+  (function () {
+    const B = S.Builder, esc = S.App.esc;
+    function q(){ return S.App.state.quote; }
+    B.renderAddons = function (menuId) {
+      const m = B.findMenu(menuId); const host = document.getElementById('ad-'+menuId); if(!m||!host) return;
+      host.innerHTML = '<div class="addon-h">Add-on items</div>' + m.addons.map(function(a,i){
+        return '<div class="addon-row"><input class="a-name" data-m="'+menuId+'" data-i="'+i+'" list="addon-list" placeholder="Item" value="'+esc(a.name)+'">'
+          + '<input class="a-qty" data-m="'+menuId+'" data-i="'+i+'" inputmode="numeric" placeholder="Qty" value="'+esc(a.qty||'')+'">'
+          + '<input class="a-mrp" data-m="'+menuId+'" data-i="'+i+'" inputmode="numeric" placeholder="MRP" value="'+esc(a.mrp||'')+'"'+(a.free?' disabled':'')+'>'
+          + '<label class="a-free"><input type="checkbox" class="a-freechk" data-m="'+menuId+'" data-i="'+i+'"'+(a.free?' checked':'')+'> Free</label>'
+          + '<button type="button" class="icon-btn a-del" data-m="'+menuId+'" data-i="'+i+'" aria-label="Remove item">×</button></div>';
+      }).join('') + '<button type="button" class="link-btn a-add" data-m="'+menuId+'">+ Add item</button>';
+      host.querySelector('.a-add').addEventListener('click',function(){ m.addons.push({name:'',mrp:0,qty:m.guests||0,free:false}); B.renderAddons(menuId); S.App.touch(); });
+      host.querySelectorAll('.a-del').forEach(function(b){ b.addEventListener('click',function(){ m.addons.splice(+b.dataset.i,1); B.renderAddons(menuId); S.App.touch(); }); });
+      host.querySelectorAll('.a-name').forEach(function(inp){ inp.addEventListener('input',function(){ const a=m.addons[+inp.dataset.i]; a.name=inp.value; const look=S.Library.addonLookup(inp.value); if(look){ a.mrp=look.mrp; a.free=look.free; B.renderAddons(menuId); } S.App.touch(); });
+        inp.addEventListener('blur',function(){ const a=m.addons[+inp.dataset.i]; if(a.name && a.name.trim()) S.Library.addAddon(a); }); });
+      host.querySelectorAll('.a-qty').forEach(function(inp){ inp.addEventListener('input',function(){ m.addons[+inp.dataset.i].qty=Math.max(0,parseInt(inp.value,10)||0); S.App.touch(); }); });
+      host.querySelectorAll('.a-mrp').forEach(function(inp){ inp.addEventListener('input',function(){ m.addons[+inp.dataset.i].mrp=Math.max(0,parseInt(inp.value,10)||0); S.App.touch(); }); });
+      host.querySelectorAll('.a-freechk').forEach(function(chk){ chk.addEventListener('change',function(){ m.addons[+chk.dataset.i].free=chk.checked; B.renderAddons(menuId); S.App.touch(); }); });
+    };
+    B.renderCharges = function () {
+      const host = document.getElementById('b-charges'); if(!host) return;
+      host.innerHTML = '<section class="card"><h2>Custom charges</h2>' + q().charges.map(function(c,i){
+        return '<div class="charge-row"><input class="ch-label" data-i="'+i+'" placeholder="Label (transport…)" value="'+esc(c.label)+'">'
+          + '<input class="ch-amt" data-i="'+i+'" inputmode="numeric" placeholder="Amount" value="'+esc(c.amount||'')+'">'
+          + '<button type="button" class="icon-btn ch-del" data-i="'+i+'" aria-label="Remove charge">×</button></div>';
+      }).join('') + '<button type="button" class="link-btn ch-add">+ Add charge</button></section>';
+      host.querySelector('.ch-add').addEventListener('click',function(){ q().charges.push({label:'',amount:0}); B.renderCharges(); S.App.touch(); });
+      host.querySelectorAll('.ch-del').forEach(function(b){ b.addEventListener('click',function(){ q().charges.splice(+b.dataset.i,1); B.renderCharges(); S.App.touch(); }); });
+      host.querySelectorAll('.ch-label').forEach(function(inp){ inp.addEventListener('input',function(){ q().charges[+inp.dataset.i].label=inp.value; S.App.touch(); }); });
+      host.querySelectorAll('.ch-amt').forEach(function(inp){ inp.addEventListener('input',function(){ q().charges[+inp.dataset.i].amount=Math.max(0,parseInt(inp.value,10)||0); S.App.touch(); }); });
+    };
   })();
   return S;
 })();
