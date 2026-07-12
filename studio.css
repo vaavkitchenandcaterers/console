@@ -32,3 +32,16 @@ button{cursor:pointer}
 .fld input,.card textarea{min-height:40px;padding:8px 10px;border:1px solid var(--line);border-radius:8px;font-size:16px;color:var(--ink);font-family:'Mukta',sans-serif}
 .card textarea{min-height:64px;resize:vertical}
 .row2{display:flex;gap:10px}.row2 .fld{flex:1}
+.menu-card{gap:8px}.menu-head{display:flex;gap:8px;align-items:center}.menu-head .m-set{flex:1;min-height:40px;border:1px solid var(--line);border-radius:8px;padding:6px 8px;font-size:16px}
+.icon-btn{width:40px;height:40px;border:1px solid var(--line);background:#fff;border-radius:8px;font-size:20px;line-height:1;color:var(--muted)}
+.grp{margin-top:4px}.grp-h{font-family:'Catamaran',sans-serif;font-weight:700;font-size:.72rem;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);margin-bottom:4px}
+.chips{display:flex;flex-wrap:wrap;gap:5px}
+.chip{display:inline-flex;align-items:center;gap:4px;background:var(--cream-deep);border-radius:999px;padding:4px 6px 4px 10px;font-size:.85rem}
+.chip-x{width:22px;height:22px;border:0;background:transparent;border-radius:50%;color:var(--muted);font-size:15px;line-height:1}
+.chip-add{border:1px dashed var(--line);background:transparent;border-radius:999px;padding:4px 10px;font-size:.82rem;color:var(--green-deep);min-height:30px}
+.price-row{display:flex;align-items:flex-end;gap:8px;margin-top:8px;padding-top:8px;border-top:1px solid var(--cream-deep)}
+.mini{display:flex;flex-direction:column;gap:2px;font-family:'Catamaran',sans-serif;font-weight:600;font-size:.7rem;color:var(--muted)}
+.mini input{width:72px;min-height:36px;border:1px solid var(--line);border-radius:6px;padding:4px 8px;font-size:16px}
+.mult{padding-bottom:8px;color:var(--muted)}.line-total{margin-left:auto;font-weight:700;font-size:1.05rem}
+.add-menu-row{display:flex;gap:8px}.add-menu-row select{flex:1;min-height:40px;border:1px solid var(--line);border-radius:8px;padding:6px 8px;font-size:16px}
+.add-menu-row button{min-height:40px;padding:8px 14px;border:1px solid var(--green-deep);background:var(--green-deep);color:#fff;border-radius:8px;font-weight:700}
