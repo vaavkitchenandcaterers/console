@@ -137,6 +137,7 @@ window.Studio = (function () {
       document.getElementById('btn-print-m').addEventListener('click',function(){ document.getElementById('btn-print').click(); });
       document.getElementById('btn-send-m').addEventListener('click',function(){ document.getElementById('btn-send').click(); });
       S.History.mount(); S.Backup.mount();
+      S.Requests.mount();
     }
     return { start:start, state:state, touch:touch, renderBuilder:renderBuilder, setQuote:setQuote, esc:esc };
   })();
@@ -363,6 +364,33 @@ window.Studio = (function () {
         Object.keys(M).forEach(function(cat){ (M[cat].menus||[]).forEach(function(mn){ if(mn.name.toLowerCase()===(m.name||'').toLowerCase()){ sourceCat=cat; groups=mn.groups.map(function(g){return [g[0],g[1].slice()];}); } }); });
         q.menus.push({ id:'m_'+Date.now()+'_'+Math.random().toString(36).slice(2,6), name:m.name, sourceCat:sourceCat, groups:(groups&&groups.length)?groups:[['Items',[]]], guests:q.defaultGuests||0, rate:0, addons:[] }); });
       q.fromRequest=id; S.App.setQuote(q); if(S._closeModal) S._closeModal(); };
+  })();
+  (function () {
+    const R = S.Requests, esc = function(s){ return S.App.esc(s); };
+    R.refreshBadge = function () { const b=document.getElementById('req-badge'); const btn=document.getElementById('btn-requests'); if(!b||!btn) return;
+      const n=R.newCount(); b.textContent=n; b.hidden=(n===0); btn.setAttribute('aria-label','Requests, '+n+' new'); };
+    R.openModal = function () {
+      const reqs=R.list();
+      const cards = reqs.length ? reqs.map(function(r){ const p=r.parsed;
+        const menuNames=(p.menus||[]).map(function(m){return m.name;}).join(', ');
+        const ev=[p.customer.eventType, p.customer.guests?p.customer.guests+' guests':'', p.customer.eventDate].filter(Boolean).join(' · ');
+        if (r.status==='quoted') return '<div class="req-card quoted"><div><span class="d-strong">'+esc(p.customer.name||'Customer')+'</span> <span class="req-q">quoted · '+esc(r.number)+'</span><div class="req-meta">'+esc([ev,menuNames].filter(Boolean).join(' · '))+'</div></div><button type="button" class="icon-btn" data-del="'+r.id+'" aria-label="Delete request">×</button></div>';
+        return '<div class="req-card new"><div><span class="d-strong">'+esc(p.customer.name||'Customer')+'</span> <span class="req-new">new</span>'+(p.unparsed?' <span class="req-warn">needs review</span>':'')
+          +'<div class="req-meta">'+esc(ev||'—')+'</div>'
+          +'<div class="req-menus">'+esc(menuNames||(p.unparsed?'(couldn’t read menus — see text)':'—'))+(p.notes?' · “'+esc(p.notes.slice(0,40))+'”':'')+'</div></div>'
+          +'<div class="req-acts"><button type="button" class="req-make" data-make="'+r.id+'">Make quote</button><button type="button" data-view="'+r.id+'">View text</button><button type="button" class="icon-btn" data-del="'+r.id+'" aria-label="Dismiss">×</button></div></div>';
+      }).join('') : '<p class="d-meta">No requests yet. Paste a customer’s WhatsApp enquiry above.</p>';
+      S.modal('<h2>New requests</h2><div class="req-paste"><label class="vh" for="req-input">Paste enquiry</label>'
+        +'<textarea id="req-input" rows="3" placeholder="Paste the customer’s WhatsApp enquiry here…"></textarea>'
+        +'<button type="button" id="req-import" class="req-import">Import request</button><p id="req-msg" class="req-msg" role="status"></p></div>'
+        +'<div class="req-list">'+cards+'</div>');
+      const box=document.querySelector('.modal-box');
+      box.querySelector('#req-import').addEventListener('click',function(){ const t=document.getElementById('req-input').value; if(!t.trim()){ document.getElementById('req-msg').textContent='Paste a message first.'; return; } R.add(t); R.refreshBadge(); R.openModal(); });
+      box.querySelectorAll('[data-make]').forEach(function(b){ b.addEventListener('click',function(){ R.toQuote(b.dataset.make); }); });
+      box.querySelectorAll('[data-del]').forEach(function(b){ b.addEventListener('click',function(){ if(confirm('Remove this request?')){ R.remove(b.dataset.del); R.refreshBadge(); R.openModal(); } }); });
+      box.querySelectorAll('[data-view]').forEach(function(b){ b.addEventListener('click',function(){ const r=R.list().find(function(x){return x.id===b.dataset.view;}); alert(r?r.raw:''); }); });
+    };
+    R.mount = function () { const btn=document.getElementById('btn-requests'); if(!btn) return; btn.addEventListener('click', R.openModal); R.refreshBadge(); };
   })();
   return S;
 })();
