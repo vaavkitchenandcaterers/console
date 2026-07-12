@@ -5,6 +5,7 @@ window.Studio = (function () {
     S._boot && S._boot();
   });
   S.KEYS = { QUOTES:'vaav_studio_quotes', DRAFT:'vaav_studio_draft', ITEMS:'vaav_studio_items', SETTINGS:'vaav_studio_settings' };
+  S.KEYS.REQUESTS = 'vaav_studio_requests';
   const mem = {}; let usingMem = false;
   S.Store = {
     get usingMemory(){ return usingMem; },
@@ -312,6 +313,35 @@ window.Studio = (function () {
       document.getElementById('bk-imp').addEventListener('change',function(e){ const f=e.target.files[0]; if(!f)return; const r=new FileReader(); r.onload=function(){ if(importData(r.result)){ alert('Restored.'); S._closeModal&&S._closeModal(); } else alert('That file could not be read.'); }; r.readAsText(f); });
     }); }
     return { exportData:exportData, importData:importData, mount:mountBtns };
+  })();
+  S.Requests = (function () {
+    const menuHdr = /^\*\s*\d+\.\s*(.+?)\s*\*\s*\((.+?)\)\s*$/;
+    function findSet(name){ const M=window.VAAV_MENUS||{}; name=(name||'').trim().toLowerCase(); let res=null;
+      Object.keys(M).forEach(function(cat){ (M[cat].menus||[]).forEach(function(mn){ if(mn.name.toLowerCase()===name) res={cat:cat,label:M[cat].label,groups:mn.groups}; }); }); return res; }
+    function parse(text){
+      text=String(text||''); const lines=text.split(/\r?\n/);
+      const menus=[]; let notes=''; const cust={name:'',eventType:'',eventDate:'',guests:0};
+      for (let i=0;i<lines.length;i++){
+        const line=lines[i].trim();
+        const hm=line.match(menuHdr);
+        if (hm){ const nm=hm[1], catRaw=hm[2]; const set=findSet(nm); let groups;
+          if (set){ groups=set.groups.map(function(g){return [g[0],g[1].slice()];}); }
+          else { groups=[]; for (let j=i+1;j<lines.length;j++){ const dl=lines[j].trim(); if(!dl||dl.charAt(0)==='*') break;
+              const lm=dl.match(/^([^,:]{1,24}):\s*(.+)$/);
+              if (lm) groups.push([lm[1].trim(), lm[2].split(',').map(function(s){return s.trim();}).filter(Boolean)]);
+              else groups.push(['Items', dl.split(',').map(function(s){return s.trim();}).filter(Boolean)]); }
+            if(!groups.length) groups=[['Items',[]]]; }
+          menus.push({ name:nm, cat:set?set.label:catRaw, groups:groups }); continue; }
+        const sr=line.match(/^\*Special requests:\*\s*(.+)$/i); if(sr){ notes=sr[1].trim(); continue; }
+        const ev=line.match(/^[•\-\*]\s*(Name|Occasion|Guests|Date):\s*(.+)$/i);
+        if (ev){ const k=ev[1].toLowerCase(), v=ev[2].trim();
+          if(k==='name')cust.name=v; else if(k==='occasion')cust.eventType=v; else if(k==='date')cust.eventDate=v; else if(k==='guests')cust.guests=parseInt(v.replace(/\D/g,''),10)||0; }
+      }
+      const any = menus.length || cust.name || cust.eventType || cust.eventDate || cust.guests;
+      if (!any) return { customer:{name:'',eventType:'',eventDate:'',guests:0}, menus:[], notes:text.trim(), unparsed:true };
+      return { customer:cust, menus:menus, notes:notes, unparsed:false };
+    }
+    return { parse:parse };
   })();
   return S;
 })();
