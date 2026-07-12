@@ -47,5 +47,29 @@ window.Studio = (function () {
       return { menus:menus, chargesTotal:Math.round(chargesTotal), grandTotal:Math.round(grandTotal), included:included };
     }
   };
+  S.Library = (function () {
+    const K = S.KEYS.ITEMS;
+    function read(){ const d = S.Store.get(K, {v:1,dishes:[],addons:[]}); d.dishes=d.dishes||[]; d.addons=d.addons||[]; return d; }
+    let menuDishes = null;
+    function allMenuDishes(){
+      if (menuDishes) return menuDishes;
+      const set = {}; const M = window.VAAV_MENUS || {};
+      Object.keys(M).forEach(function(cat){ (M[cat].menus||[]).forEach(function(mn){ (mn.groups||[]).forEach(function(g){ (g[1]||[]).forEach(function(dish){ set[dish.toLowerCase()] = dish; }); }); }); });
+      menuDishes = Object.keys(set).map(function(k){return set[k];}); return menuDishes;
+    }
+    return {
+      load: read,
+      addDish: function (name) { name=(name||'').trim(); if(!name) return; const d=read();
+        if (!d.dishes.some(function(x){return x.toLowerCase()===name.toLowerCase();}) && !allMenuDishes().some(function(x){return x.toLowerCase()===name.toLowerCase();})) { d.dishes.push(name); S.Store.set(K,d); } },
+      addAddon: function (a) { const name=(a.name||'').trim(); if(!name) return; const d=read();
+        const i=d.addons.findIndex(function(x){return x.name.toLowerCase()===name.toLowerCase();});
+        const entry={name:name,mrp:Number(a.mrp)||0,free:!!a.free}; if(i>=0) d.addons[i]=entry; else d.addons.push(entry); S.Store.set(K,d); },
+      dishSuggestions: function (prefix) { prefix=(prefix||'').trim().toLowerCase(); if(!prefix) return [];
+        const d=read(); const pool=allMenuDishes().concat(d.dishes); const seen={}; const out=[];
+        pool.forEach(function(n){ const k=n.toLowerCase(); if(k.indexOf(prefix)>-1 && !seen[k]){seen[k]=1;out.push(n);} }); return out.slice(0,8); },
+      addonLookup: function (name) { name=(name||'').trim().toLowerCase(); const d=read();
+        const hit=d.addons.find(function(x){return x.name.toLowerCase()===name;}); return hit?{mrp:hit.mrp,free:hit.free}:null; }
+    };
+  })();
   return S;
 })();
