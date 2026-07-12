@@ -78,5 +78,24 @@ window.Studio = (function () {
       return 'VAAV-' + y + '-' + String(n).padStart(3, '0');
     }
   };
+  S.Gate = (function () {
+    const PASS_HASH = '0578ce54d56bde3406b8b5330f400e9bd90d40cc83f14caa578f3f9a901c1a3a';
+    async function hash(str){ const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(str)); return [...new Uint8Array(buf)].map(function(x){return x.toString(16).padStart(2,'0');}).join(''); }
+    function isUnlocked(){ return !!(S.Store.get(S.KEYS.SETTINGS, {}).unlocked); }
+    function unlock(){ const st = S.Store.get(S.KEYS.SETTINGS, {v:1,counters:{}}); st.unlocked = true; S.Store.set(S.KEYS.SETTINGS, st); }
+    async function check(input){ return (await hash(input)) === PASS_HASH; }
+    function reveal(){ document.getElementById('gate').hidden = true; document.getElementById('app').hidden = false; if (S.App && S.App.start) S.App.start(); }
+    function mount(){
+      const gate = document.getElementById('gate'), app = document.getElementById('app');
+      if (isUnlocked()) { reveal(); return; }
+      gate.hidden = false; app.hidden = true;
+      const form = document.getElementById('gate-form'), input = document.getElementById('gate-input'), err = document.getElementById('gate-err');
+      form.addEventListener('submit', async function (e) { e.preventDefault(); err.textContent='';
+        if (await check(input.value)) { unlock(); reveal(); } else { err.textContent = 'Incorrect passcode.'; input.select(); } });
+      input.focus();
+    }
+    return { hash:hash, check:check, isUnlocked:isUnlocked, unlock:unlock, mount:mount, PASS_HASH:PASS_HASH };
+  })();
+  S._boot = function () { S.Gate.mount(); };
   return S;
 })();
