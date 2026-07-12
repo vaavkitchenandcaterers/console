@@ -285,7 +285,9 @@ window.Studio = (function () {
     function save(){ const q=S.App.state.quote; const list=all();
       if(!q.number){ q.number=S.Numbering.next(new Date().getFullYear()); q.createdAt=new Date().toISOString().slice(0,10); }
       q.updatedAt=new Date().toISOString().slice(0,10); const i=list.findIndex(function(x){return x.id===q.id;});
-      if(i>=0) list[i]=JSON.parse(JSON.stringify(q)); else list.push(JSON.parse(JSON.stringify(q))); S.Store.set(S.KEYS.QUOTES,list); return q.number; }
+      if(i>=0) list[i]=JSON.parse(JSON.stringify(q)); else list.push(JSON.parse(JSON.stringify(q))); S.Store.set(S.KEYS.QUOTES,list);
+      if (q.fromRequest && S.Requests) { S.Requests.markQuoted(q.fromRequest, q.number); if (S.Requests.refreshBadge) S.Requests.refreshBadge(); }
+      return q.number; }
     function open(id){ const q=all().find(function(x){return x.id===id;}); if(q){ S.App.setQuote(JSON.parse(JSON.stringify(q))); S._closeModal&&S._closeModal(); } }
     function duplicate(id){ const q=all().find(function(x){return x.id===id;}); if(q){ const copy=JSON.parse(JSON.stringify(q)); copy.id='q_'+Date.now()+'_'+Math.random().toString(36).slice(2,7); copy.number=''; copy.createdAt=''; S.App.setQuote(copy); S._closeModal&&S._closeModal(); } }
     function remove(id){ if(!confirm('Delete this quote?'))return; S.Store.set(S.KEYS.QUOTES, all().filter(function(x){return x.id!==id;})); mount(true); }
@@ -342,6 +344,25 @@ window.Studio = (function () {
       return { customer:cust, menus:menus, notes:notes, unparsed:false };
     }
     return { parse:parse };
+  })();
+  (function () {
+    const R = S.Requests;
+    R.add = function (text) { const parsed=R.parse(text);
+      const req={ id:'r_'+Date.now()+'_'+Math.random().toString(36).slice(2,6), receivedAt:new Date().toISOString().slice(0,10), raw:String(text||''), parsed:parsed, status:'new', number:'' };
+      const list=S.Store.get(S.KEYS.REQUESTS,[]); list.push(req); S.Store.set(S.KEYS.REQUESTS,list); return req; };
+    R.list = function () { const l=S.Store.get(S.KEYS.REQUESTS,[]);
+      const news=l.filter(function(r){return r.status==='new';}).reverse();
+      const q=l.filter(function(r){return r.status!=='new';}).reverse(); return news.concat(q); };
+    R.remove = function (id) { S.Store.set(S.KEYS.REQUESTS, S.Store.get(S.KEYS.REQUESTS,[]).filter(function(r){return r.id!==id;})); };
+    R.newCount = function () { return S.Store.get(S.KEYS.REQUESTS,[]).filter(function(r){return r.status==='new';}).length; };
+    R.markQuoted = function (id, number) { const l=S.Store.get(S.KEYS.REQUESTS,[]); const r=l.find(function(x){return x.id===id;}); if(r){ r.status='quoted'; r.number=number; S.Store.set(S.KEYS.REQUESTS,l); } };
+    R.toQuote = function (id) { const l=S.Store.get(S.KEYS.REQUESTS,[]); const r=l.find(function(x){return x.id===id;}); if(!r) return; const p=r.parsed;
+      const q=S.Quote.blank(); q.customer.name=p.customer.name||''; q.customer.eventType=p.customer.eventType||''; q.customer.eventDate=p.customer.eventDate||''; q.defaultGuests=p.customer.guests||0; q.notes=p.notes||'';
+      const M=window.VAAV_MENUS||{};
+      (p.menus||[]).forEach(function(m){ let sourceCat=null, groups=m.groups;
+        Object.keys(M).forEach(function(cat){ (M[cat].menus||[]).forEach(function(mn){ if(mn.name.toLowerCase()===(m.name||'').toLowerCase()){ sourceCat=cat; groups=mn.groups.map(function(g){return [g[0],g[1].slice()];}); } }); });
+        q.menus.push({ id:'m_'+Date.now()+'_'+Math.random().toString(36).slice(2,6), name:m.name, sourceCat:sourceCat, groups:(groups&&groups.length)?groups:[['Items',[]]], guests:q.defaultGuests||0, rate:0, addons:[] }); });
+      q.fromRequest=id; S.App.setQuote(q); if(S._closeModal) S._closeModal(); };
   })();
   return S;
 })();
