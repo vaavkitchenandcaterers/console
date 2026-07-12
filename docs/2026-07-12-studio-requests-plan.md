@@ -106,11 +106,11 @@ Expected FAIL: `{"r":"undefined"}`.
 (function(){
   var SAMPLE="Hello VAAV Kitchen,\n\nI'd like to enquire about catering. Here's my shortlist:\n\n*1. Lunch 5* (Lunch)\nPayasam, White Rice, Sambar\n\n*2. Tiffin 7* (Tiffin)\nSweets: Kaju Katli\nPoori, Idli\n\n*Special requests:* No onion or garlic\n\n*Event details:*\n• Name: Priya\n• Occasion: Seemantham\n• Guests: 150\n• Date: 12 Aug 2026\n\nPlease share a quote. Thank you!";
   var p=window.Studio.Requests.parse(SAMPLE);
-  return JSON.stringify({ menus:p.menus.map(function(m){return m.name+'/'+m.cat;}), lunchGroupsFromSet:(p.menus[0].groups.length>1), name:p.customer.name, occasion:p.customer.eventType, guests:p.customer.guests, date:p.customer.eventDate, notes:p.notes, unparsed:p.unparsed });
+  return JSON.stringify({ menus:p.menus.map(function(m){return m.name+'/'+m.cat;}), lunch5DishCount:p.menus[0].groups.reduce(function(s,g){return s+g[1].length;},0), name:p.customer.name, occasion:p.customer.eventType, guests:p.customer.guests, date:p.customer.eventDate, notes:p.notes, unparsed:p.unparsed });
 })()
 ```
-Expected: `{"menus":["Lunch 5/Lunch","Tiffin 7/Tiffin"],"lunchGroupsFromSet":true,"name":"Priya","occasion":"Seemantham","guests":150,"date":"12 Aug 2026","notes":"No onion or garlic","unparsed":false}`.
-(`lunchGroupsFromSet` is true because "Lunch 5" matched `VAAV_MENUS` and its full multi-group set was used, not the 3 dishes in the message.)
+Expected: `{"menus":["Lunch 5/Lunch","Tiffin 7/Tiffin"],"lunch5DishCount":12,"name":"Priya","occasion":"Seemantham","guests":150,"date":"12 Aug 2026","notes":"No onion or garlic","unparsed":false}`.
+(`lunch5DishCount` is 12 — the full set — because "Lunch 5" matched `VAAV_MENUS` and its clean set groups were used, not the 3 dishes in the message. Note: Lunch/Tiffin sets are a single `"Items"` group; only Dinner sets are multi-group.)
 
 - [ ] **Step 4: Verify unparseable fallback**
 ```js
