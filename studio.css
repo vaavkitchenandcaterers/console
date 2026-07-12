@@ -74,3 +74,10 @@ button{cursor:pointer}
   .d-menu,.d-total{break-inside:avoid}
   *{-webkit-print-color-adjust:exact;print-color-adjust:exact}
 }
+.modal{position:fixed;inset:0;z-index:60;display:flex;align-items:center;justify-content:center}
+.modal-back{position:absolute;inset:0;background:rgba(20,61,29,.45)}
+.modal-box{position:relative;background:#fff;border-radius:14px;padding:20px;width:min(480px,92vw);max-height:86vh;overflow:auto;display:flex;flex-direction:column;gap:12px}
+.q-list{display:flex;flex-direction:column;gap:8px}
+.q-row{display:flex;align-items:center;justify-content:space-between;gap:10px;border:1px solid var(--line);border-radius:8px;padding:8px 10px}
+.q-acts{display:flex;gap:6px}.q-acts button{min-height:36px;padding:6px 10px;border:1px solid var(--line);background:#fff;border-radius:6px;font-size:.85rem}
+.bk-imp{display:inline-flex;align-items:center;min-height:36px;padding:6px 10px;border:1px solid var(--line);border-radius:6px;font-size:.85rem;cursor:pointer}

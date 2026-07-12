@@ -132,6 +132,8 @@ window.Studio = (function () {
       (function(){ const dl=document.createElement('datalist'); dl.id='addon-list'; S.Library.load().addons.forEach(function(a){ const o=document.createElement('option'); o.value=a.name; dl.appendChild(o); }); document.body.appendChild(dl); })();
       document.getElementById('btn-new').addEventListener('click', function(){ if (confirm('Start a new blank quote? The current draft will be cleared.')) newQuote(); });
       S.Output.mount();
+      document.getElementById('btn-save').addEventListener('click', function(){ const n=S.History.save(); S.App.touch(); alert('Saved as '+n); });
+      S.History.mount(); S.Backup.mount();
     }
     return { start:start, state:state, touch:touch, renderBuilder:renderBuilder, setQuote:setQuote, esc:esc };
   })();
@@ -267,5 +269,47 @@ window.Studio = (function () {
       const a=document.createElement('a'); a.href=link.href; a.target='_blank'; a.rel='noopener noreferrer'; document.body.appendChild(a); a.click(); a.remove();
     });
   } };
+  S.modal = function (html) {
+    const host=document.getElementById('modal'); host.hidden=false; host.innerHTML='<div class="modal-back"></div><div class="modal-box" role="dialog" aria-modal="true">'+html+'</div>';
+    const box=host.querySelector('.modal-box'); const last=document.activeElement;
+    function close(){ host.hidden=true; host.innerHTML=''; document.removeEventListener('keydown',onKey); if(last&&last.focus)last.focus(); }
+    function onKey(e){ if(e.key==='Escape'){close();} if(e.key==='Tab'){ const f=box.querySelectorAll('button,[href],input,select,textarea,[tabindex]:not([tabindex="-1"])'); if(!f.length)return; const a=f[0],b=f[f.length-1]; if(e.shiftKey&&document.activeElement===a){e.preventDefault();b.focus();} else if(!e.shiftKey&&document.activeElement===b){e.preventDefault();a.focus();} } }
+    host.querySelector('.modal-back').addEventListener('click',close); document.addEventListener('keydown',onKey);
+    const fb=box.querySelector('button'); if(fb)fb.focus(); S._closeModal=close; return close;
+  };
+  S.History = (function () {
+    function all(){ return S.Store.get(S.KEYS.QUOTES, []); }
+    function save(){ const q=S.App.state.quote; const list=all();
+      if(!q.number){ q.number=S.Numbering.next(new Date().getFullYear()); q.createdAt=new Date().toISOString().slice(0,10); }
+      q.updatedAt=new Date().toISOString().slice(0,10); const i=list.findIndex(function(x){return x.id===q.id;});
+      if(i>=0) list[i]=JSON.parse(JSON.stringify(q)); else list.push(JSON.parse(JSON.stringify(q))); S.Store.set(S.KEYS.QUOTES,list); return q.number; }
+    function open(id){ const q=all().find(function(x){return x.id===id;}); if(q){ S.App.setQuote(JSON.parse(JSON.stringify(q))); S._closeModal&&S._closeModal(); } }
+    function duplicate(id){ const q=all().find(function(x){return x.id===id;}); if(q){ const copy=JSON.parse(JSON.stringify(q)); copy.id='q_'+Date.now()+'_'+Math.random().toString(36).slice(2,7); copy.number=''; copy.createdAt=''; S.App.setQuote(copy); S._closeModal&&S._closeModal(); } }
+    function remove(id){ if(!confirm('Delete this quote?'))return; S.Store.set(S.KEYS.QUOTES, all().filter(function(x){return x.id!==id;})); mount(true); }
+    function mount(reopen){ if(reopen||arguments[0]===true){} }
+    function openModal(){ const list=all().slice().reverse();
+      const rows = list.length ? list.map(function(q){ return '<div class="q-row"><div><div class="d-strong">'+S.App.esc(q.number||'(draft)')+'</div><div class="d-meta">'+S.App.esc(q.customer.name||'—')+' · '+S.App.esc(q.customer.eventDate||'')+'</div></div>'
+        + '<div class="q-acts"><button type="button" data-open="'+q.id+'">Open</button><button type="button" data-dup="'+q.id+'">Duplicate</button><button type="button" data-del="'+q.id+'" aria-label="Delete">×</button></div></div>'; }).join('') : '<p class="d-meta">No saved quotes yet.</p>';
+      S.modal('<h2>Saved quotes</h2><div class="q-list">'+rows+'</div>');
+      const box=document.querySelector('.modal-box');
+      box.querySelectorAll('[data-open]').forEach(function(b){ b.addEventListener('click',function(){ open(b.dataset.open); }); });
+      box.querySelectorAll('[data-dup]').forEach(function(b){ b.addEventListener('click',function(){ duplicate(b.dataset.dup); }); });
+      box.querySelectorAll('[data-del]').forEach(function(b){ b.addEventListener('click',function(){ remove(b.dataset.del); openModal(); }); });
+    }
+    function mountBtns(){ document.getElementById('btn-saved').addEventListener('click', openModal); }
+    return { save:save, open:open, duplicate:duplicate, remove:remove, list:all, mount:mountBtns, openModal:openModal };
+  })();
+  S.Backup = (function () {
+    function exportData(){ return JSON.stringify({ quotes:S.Store.get(S.KEYS.QUOTES,[]), items:S.Store.get(S.KEYS.ITEMS,{v:1,dishes:[],addons:[]}), settings:S.Store.get(S.KEYS.SETTINGS,{v:1,counters:{}}) }); }
+    function importData(json){ try{ const d=JSON.parse(json); if(!d||!Array.isArray(d.quotes)) return false;
+      S.Store.set(S.KEYS.QUOTES,d.quotes); if(d.items)S.Store.set(S.KEYS.ITEMS,d.items);
+      const cur=S.Store.get(S.KEYS.SETTINGS,{v:1,counters:{}}); if(d.settings&&d.settings.counters){ cur.counters=d.settings.counters; S.Store.set(S.KEYS.SETTINGS,cur);} return true; }catch(e){ return false; } }
+    function mountBtns(){ document.getElementById('btn-backup').addEventListener('click', function(){
+      S.modal('<h2>Backup</h2><p class="d-meta">Export your quotes + item library to a file, or import to restore / move to another device.</p><div class="q-acts"><button type="button" id="bk-exp">Export file</button><label class="bk-imp">Import file<input type="file" id="bk-imp" accept="application/json" hidden></label></div>');
+      document.getElementById('bk-exp').addEventListener('click',function(){ const blob=new Blob([exportData()],{type:'application/json'}); const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='vaav-quotes-backup.json'; a.click(); URL.revokeObjectURL(a.href); });
+      document.getElementById('bk-imp').addEventListener('change',function(e){ const f=e.target.files[0]; if(!f)return; const r=new FileReader(); r.onload=function(){ if(importData(r.result)){ alert('Restored.'); S._closeModal&&S._closeModal(); } else alert('That file could not be read.'); }; r.readAsText(f); });
+    }); }
+    return { exportData:exportData, importData:importData, mount:mountBtns };
+  })();
   return S;
 })();
