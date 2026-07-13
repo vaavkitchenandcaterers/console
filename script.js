@@ -34,13 +34,23 @@ document.querySelectorAll('[data-wa-context]').forEach(a => {
   a.target = "_blank"; a.rel = "noopener noreferrer";
 });
 
-// --- Package CTAs: deep-link straight to WhatsApp with the package name pre-filled ---
+// --- Package CTAs: add the package to the shortlist, then open the drawer —
+//     one unified enquiry path (same shortlist → WhatsApp flow as the menu cards).
+//     Falls back to the /contact/ href if JS/shortlist is unavailable. ---
 document.querySelectorAll('.pkg-enquire').forEach(a => {
   const pkgName = a.dataset.pkg;
   if (!pkgName) return;
-  a.href = waLink(`Hello VAAV Kitchen, I'd like to enquire about the ${pkgName} package for my event.`);
-  a.target = "_blank"; a.rel = "noopener noreferrer";
-  a.setAttribute('aria-label', `Enquire about the ${pkgName} package on WhatsApp`);
+  const card = a.closest('.pkg');
+  const includes = card ? [...card.querySelectorAll('ul li')].map(li => li.textContent.trim()).filter(Boolean) : [];
+  const id = 'package:' + pkgName;
+  a.setAttribute('aria-label', `Add the ${pkgName} package to your shortlist`);
+  a.addEventListener('click', e => {
+    const S = window.VaavShortlist;
+    if (!S) return; // no-JS fallback: the /contact/ href still works
+    e.preventDefault();
+    if (!S.has(id)) S.add({ id, cat: 'Package', name: pkgName, groups: [['Includes', includes]] });
+    S.openDrawer();
+  });
 });
 
 // --- Google reviews links ---
@@ -183,6 +193,21 @@ const VAAV_REVIEWS = [
     l.classList.remove('open');
     t.setAttribute('aria-expanded', 'false');
   }));
+})();
+
+// --- "Build your feast" progress cue on the menu page: reflects the shortlist count ---
+(function () {
+  const el = document.getElementById('feastProgress');
+  if (!el || !window.VaavShortlist) return;
+  function sync() {
+    const n = window.VaavShortlist.count();
+    el.textContent = n === 0
+      ? 'Your feast is empty — tap “Add to shortlist” on any menu below to start building.'
+      : n + (n === 1 ? ' menu' : ' menus') + ' in your feast — tap the Shortlist button to review & send.';
+    el.classList.toggle('has-items', n > 0);
+  }
+  document.addEventListener('vaav:shortlistchange', sync);
+  sync();
 })();
 
 // --- keep the sticky mobile action bar clear of the hero: hide it while the hero
