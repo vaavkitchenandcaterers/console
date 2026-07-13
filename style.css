@@ -509,6 +509,9 @@ body.vaav-sl-open .vaav-sl-pill,body.vaav-sl-open .wa-float,body.vaav-sl-open .m
 .vaav-sl-event{display:flex;flex-direction:column;gap:10px}
 .vaav-sl-row2{display:flex;gap:10px}
 .vaav-sl-row2 input{width:100%}
+.vaav-sl-datewrap{display:block;width:100%;min-width:0}
+.vaav-sl-datewrap input[type="date"]{accent-color:var(--green-deep);color-scheme:light}
+.vaav-sl-datewrap input[type="date"]::-webkit-date-and-time-value{text-align:left}
 .vaav-sl-send{display:flex;align-items:center;justify-content:center;gap:9px;background:var(--green-deep);color:#fff;
   text-decoration:none;font-family:'Catamaran',sans-serif;font-weight:800;font-size:1rem;padding:14px;border-radius:12px;min-height:44px}
 .vaav-sl-send svg{width:20px;height:20px}

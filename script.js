@@ -20,6 +20,21 @@ const GOOGLE_REVIEWS_URL = "https://www.google.com/maps?cid=16612426966021584661
 function waLink(msg) {
   return "https://wa.me/" + WHATSAPP_NUMBER + "?text=" + encodeURIComponent(msg);
 }
+
+// --- Date helpers shared by the shortlist module and its drawer UI ---
+// Local (not UTC) today, so a date-input's min doesn't drift a day off near midnight.
+function todayISO() {
+  const d = new Date();
+  const pad = n => String(n).padStart(2, '0');
+  return d.getFullYear() + '-' + pad(d.getMonth() + 1) + '-' + pad(d.getDate());
+}
+// "2026-08-12" -> "12 Aug 2026" for a human-readable WhatsApp message.
+function formatEventDate(iso) {
+  const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec((iso || '').trim());
+  if (!m) return (iso || '').trim(); // not our date-input format — pass through as typed
+  const names = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  return parseInt(m[3], 10) + ' ' + names[parseInt(m[2], 10) - 1] + ' ' + m[1];
+}
 const waMsg = "Hello VAAV Kitchen, I'd like to enquire about catering for my event.";
 ['wa-float', 'wa-primary', 'nav-wa', 'wa-bar'].forEach(id => {
   const el = document.getElementById(id);
@@ -112,7 +127,7 @@ window.VaavShortlist = (function () {
       if ((ev.name || "").trim()) evLines.push("• Name: " + ev.name.trim());
       if ((ev.occasion || "").trim()) evLines.push("• Occasion: " + ev.occasion.trim());
       if ((ev.guests || "").trim()) evLines.push("• Guests: " + ev.guests.trim());
-      if ((ev.date || "").trim()) evLines.push("• Date: " + ev.date.trim());
+      if ((ev.date || "").trim()) evLines.push("• Date: " + formatEventDate(ev.date));
       if (evLines.length) parts.push("*Event details:*\n" + evLines.join("\n"));
       parts.push("Please share a quote. Thank you!");
       return parts.join("\n\n");
@@ -488,7 +503,8 @@ const VAAV_REVIEWS = [
       '<input id="vaav-sl-ev-name" placeholder="Your name" value="' + esc(st.event.name) + '">' +
       '<input id="vaav-sl-ev-occasion" placeholder="Occasion (wedding, seemantham…)" value="' + esc(st.event.occasion) + '">' +
       '<div class="vaav-sl-row2"><input id="vaav-sl-ev-guests" inputmode="numeric" placeholder="Guests" value="' + esc(st.event.guests) + '">' +
-      '<input id="vaav-sl-ev-date" placeholder="Event date" value="' + esc(st.event.date) + '"></div></div>';
+      '<span class="vaav-sl-datewrap"><label class="vh" for="vaav-sl-ev-date">Event date</label>' +
+      '<input id="vaav-sl-ev-date" type="date" min="' + todayISO() + '" aria-label="Event date" value="' + esc(st.event.date) + '"></span></div></div>';
     h += '<a class="vaav-sl-send" href="#" target="_blank" rel="noopener noreferrer">' +
       '<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M.057 24l1.687-6.163a11.867 11.867 0 01-1.587-5.946C.16 5.335 5.495 0 12.05 0a11.82 11.82 0 018.413 3.488 11.82 11.82 0 013.48 8.414c-.003 6.557-5.338 11.892-11.893 11.892a11.9 11.9 0 01-5.688-1.448L.057 24z"/></svg>Send enquiry on WhatsApp</a>';
     h += '<button type="button" class="vaav-sl-clear">Clear all</button>';
