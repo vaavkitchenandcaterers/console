@@ -43,7 +43,7 @@ document.querySelectorAll('.pkg-enquire').forEach(a => {
   const card = a.closest('.pkg');
   const includes = card ? [...card.querySelectorAll('ul li')].map(li => li.textContent.trim()).filter(Boolean) : [];
   const id = 'package:' + pkgName;
-  a.setAttribute('aria-label', `Add the ${pkgName} package to your shortlist`);
+  a.setAttribute('aria-label', `Add the ${pkgName} package to your feast`);
   a.addEventListener('click', e => {
     const S = window.VaavShortlist;
     if (!S) return; // no-JS fallback: the /contact/ href still works
@@ -114,7 +114,7 @@ window.VaavShortlist = (function () {
     buildMessage: function () {
       const parts = [];
       parts.push("Hello VAAV Kitchen,");
-      parts.push("I'd like to enquire about catering. Here's my shortlist:");
+      parts.push("I'd like to enquire about catering. Here's what I've picked:");
       state.items.forEach(function (it, i) {
         const lines = ["*" + (i + 1) + ". " + it.name + "* (" + it.cat + ")"];
         (it.groups || []).forEach(function (g) {
@@ -202,8 +202,8 @@ const VAAV_REVIEWS = [
   function sync() {
     const n = window.VaavShortlist.count();
     el.textContent = n === 0
-      ? 'Your feast is empty — tap “Add to shortlist” on any menu below to start building.'
-      : n + (n === 1 ? ' menu' : ' menus') + ' in your feast — tap the Shortlist button to review & send.';
+      ? 'Your feast is empty — tap “Add to my feast” on any menu below to start building.'
+      : n + (n === 1 ? ' menu' : ' menus') + ' in your feast — tap “My feast” to review & send.';
     el.classList.toggle('has-items', n > 0);
   }
   document.addEventListener('vaav:shortlistchange', sync);
@@ -308,8 +308,9 @@ const VAAV_REVIEWS = [
       p.setAttribute('role', 'tab');
       p.setAttribute('aria-controls', 'menuCard');
       p.tabIndex = active ? 0 : -1;
-      p.textContent = i + 1;
-      p.setAttribute('aria-label', m.name);
+      const sig = (m.groups && m.groups[0] && m.groups[0][1] && m.groups[0][1][0]) ? m.groups[0][1][0] : '';
+      p.innerHTML = `<span class="mp-n">${i + 1}</span><span class="mp-sig">${sig}</span>`;
+      p.setAttribute('aria-label', sig ? `${m.name} — starts with ${sig}` : m.name);
       p.setAttribute('aria-selected', String(active));
       p.onclick = () => { curIdx = i; render(); };
       pickEl.appendChild(p);
@@ -328,7 +329,7 @@ const VAAV_REVIEWS = [
     const inList = window.VaavShortlist && window.VaavShortlist.has(slId);
     html += '<div class="rail-cta">';
     html += '<button type="button" class="mc-add' + (inList ? ' added' : '') + '" data-id="' + slId + '" aria-pressed="' + (inList ? 'true' : 'false') + '">' +
-      '<span class="mc-add-txt">' + (inList ? '✓ Added to shortlist' : '+ Add to shortlist') + '</span></button>';
+      '<span class="mc-add-txt">' + (inList ? '✓ In your feast' : '+ Add to my feast') + '</span></button>';
     html += '<p class="rail-note">Mix and match across any set — we’ll tailor it to your event.</p></div>';
     html += '</div><div class="mc-body"><div class="mc-groups">';
     let n = 0;
@@ -348,7 +349,7 @@ const VAAV_REVIEWS = [
     cardEl.innerHTML = html;
     const addBtn = cardEl.querySelector('.mc-add');
     if (addBtn && window.VaavShortlist) {
-      addBtn.setAttribute('aria-label', (window.VaavShortlist.has(addBtn.dataset.id) ? 'Remove ' : 'Add ') + menu.name + (window.VaavShortlist.has(addBtn.dataset.id) ? ' from shortlist' : ' to shortlist'));
+      addBtn.setAttribute('aria-label', (window.VaavShortlist.has(addBtn.dataset.id) ? 'Remove ' : 'Add ') + menu.name + (window.VaavShortlist.has(addBtn.dataset.id) ? ' from your feast' : ' to your feast'));
       addBtn.addEventListener('click', function () {
         const S = window.VaavShortlist;
         if (S.has(addBtn.dataset.id)) S.remove(addBtn.dataset.id);
@@ -368,9 +369,9 @@ const VAAV_REVIEWS = [
     addBtn.classList.toggle('added', has);
     addBtn.setAttribute('aria-pressed', has ? 'true' : 'false');
     const txt = addBtn.querySelector('.mc-add-txt');
-    if (txt) txt.textContent = has ? '✓ Added to shortlist' : '+ Add to shortlist';
+    if (txt) txt.textContent = has ? '✓ In your feast' : '+ Add to my feast';
     const nm = addBtn.dataset.id.slice(addBtn.dataset.id.indexOf(':') + 1);
-    addBtn.setAttribute('aria-label', (has ? 'Remove ' : 'Add ') + nm + (has ? ' from shortlist' : ' to shortlist'));
+    addBtn.setAttribute('aria-label', (has ? 'Remove ' : 'Add ') + nm + (has ? ' from your feast' : ' to your feast'));
   });
 })();
 
@@ -410,9 +411,9 @@ const VAAV_REVIEWS = [
   function sync() {
     const n = S.count();
     pill.style.display = n > 0 ? 'inline-flex' : 'none';
-    pill.querySelector('.vaav-sl-pill-label').textContent = 'Shortlist (' + n + ')';
-    pill.setAttribute('aria-label', 'Review shortlist, ' + n + (n === 1 ? ' menu' : ' menus'));
-    live.textContent = n > 0 ? (n + (n === 1 ? ' menu' : ' menus') + ' in shortlist') : '';
+    pill.querySelector('.vaav-sl-pill-label').textContent = 'My feast (' + n + ')';
+    pill.setAttribute('aria-label', 'Review your feast, ' + n + (n === 1 ? ' menu' : ' menus'));
+    live.textContent = n > 0 ? (n + (n === 1 ? ' menu' : ' menus') + ' in your feast') : '';
   }
   pill.addEventListener('click', function () {
     document.dispatchEvent(new CustomEvent('vaav:shortlistopen'));
@@ -433,8 +434,8 @@ const VAAV_REVIEWS = [
   drawer.setAttribute('aria-modal', 'true');
   drawer.setAttribute('aria-labelledby', 'vaav-sl-title');
   drawer.innerHTML =
-    '<div class="vaav-sl-head"><h2 id="vaav-sl-title">Your shortlist</h2>' +
-    '<button type="button" class="vaav-sl-close" aria-label="Close shortlist"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12"/></svg></button></div>' +
+    '<div class="vaav-sl-head"><h2 id="vaav-sl-title">Your feast</h2>' +
+    '<button type="button" class="vaav-sl-close" aria-label="Close your feast"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12"/></svg></button></div>' +
     '<div id="vaav-sl-body" class="vaav-sl-body"></div>';
   document.body.appendChild(backdrop);
   document.body.appendChild(drawer);
@@ -488,7 +489,7 @@ const VAAV_REVIEWS = [
   function render() {
     const st = S.getState();
     if (!st.items.length) {
-      body.innerHTML = '<p class="vaav-sl-empty">Your shortlist is empty. Add set menus from the menu explorer to send them to us together.</p>';
+      body.innerHTML = '<p class="vaav-sl-empty">Your feast is empty. Add set menus from the menu explorer to send them to us together.</p>';
       return;
     }
     let h = '<div class="vaav-sl-list">';
