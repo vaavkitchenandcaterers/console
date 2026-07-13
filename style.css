@@ -408,7 +408,9 @@ section{padding:90px 0}
 .mobile-actionbar{position:fixed;left:0;right:0;bottom:0;z-index:90;display:none;gap:10px;
   padding:10px 14px calc(10px + env(safe-area-inset-bottom,0px));
   background:rgba(247,243,231,.98);backdrop-filter:blur(10px);border-top:1px solid var(--cream-deep);
-  box-shadow:0 -6px 24px -12px rgba(20,61,29,.4)}
+  box-shadow:0 -6px 24px -12px rgba(20,61,29,.4);transition:transform .28s ease}
+.mobile-actionbar.at-hero{transform:translateY(110%)}
+@media(prefers-reduced-motion:reduce){.mobile-actionbar{transition:none}}
 .mab-btn{flex:1;display:flex;align-items:center;justify-content:center;gap:8px;min-height:50px;border-radius:14px;
   font-family:'Catamaran',sans-serif;font-weight:800;font-size:1rem;text-decoration:none;
   touch-action:manipulation;transition:background .15s}

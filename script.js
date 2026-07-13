@@ -185,6 +185,21 @@ const VAAV_REVIEWS = [
   }));
 })();
 
+// --- keep the sticky mobile action bar clear of the hero: hide it while the hero
+//     is on screen (the hero has its own CTAs), reveal it once scrolled past. Only
+//     runs on the home page (spoke pages have no .hero, so the bar always shows). ---
+(function () {
+  const bar = document.querySelector('.mobile-actionbar');
+  const hero = document.querySelector('.hero');
+  if (!bar || !hero) return;
+  bar.classList.add('at-hero'); // start hidden on the hero so it never covers the CTAs at load
+  if (!('IntersectionObserver' in window)) { bar.classList.remove('at-hero'); return; }
+  const io = new IntersectionObserver(entries => {
+    bar.classList.toggle('at-hero', entries[0].isIntersecting);
+  }, { threshold: 0 });
+  io.observe(hero);
+})();
+
 // --- interactive menu explorer (nested ARIA tabs: category tablist -> menu-number tablist) ---
 (function () {
   const M = window.VAAV_MENUS;
