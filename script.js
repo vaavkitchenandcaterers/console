@@ -318,6 +318,20 @@ const VAAV_REVIEWS = [
     }
   }
   render();
+
+  // Keep the visible card's Add button in sync when the shortlist changes elsewhere
+  // (e.g. a menu removed via the drawer) — otherwise the button would still read "Added".
+  document.addEventListener('vaav:shortlistchange', function () {
+    const addBtn = cardEl.querySelector('.mc-add');
+    if (!addBtn || !window.VaavShortlist) return;
+    const has = window.VaavShortlist.has(addBtn.dataset.id);
+    addBtn.classList.toggle('added', has);
+    addBtn.setAttribute('aria-pressed', has ? 'true' : 'false');
+    const txt = addBtn.querySelector('.mc-add-txt');
+    if (txt) txt.textContent = has ? '✓ Added to shortlist' : '+ Add to shortlist';
+    const nm = addBtn.dataset.id.slice(addBtn.dataset.id.indexOf(':') + 1);
+    addBtn.setAttribute('aria-label', (has ? 'Remove ' : 'Add ') + nm + (has ? ' from shortlist' : ' to shortlist'));
+  });
 })();
 
 // Nav active-state is now static per page (aria-current="page" in each page's HTML),
