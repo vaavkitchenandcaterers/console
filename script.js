@@ -34,25 +34,6 @@ document.querySelectorAll('[data-wa-context]').forEach(a => {
   a.target = "_blank"; a.rel = "noopener noreferrer";
 });
 
-// --- Package CTAs: add the package to the shortlist, then open the drawer —
-//     one unified enquiry path (same shortlist → WhatsApp flow as the menu cards).
-//     Falls back to the /contact/ href if JS/shortlist is unavailable. ---
-document.querySelectorAll('.pkg-enquire').forEach(a => {
-  const pkgName = a.dataset.pkg;
-  if (!pkgName) return;
-  const card = a.closest('.pkg');
-  const includes = card ? [...card.querySelectorAll('ul li')].map(li => li.textContent.trim()).filter(Boolean) : [];
-  const id = 'package:' + pkgName;
-  a.setAttribute('aria-label', `Add the ${pkgName} package to your feast`);
-  a.addEventListener('click', e => {
-    const S = window.VaavShortlist;
-    if (!S) return; // no-JS fallback: the /contact/ href still works
-    e.preventDefault();
-    if (!S.has(id)) S.add({ id, cat: 'Package', name: pkgName, groups: [['Includes', includes]] });
-    S.openDrawer();
-  });
-});
-
 // --- Google reviews links ---
 document.querySelectorAll('.js-greviews').forEach(a => {
   a.href = GOOGLE_REVIEWS_URL; a.target = "_blank"; a.rel = "noopener noreferrer";
