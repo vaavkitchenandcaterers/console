@@ -116,7 +116,8 @@ window.Studio = (function () {
         + '</section>'
         + '<div id="b-menus"></div>'
         + '<div id="b-charges"></div>'
-        + '<section class="card"><h2>Notes</h2><textarea id="c-notes" rows="3" placeholder="Prices valid 15 days…">'+esc(q.notes)+'</textarea></section>';
+        + '<section class="card"><h2>Notes</h2><textarea id="c-notes" rows="3" placeholder="Prices valid 15 days…">'+esc(q.notes)+'</textarea></section>'
+        + '<button type="button" id="btn-clear-form" class="clear-form-btn">Clear all fields in this quote</button>';
       bindCustomer();
       if (S.Builder){ S.Builder.renderMenus && S.Builder.renderMenus(); S.Builder.renderCharges && S.Builder.renderCharges(); }
     }
@@ -125,6 +126,15 @@ window.Studio = (function () {
       Object.keys(map).forEach(function(id){ const el=document.getElementById(id); if(!el) return; el.addEventListener('input',function(){ state.quote[map[id][0]][map[id][1]]=el.value; touch(); }); });
       const g=document.getElementById('c-guests'); g.addEventListener('input',function(){ state.quote.defaultGuests=Math.max(0,parseInt(g.value,10)||0); touch(); });
       const n=document.getElementById('c-notes'); n.addEventListener('input',function(){ state.quote.notes=n.value; touch(); });
+      const clearBtn=document.getElementById('btn-clear-form');
+      if (clearBtn) clearBtn.addEventListener('click', function(){
+        if (confirm('Clear all fields in this quote? Customer info, menus, charges and notes will be wiped. This cannot be undone.')) {
+          const kept = state.quote.number, keptId = state.quote.id, keptCreated = state.quote.createdAt;
+          const fresh = S.Quote.blank();
+          fresh.number = kept; fresh.id = keptId; fresh.createdAt = keptCreated; // keep identity if this was a saved quote
+          setQuote(fresh);
+        }
+      });
     }
     function start(){
       const draft = S.Store.get(S.KEYS.DRAFT, null);
@@ -153,7 +163,10 @@ window.Studio = (function () {
       q().menus.push(menu); S.App.renderBuilder(); }
     function render(){
       const host=document.getElementById('b-menus'); if(!host) return;
-      host.innerHTML = q().menus.map(function(m){
+      const menuCount = q().menus.length;
+      const header = '<div class="section-label">Menus</div>'
+        + (menuCount===0 ? '<p class="hint-box">No menus yet — pick a set menu below to add your first one, or start with a blank menu.</p>' : '');
+      host.innerHTML = header + q().menus.map(function(m){
         const groups = m.groups.map(function(g,gi){
           const chips = g[1].map(function(dish,di){ return '<span class="chip">'+esc(dish)+'<button type="button" class="chip-x" data-m="'+m.id+'" data-g="'+gi+'" data-d="'+di+'" aria-label="Remove '+esc(dish)+'"><span aria-hidden="true">×</span></button></span>'; }).join('');
           return '<div class="grp"><div class="grp-h">'+esc(g[0])+'</div><div class="chips">'+chips+'<button type="button" class="chip-add" data-m="'+m.id+'" data-g="'+gi+'">+ add</button></div></div>';
