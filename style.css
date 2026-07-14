@@ -529,3 +529,9 @@ body.vaav-sl-open .vaav-sl-pill,body.vaav-sl-open .wa-float,body.vaav-sl-open .m
 .feast-progress{font-family:'Catamaran',sans-serif;font-weight:700;font-size:.9rem;color:var(--muted);
   margin:0 0 18px;padding:9px 15px;border:1px dashed #d8cdaf;border-radius:10px;display:inline-block;transition:color .2s,background .2s,border-color .2s}
 .feast-progress.has-items{color:var(--green-deep);border-color:var(--green-deep);background:var(--cream-deep)}
+
+/* ---------- Add-to-feast confirmation chip ---------- */
+.feast-chip{position:fixed;top:0;left:0;width:26px;height:26px;border-radius:50%;
+  background:var(--green-deep);display:flex;align-items:center;justify-content:center;
+  pointer-events:none;z-index:120;will-change:transform,opacity}
+.feast-chip svg{width:14px;height:14px}

@@ -404,9 +404,13 @@ const VAAV_REVIEWS = [
   document.body.appendChild(pill);
   document.body.appendChild(live);
 
+  let justAppeared = false;
+
   function sync() {
     const n = S.count();
+    const wasVisible = pill.style.display === 'inline-flex';
     pill.style.display = n > 0 ? 'inline-flex' : 'none';
+    justAppeared = n > 0 && !wasVisible;
     pill.querySelector('.vaav-sl-pill-label').textContent = 'My feast (' + n + ')';
     pill.setAttribute('aria-label', 'Review your feast, ' + n + (n === 1 ? ' menu' : ' menus'));
     live.textContent = n > 0 ? (n + (n === 1 ? ' menu' : ' menus') + ' in your feast') : '';
@@ -416,6 +420,66 @@ const VAAV_REVIEWS = [
   });
   document.addEventListener('vaav:shortlistchange', sync);
   sync();
+
+  function flashPillReduced() {
+    pill.animate([{ opacity: .4 }, { opacity: 1 }], { duration: 150, easing: 'ease-out' });
+  }
+
+  function fadeInPill() {
+    pill.animate([
+      { opacity: 0, transform: 'scale(.8)' },
+      { opacity: 1, transform: 'scale(1)' }
+    ], { duration: 220, easing: 'cubic-bezier(.2,.8,.3,1.3)' });
+  }
+
+  function bouncePill() {
+    pill.animate([
+      { transform: 'scale(1)', backgroundColor: '#faf6ec' },
+      { transform: 'scale(1.15)', backgroundColor: '#e6cf04', offset: .4 },
+      { transform: 'scale(.97)', backgroundColor: '#faf6ec', offset: .75 },
+      { transform: 'scale(1)', backgroundColor: '#faf6ec' }
+    ], { duration: 340, easing: 'ease-out' });
+  }
+
+  function spawnChip() {
+    const chip = document.createElement('div');
+    chip.className = 'feast-chip';
+    chip.setAttribute('aria-hidden', 'true');
+    chip.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="#faf6ec" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>';
+    document.body.appendChild(chip);
+    return chip;
+  }
+
+  S.flyToPill = function (sourceEl) {
+    if (!sourceEl || window.innerWidth <= 760) return;
+    if (pill.style.display !== 'inline-flex') return;
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      flashPillReduced();
+      return;
+    }
+    const startBox = sourceEl.getBoundingClientRect();
+    const endBox = pill.getBoundingClientRect();
+    const startX = startBox.left + startBox.width / 2 - 13;
+    const startY = startBox.top + startBox.height / 2 - 13;
+    const endX = endBox.left + endBox.width / 2 - 13;
+    const endY = endBox.top + endBox.height / 2 - 13;
+    const midX = (startX + endX) / 2;
+    const midY = Math.min(startY, endY) - 60;
+    const wasJustAppeared = justAppeared;
+
+    const chip = spawnChip();
+    const anim = chip.animate([
+      { transform: 'translate(' + startX + 'px,' + startY + 'px) scale(1)', opacity: 1, offset: 0 },
+      { transform: 'translate(' + midX + 'px,' + midY + 'px) scale(.85)', opacity: 1, offset: .5 },
+      { transform: 'translate(' + endX + 'px,' + endY + 'px) scale(.25)', opacity: 0, offset: 1 }
+    ], { duration: 480, easing: 'cubic-bezier(.3,.1,.3,1)' });
+
+    anim.onfinish = function () {
+      chip.remove();
+      if (wasJustAppeared) fadeInPill();
+      else bouncePill();
+    };
+  };
 })();
 
 // --- shortlist: drawer / bottom-sheet shell ---
