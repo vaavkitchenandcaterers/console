@@ -348,8 +348,12 @@ const VAAV_REVIEWS = [
       addBtn.setAttribute('aria-label', (window.VaavShortlist.has(addBtn.dataset.id) ? 'Remove ' : 'Add ') + menu.name + (window.VaavShortlist.has(addBtn.dataset.id) ? ' from your feast' : ' to your feast'));
       addBtn.addEventListener('click', function () {
         const S = window.VaavShortlist;
-        if (S.has(addBtn.dataset.id)) S.remove(addBtn.dataset.id);
-        else S.add({ id: addBtn.dataset.id, cat: data.label, name: menu.name, groups: menu.groups });
+        if (S.has(addBtn.dataset.id)) {
+          S.remove(addBtn.dataset.id);
+        } else {
+          S.add({ id: addBtn.dataset.id, cat: data.label, name: menu.name, groups: menu.groups });
+          if (S.flyToPill) S.flyToPill(addBtn);
+        }
         render();
       });
     }
