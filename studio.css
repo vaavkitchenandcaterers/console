@@ -87,6 +87,7 @@ button{cursor:pointer}
   .topbar,.builder,.gate,.modal,#add-menu-sel{display:none !important}
   .workspace{display:block}.preview-wrap{padding:0;background:#fff}
   .doc{border:0;max-width:100%;padding:0}
+  .d-head{margin:0}
   body{background:#fff}
   .d-menu,.d-total{break-inside:avoid}
   *{-webkit-print-color-adjust:exact;print-color-adjust:exact}
