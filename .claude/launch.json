@@ -4,7 +4,7 @@
     {
       "name": "vaav",
       "runtimeExecutable": "node",
-      "runtimeArgs": ["server.js"],
+      "runtimeArgs": ["server.cjs"],
       "port": 8765
     },
     {

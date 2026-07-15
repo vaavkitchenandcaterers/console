@@ -9,10 +9,10 @@ Authentic Tamil catering site for Chennai. Static, fast, mobile-first, no build 
 | `style.css` | All styling (Tamil temple palette, fonts, animations, responsive) |
 | `menu-data.js` | The 66 set menus (Tiffin / Lunch / Dinner) — edit dishes here |
 | `script.js` | Interactivity (menu explorer, WhatsApp links, mobile nav) |
-| `server.js` | Optional local preview server — **not needed in production** |
+| `server.cjs` | Optional local preview server — **not needed in production** |
 
 ## To view locally
-Just open `index.html` in a browser. (Or run `node server.js` and visit `http://localhost:8765`.)
+Just open `index.html` in a browser. (Or run `node server.cjs` and visit `http://localhost:8765`.)
 
 ## To edit the important bits
 - **Phone / WhatsApp number** — top of `script.js`: `WHATSAPP_NUMBER` and `PHONE_DISPLAY`.
