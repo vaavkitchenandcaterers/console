@@ -36,7 +36,14 @@ http.createServer((req, res) => {
   }
 
   fs.readFile(file, (err, data) => {
-    if (err) { res.writeHead(404, secureHeaders()); res.end('Not found'); return; }
+    if (err) {
+      // Mirror Netlify/Apache: serve the custom 404 page with a real 404 status.
+      fs.readFile(path.join(root, '404.html'), (err2, page) => {
+        res.writeHead(404, secureHeaders({ 'Content-Type': 'text/html' }));
+        res.end(req.method === 'HEAD' ? undefined : (err2 ? 'Not found' : page));
+      });
+      return;
+    }
     const type = types[path.extname(file).toLowerCase()] || 'application/octet-stream';
     res.writeHead(200, secureHeaders({ 'Content-Type': type }));
     res.end(req.method === 'HEAD' ? undefined : data);
