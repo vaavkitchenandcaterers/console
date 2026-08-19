@@ -408,10 +408,11 @@ section{padding:90px 0}
 .info-line .ic svg{width:26px;height:26px}
 .info-line h4{font-family:'Mukta',sans-serif;font-size:1rem;margin-bottom:2px}
 .info-line p,.info-line a{color:rgba(247,243,231,.78);font-size:.95rem;text-decoration:none}
+.info-line a{display:inline-block;min-height:44px;padding:10px 0;margin:-10px 0;box-sizing:border-box}
 .info-line a:hover{color:var(--yellow)}
 .map-embed{margin-top:8px;border-radius:18px;overflow:hidden;border:1px solid rgba(247,243,231,.2);box-shadow:0 14px 30px -18px rgba(0,0,0,.5);line-height:0}
 .map-embed iframe{width:100%;height:240px;border:0;display:block;filter:saturate(1.05)}
-.map-link{display:inline-flex;align-items:center;gap:6px;margin-top:14px;color:var(--yellow);text-decoration:none;font-weight:600;font-size:.92rem}
+.map-link{display:inline-flex;align-items:center;gap:6px;min-height:44px;margin:4px 0 -10px;padding:10px 0;color:var(--yellow);text-decoration:none;font-weight:600;font-size:.92rem;box-sizing:border-box}
 .map-link svg{width:16px;height:16px}
 .map-link:hover{text-decoration:underline}
 

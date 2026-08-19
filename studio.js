@@ -201,9 +201,9 @@ window.Studio = (function () {
     B.renderAddons = function (menuId) {
       const m = B.findMenu(menuId); const host = document.getElementById('ad-'+menuId); if(!m||!host) return;
       host.innerHTML = '<div class="addon-h">Add-on items</div>' + m.addons.map(function(a,i){
-        return '<div class="addon-row"><input class="a-name" data-m="'+menuId+'" data-i="'+i+'" list="addon-list" placeholder="Item" value="'+esc(a.name)+'">'
-          + '<input class="a-qty" data-m="'+menuId+'" data-i="'+i+'" inputmode="numeric" placeholder="Qty" value="'+esc(a.qty||'')+'">'
-          + '<input class="a-mrp" data-m="'+menuId+'" data-i="'+i+'" inputmode="numeric" placeholder="MRP" value="'+esc(a.mrp||'')+'"'+(a.free?' disabled':'')+'>'
+        return '<div class="addon-row"><input class="a-name" data-m="'+menuId+'" data-i="'+i+'" list="addon-list" placeholder="Item" aria-label="Add-on item name" value="'+esc(a.name)+'">'
+          + '<input class="a-qty" data-m="'+menuId+'" data-i="'+i+'" inputmode="numeric" placeholder="Qty" aria-label="Add-on quantity" value="'+esc(a.qty||'')+'">'
+          + '<input class="a-mrp" data-m="'+menuId+'" data-i="'+i+'" inputmode="numeric" placeholder="MRP" aria-label="Add-on price (MRP)" value="'+esc(a.mrp||'')+'"'+(a.free?' disabled':'')+'>'
           + '<label class="a-free"><input type="checkbox" class="a-freechk" data-m="'+menuId+'" data-i="'+i+'"'+(a.free?' checked':'')+'> Free</label>'
           + '<button type="button" class="icon-btn a-del" data-m="'+menuId+'" data-i="'+i+'" aria-label="Remove item">×</button></div>';
       }).join('') + '<button type="button" class="link-btn a-add" data-m="'+menuId+'">+ Add item</button>';
@@ -218,8 +218,8 @@ window.Studio = (function () {
     B.renderCharges = function () {
       const host = document.getElementById('b-charges'); if(!host) return;
       host.innerHTML = '<section class="card"><h2>Custom charges</h2>' + q().charges.map(function(c,i){
-        return '<div class="charge-row"><input class="ch-label" data-i="'+i+'" placeholder="Label (transport…)" value="'+esc(c.label)+'">'
-          + '<input class="ch-amt" data-i="'+i+'" inputmode="numeric" placeholder="Amount" value="'+esc(c.amount||'')+'">'
+        return '<div class="charge-row"><input class="ch-label" data-i="'+i+'" placeholder="Label (transport…)" aria-label="Charge label" value="'+esc(c.label)+'">'
+          + '<input class="ch-amt" data-i="'+i+'" inputmode="numeric" placeholder="Amount" aria-label="Charge amount" value="'+esc(c.amount||'')+'">'
           + '<button type="button" class="icon-btn ch-del" data-i="'+i+'" aria-label="Remove charge">×</button></div>';
       }).join('') + '<button type="button" class="link-btn ch-add">+ Add charge</button></section>';
       host.querySelector('.ch-add').addEventListener('click',function(){ q().charges.push({label:'',amount:0}); B.renderCharges(); S.App.touch(); });

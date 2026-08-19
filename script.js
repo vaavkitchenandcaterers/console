@@ -489,9 +489,9 @@ const VAAV_REVIEWS = [
     h += '<label class="vaav-sl-fieldlabel" for="vaav-sl-notes">Special requests</label>' +
       '<textarea id="vaav-sl-notes" class="vaav-sl-notes" placeholder="No onion or garlic, extra sweet…">' + esc(st.notes) + '</textarea>';
     h += '<div class="vaav-sl-event"><div class="vaav-sl-fieldlabel">Event details (optional)</div>' +
-      '<input id="vaav-sl-ev-name" placeholder="Your name" value="' + esc(st.event.name) + '">' +
-      '<input id="vaav-sl-ev-occasion" placeholder="Occasion (wedding, seemantham…)" value="' + esc(st.event.occasion) + '">' +
-      '<div class="vaav-sl-row2"><input id="vaav-sl-ev-guests" inputmode="numeric" placeholder="Guests" value="' + esc(st.event.guests) + '">' +
+      '<input id="vaav-sl-ev-name" placeholder="Your name" aria-label="Your name" value="' + esc(st.event.name) + '">' +
+      '<input id="vaav-sl-ev-occasion" placeholder="Occasion (wedding, seemantham…)" aria-label="Occasion" value="' + esc(st.event.occasion) + '">' +
+      '<div class="vaav-sl-row2"><input id="vaav-sl-ev-guests" inputmode="numeric" placeholder="Guests" aria-label="Number of guests" value="' + esc(st.event.guests) + '">' +
       '<span class="vaav-sl-datewrap"><label class="vh" for="vaav-sl-ev-date">Event date</label>' +
       '<input id="vaav-sl-ev-date" type="date" min="' + todayISO() + '" aria-label="Event date" value="' + esc(st.event.date) + '"></span></div></div>';
     h += '<a class="vaav-sl-send" href="#" target="_blank" rel="noopener noreferrer">' +
