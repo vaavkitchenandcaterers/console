@@ -57,7 +57,7 @@ Adds the fact "this feast has been sent" to the model, and the rule that any edi
   - `sentAt(): string` — ISO-8601 string, or `""` if never sent / invalidated.
   - Invariant relied on by Task 3: `add()`, `remove()`, `clear()`, `setNotes()` and `setEventField()` all reset `sentAt` to `""`.
 
-- [ ] **Step 1: Write the failing tests**
+- [x] **Step 1: Write the failing tests**
 
 Append to `shortlist.test.js`, inside the existing top-level scope (after the `createShortlist` describe block closes):
 
@@ -133,7 +133,7 @@ describe('sent state', () => {
 });
 ```
 
-- [ ] **Step 2: Run the tests to verify they fail**
+- [x] **Step 2: Run the tests to verify they fail**
 
 ```bash
 npx vitest run shortlist.test.js -t "sent state"
@@ -141,7 +141,7 @@ npx vitest run shortlist.test.js -t "sent state"
 
 Expected: FAIL — 9 failed. Eight of them stop one line earlier than you might guess, on `TypeError: s.markSent is not a function`; only the last ("a v1 payload…") reports `s.sentAt is not a function`. Same root cause.
 
-- [ ] **Step 3: Implement**
+- [x] **Step 3: Implement**
 
 In `shortlist.js`, change the `EMPTY` factory to include `sentAt`:
 
@@ -184,7 +184,7 @@ Then edit the five mutators in the returned object so each calls `touch(state)` 
 
 `clear()` needs no `touch()` — it replaces the whole state with `EMPTY()`, whose `sentAt` is already `""`.
 
-- [ ] **Step 4: Run the tests to verify they pass**
+- [x] **Step 4: Run the tests to verify they pass**
 
 ```bash
 npm test
@@ -192,7 +192,7 @@ npm test
 
 Expected: PASS — the new "sent state" block plus every pre-existing `createShortlist` test. If an older test fails, the mutator edits broke an existing contract; fix the implementation, not the old test.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add shortlist.js shortlist.test.js
@@ -215,7 +215,7 @@ Two facts the interface currently hides: that the feast caps at 20, and that `lo
   - `isFull(): boolean` — true when `items.length >= CAP`. Used by Task 6 on the menu card.
   - `isPersistent(): boolean` — performs a probe write and reports whether storage accepted it. Used by Task 6 in the drawer.
 
-- [ ] **Step 1: Write the failing tests**
+- [x] **Step 1: Write the failing tests**
 
 Append to `shortlist.test.js`:
 
@@ -263,7 +263,7 @@ describe('capacity and persistence', () => {
 });
 ```
 
-- [ ] **Step 2: Run the tests to verify they fail**
+- [x] **Step 2: Run the tests to verify they fail**
 
 ```bash
 npx vitest run shortlist.test.js -t "capacity and persistence"
@@ -271,7 +271,7 @@ npx vitest run shortlist.test.js -t "capacity and persistence"
 
 Expected: FAIL — 5 of the 6 fail with `TypeError: s.isFull is not a function` / `s.isPersistent is not a function`. The sixth ("add() is refused at the cap") passes immediately: it only exercises `add()`, `count()` and `CAP`, which already exist. That is expected, not a red flag.
 
-- [ ] **Step 3: Implement**
+- [x] **Step 3: Implement**
 
 In `shortlist.js`, add to the returned object, immediately after `count`:
 
@@ -282,7 +282,7 @@ In `shortlist.js`, add to the returned object, immediately after `count`:
 
 `isPersistent()` deliberately writes: `usingMem` only flips inside `write()`'s catch, so a probe is the only honest way to answer the question before the customer has added anything.
 
-- [ ] **Step 4: Run the tests to verify they pass**
+- [x] **Step 4: Run the tests to verify they pass**
 
 ```bash
 npm test
@@ -290,7 +290,7 @@ npm test
 
 Expected: PASS, all suites.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add shortlist.js shortlist.test.js
@@ -312,7 +312,7 @@ After Send, the drawer stops showing a form the customer has already submitted a
 - Consumes: `S.markSent()`, `S.sentAt()` from Task 1; the existing `waLink()` and `S.buildMessage()` already in scope in `script.js`.
 - Produces: `renderSent()` inside the same IIFE; the class names `.vaav-sl-sent`, `.vaav-sl-sent-h`, `.vaav-sl-sent-list`, `.vaav-sl-again`, `.vaav-sl-edit` used by Task 4's Copy button.
 
-- [ ] **Step 1: Add the reply-time constant**
+- [x] **Step 1: Add the reply-time constant**
 
 At the top of the drawer-content IIFE in `script.js`, directly under `const body = document.getElementById('vaav-sl-body');`, add:
 
@@ -328,7 +328,7 @@ At the top of the drawer-content IIFE in `script.js`, directly under `const body
   }
 ```
 
-- [ ] **Step 2: Add the sent renderer**
+- [x] **Step 2: Add the sent renderer**
 
 In the same IIFE, add this function directly above `function render() {`:
 
@@ -370,7 +370,7 @@ In the same IIFE, add this function directly above `function render() {`:
   }
 ```
 
-- [ ] **Step 3: Route render() through it**
+- [x] **Step 3: Route render() through it**
 
 In the same IIFE, change the first lines of `render()` from:
 
@@ -389,7 +389,7 @@ to:
     if (!st.items.length) {
 ```
 
-- [ ] **Step 4: Mark sent on the Send click**
+- [x] **Step 4: Mark sent on the Send click**
 
 At the end of `render()`, inside the existing `if (send) { ... }` block, after the three `addEventListener` calls for `refresh`, add:
 
@@ -404,7 +404,7 @@ At the end of `render()`, inside the existing `if (send) { ... }` block, after t
 
 `markSent()` emits `vaav:shortlistchange`, which the existing listener at the bottom of the IIFE already routes to `render()` — no extra wiring.
 
-- [ ] **Step 5: Add the styles**
+- [x] **Step 5: Add the styles**
 
 Append to `style.css`, after the `.vaav-sl-help` rule:
 
@@ -423,7 +423,7 @@ Append to `style.css`, after the `.vaav-sl-help` rule:
 .vaav-sl-edit:hover,.vaav-sl-edit:focus-visible{color:var(--green-deep);border-color:var(--green-deep)}
 ```
 
-- [ ] **Step 6: Verify in the preview**
+- [x] **Step 6: Verify in the preview**
 
 Start the preview (launch config `vaav`, port 8765) and walk the flow at `http://localhost:8765/menu/`:
 
@@ -438,7 +438,7 @@ Start the preview (launch config `vaav`, port 8765) and walk the flow at `http:/
 
 Every one of those eight must pass before committing.
 
-- [ ] **Step 7: Commit**
+- [x] **Step 7: Commit**
 
 ```bash
 git add script.js style.css
@@ -459,7 +459,7 @@ On desktop without WhatsApp installed the deep link fails silently and the custo
 - Consumes: `renderSent()` and `.vaav-sl-edit` styling from Task 3; `S.buildMessage()`.
 - Produces: nothing later tasks depend on.
 
-- [ ] **Step 1: Add the button to the sent panel markup**
+- [x] **Step 1: Add the button to the sent panel markup**
 
 In `renderSent()` in `script.js`, change the `.vaav-sl-edit` line of the `innerHTML` string from:
 
@@ -474,7 +474,7 @@ to:
       '<button type="button" class="vaav-sl-edit">Edit my feast</button></div>' +
 ```
 
-- [ ] **Step 2: Wire the copy handler**
+- [x] **Step 2: Wire the copy handler**
 
 In `renderSent()`, directly before the `body.querySelector('.vaav-sl-edit')` handler, add:
 
@@ -500,7 +500,7 @@ In `renderSent()`, directly before the `body.querySelector('.vaav-sl-edit')` han
 
 The label change is the whole confirmation — no toast, and it is not reset, because the panel is re-rendered on every state change anyway.
 
-- [ ] **Step 3: Add the row style**
+- [x] **Step 3: Add the row style**
 
 Append to `style.css`:
 
@@ -512,7 +512,7 @@ Append to `style.css`:
 .vaav-sl-copy:hover,.vaav-sl-copy:focus-visible{color:var(--green-deep);border-color:var(--green-deep)}
 ```
 
-- [ ] **Step 4: Fix the date format in the sent panel**
+- [x] **Step 4: Fix the date format in the sent panel**
 
 Found during Task 3 review: the panel prints the raw `<input type="date">` value (`2026-12-05`) while the message the customer actually sent says `5 Dec 2026`. Two renderings of the same fact, and the one on screen is the machine's. `formatEventDate` is already imported at `script.js:1`.
 
@@ -530,11 +530,11 @@ to:
 
 Leave the date `<input>`'s `value` in `render()` alone — that one must stay ISO or the field will not populate.
 
-- [ ] **Step 5: Verify in the preview**
+- [x] **Step 5: Verify in the preview**
 
 At `http://localhost:8765/menu/`: add a menu, set an event date, send, and confirm the panel shows `5 Dec 2026` — the same form the WhatsApp message uses. Then click **Copy message**. The label must change to "Copied ✓", and pasting into any text field must reproduce the exact WhatsApp message including the `*1. Tiffin 1* (Tiffin)` header lines. Then check both buttons are ≥44px tall and reachable by keyboard in order.
 
-- [ ] **Step 6: Commit**
+- [x] **Step 6: Commit**
 
 ```bash
 git add script.js style.css
@@ -555,7 +555,7 @@ git commit -m "feat(shortlist): copy the enquiry text as a WhatsApp fallback"
 - Consumes: `S.clear()`, `S.count()`.
 - Produces: nothing later tasks depend on.
 
-- [ ] **Step 1: Replace the clear handler**
+- [x] **Step 1: Replace the clear handler**
 
 In `render()` in `script.js`, replace this line:
 
@@ -588,7 +588,7 @@ with:
 
 `S.clear()` emits, which re-renders into the empty state. Cancelling just re-renders. `e.stopPropagation()` stops Escape from also closing the whole drawer — cancel the confirm first, close the drawer on a second press.
 
-- [ ] **Step 2: Add the styles**
+- [x] **Step 2: Add the styles**
 
 Append to `style.css`:
 
@@ -604,11 +604,11 @@ Append to `style.css`:
 
 The safe choice is the plain one and takes focus; the destructive one is the coloured one. Do not swap them.
 
-- [ ] **Step 3: Verify in the preview**
+- [x] **Step 3: Verify in the preview**
 
 Add two menus, open the drawer, click **Clear all**: the confirm replaces the button in place, focus is on "Keep them", Escape cancels without closing the drawer, "Keep them" restores the list intact, and "Remove all" empties the feast and shows the empty state.
 
-- [ ] **Step 4: Commit**
+- [x] **Step 4: Commit**
 
 ```bash
 git add script.js style.css
@@ -629,7 +629,7 @@ Two honest lines using the flags from Task 2.
 - Consumes: `S.isPersistent()`, `S.isFull()` from Task 2.
 - Produces: `syncAdd(addBtn)` inside the menu-explorer IIFE — the only place the Add button's class, `aria-pressed`, label text and disabled state are decided. Any future state on that button goes here and nowhere else.
 
-- [ ] **Step 1: Add the storage line to the drawer**
+- [x] **Step 1: Add the storage line to the drawer**
 
 In `render()` in `script.js`, immediately after the line that closes the item list (`h += '</div>';`), add:
 
@@ -641,7 +641,7 @@ In `render()` in `script.js`, immediately after the line that closes the item li
       '</p>';
 ```
 
-- [ ] **Step 2: Add a single sync function for the Add button**
+- [x] **Step 2: Add a single sync function for the Add button**
 
 The button's state is currently computed in two places — once when the card is built (inside `render()`, right after `cardEl.innerHTML = html;`) and once in the `vaav:shortlistchange` listener at the end of the IIFE. They already duplicate each other, and adding a third state (full) to both would be the moment they drift. Replace both with one function.
 
@@ -690,7 +690,7 @@ And in the `vaav:shortlistchange` listener at the end of the IIFE, replace every
 
 Keep the guard, the `const addBtn = cardEl.querySelector('.mc-add');` line above it, and the explanatory comment above the listener exactly as they are.
 
-- [ ] **Step 3: Add the styles**
+- [x] **Step 3: Add the styles**
 
 Append to `style.css`:
 
@@ -702,13 +702,13 @@ Append to `style.css`:
 
 Put these next to the existing `.mc-add.added` rules (`style.css:567`), not in the `.vaav-sl-*` block — the button lives on the dark card rail, which is why the disabled treatment uses the same translucent cream as `.added` rather than a token. The `:hover` override is needed because `.mc-add:hover` would otherwise still light up a disabled button.
 
-- [ ] **Step 4: Verify in the preview**
+- [x] **Step 4: Verify in the preview**
 
 Storage line: open the drawer with one menu → "Saved on this phone only". Open the same page in a private window, add a menu, open the drawer → still works, and the line changes only if that browser actually refuses `localStorage` (Chrome incognito allows it — Firefox private and Safari with cookies blocked are the real cases; test in at least one).
 
 Capacity: add 20 menus, then open a 21st set → its button reads "Feast is full (20)", is disabled, and the aria-label explains the fix. Remove one from the drawer → the button becomes usable again.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add script.js style.css
@@ -721,7 +721,13 @@ git commit -m "feat(shortlist): say where the feast is saved and when it is full
 
 **Spec coverage** — brief items in this milestone: sent panel (T3), copy fallback (T4), inline confirm for Clear all (T5), storage honesty (T6), capacity messaging (T6), model support for all of it (T1, T2). The remaining brief items are out of this plan's scope by design and are listed under Follow-on plans below.
 
-**Placeholders** — none: every step carries the literal code or the literal command. The one deliberate uncertainty is flagged inline in Task 6 Step 3 (confirm the add-button's real class name before writing the CSS rule) rather than hidden.
+**Placeholders** — none: every step carries the literal code or the literal command.
+
+**Amendments made during execution** (each committed separately, so the plan and the code never disagreed):
+- Task 1 / Task 2 Step 2 — corrected the expected failure messages after seeing the real vitest output.
+- Task 4 — gained a step: the sent panel was printing the raw ISO date while the message sent `5 Dec 2026`. Found reviewing Task 3.
+- Task 6 Step 2 — rewritten. The original assumed a plain-text add button; the real `.mc-add` carries `aria-pressed` and an inner `.mc-add-txt` span, and its state was computed in two places. The task now consolidates both into one `syncAdd()`.
+- Global Constraints — `--yellow` / `--yellow-deep` were missing from the token whitelist while Task 3's own CSS used one of them.
 
 **Type consistency** — `markSent`/`sentAt`/`isFull`/`isPersistent` are named identically in Tasks 1–2 (definitions) and Tasks 3–6 (uses). `renderSent()` is defined in T3 and extended in T4. `.vaav-sl-edit`, `.vaav-sl-copy`, `.vaav-sl-row`, `.vaav-sl-confirm*`, `.vaav-sl-where` appear in exactly the tasks that create them.
 
