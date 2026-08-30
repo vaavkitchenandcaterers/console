@@ -203,6 +203,25 @@ const VAAV_REVIEWS = [
     if (newPill) newPill.focus();
   });
 
+  // Single source of truth for the Add button's state, so the initial render and
+  // the shortlistchange listener can't drift apart.
+  function syncAdd(addBtn) {
+    const S = window.VaavShortlist;
+    if (!addBtn || !S) return;
+    const has = S.has(addBtn.dataset.id);
+    const full = !has && S.isFull();
+    const nm = addBtn.dataset.id.slice(addBtn.dataset.id.indexOf(':') + 1);
+    addBtn.classList.toggle('added', has);
+    addBtn.classList.toggle('is-full', full);
+    addBtn.disabled = full;
+    addBtn.setAttribute('aria-pressed', has ? 'true' : 'false');
+    const txt = addBtn.querySelector('.mc-add-txt');
+    if (txt) txt.textContent = full ? 'Feast is full (20)' : (has ? '✓ In your feast' : '+ Add to my feast');
+    addBtn.setAttribute('aria-label',
+      full ? 'Feast is full — remove a menu from your feast to add another'
+           : (has ? 'Remove ' : 'Add ') + nm + (has ? ' from your feast' : ' to your feast'));
+  }
+
   function render() {
     const data = M[curCat];
     [...tabsEl.children].forEach(b => {
@@ -266,7 +285,7 @@ const VAAV_REVIEWS = [
     cardEl.innerHTML = html;
     const addBtn = cardEl.querySelector('.mc-add');
     if (addBtn && window.VaavShortlist) {
-      addBtn.setAttribute('aria-label', (window.VaavShortlist.has(addBtn.dataset.id) ? 'Remove ' : 'Add ') + menu.name + (window.VaavShortlist.has(addBtn.dataset.id) ? ' from your feast' : ' to your feast'));
+      syncAdd(addBtn);
       addBtn.addEventListener('click', function () {
         const S = window.VaavShortlist;
         if (S.has(addBtn.dataset.id)) {
@@ -286,13 +305,7 @@ const VAAV_REVIEWS = [
   document.addEventListener('vaav:shortlistchange', function () {
     const addBtn = cardEl.querySelector('.mc-add');
     if (!addBtn || !window.VaavShortlist) return;
-    const has = window.VaavShortlist.has(addBtn.dataset.id);
-    addBtn.classList.toggle('added', has);
-    addBtn.setAttribute('aria-pressed', has ? 'true' : 'false');
-    const txt = addBtn.querySelector('.mc-add-txt');
-    if (txt) txt.textContent = has ? '✓ In your feast' : '+ Add to my feast';
-    const nm = addBtn.dataset.id.slice(addBtn.dataset.id.indexOf(':') + 1);
-    addBtn.setAttribute('aria-label', (has ? 'Remove ' : 'Add ') + nm + (has ? ' from your feast' : ' to your feast'));
+    syncAdd(addBtn);
   });
 })();
 
@@ -551,6 +564,11 @@ const VAAV_REVIEWS = [
         '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 6h18M8 6V4h8v2M19 6l-1 14H6L5 6"/></svg></button></div>';
     });
     h += '</div>';
+    h += '<p class="vaav-sl-where">' +
+      (S.isPersistent()
+        ? 'Saved on this phone only — send it to keep it.'
+        : 'Your browser isn’t saving this — send it before you leave the page.') +
+      '</p>';
     h += '<label class="vaav-sl-fieldlabel" for="vaav-sl-notes">Special requests</label>' +
       '<textarea id="vaav-sl-notes" class="vaav-sl-notes" placeholder="No onion or garlic, extra sweet…">' + esc(st.notes) + '</textarea>';
     h += '<div class="vaav-sl-event"><div class="vaav-sl-fieldlabel">Event details (optional)</div>' +
