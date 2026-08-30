@@ -8,7 +8,7 @@ export function formatEventDate(iso) {
 export function createShortlist(storage) {
   const KEY = "vaav_shortlist_v1";
   const CAP = 20;
-  const EMPTY = () => ({ v: 1, items: [], notes: "", event: { name: "", occasion: "", guests: "", date: "" } });
+  const EMPTY = () => ({ v: 1, items: [], notes: "", event: { name: "", occasion: "", guests: "", date: "" }, sentAt: "" });
   let mem = null;
   let usingMem = false;
 
@@ -30,6 +30,7 @@ export function createShortlist(storage) {
   function emit() {
     if (typeof document !== 'undefined') document.dispatchEvent(new CustomEvent("vaav:shortlistchange"));
   }
+  function touch(state) { state.sentAt = ""; }
 
   let state = read();
 
@@ -42,19 +43,23 @@ export function createShortlist(storage) {
       if (this.has(item.id)) return false;
       if (state.items.length >= CAP) return false;
       state.items.push({ id: item.id, cat: item.cat, name: item.name, groups: item.groups });
-      write(state); emit(); return true;
+      touch(state); write(state); emit(); return true;
     },
     remove: function (id) {
       state.items = state.items.filter(function (i) { return i.id !== id; });
-      write(state); emit();
+      touch(state); write(state); emit();
     },
     clear: function () { state = EMPTY(); write(state); emit(); },
     count: function () { return state.items.length; },
-    setNotes: function (str) { state.notes = str || ""; write(state); },
+    setNotes: function (str) { state.notes = str || ""; touch(state); write(state); },
     setEventField: function (key, val) {
       if (!(key in state.event)) return;
-      state.event[key] = val || ""; write(state);
+      state.event[key] = val || ""; touch(state); write(state);
     },
+    markSent: function () {
+      state.sentAt = new Date().toISOString(); write(state); emit();
+    },
+    sentAt: function () { return state.sentAt || ""; },
     buildMessage: function () {
       const parts = [];
       parts.push("Hello VAAV Kitchen,");

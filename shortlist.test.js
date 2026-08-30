@@ -163,6 +163,76 @@ describe('createShortlist', () => {
   });
 });
 
+describe('sent state', () => {
+  it('sentAt() is empty before anything is sent', () => {
+    const s = createShortlist(fakeStorage());
+    expect(s.sentAt()).toBe('');
+  });
+
+  it('markSent() records an ISO timestamp', () => {
+    const s = createShortlist(fakeStorage());
+    s.add(menuA);
+    s.markSent();
+    expect(s.sentAt()).toMatch(/^\d{4}-\d{2}-\d{2}T/);
+  });
+
+  it('sentAt() survives a reload from the same storage', () => {
+    const store = fakeStorage();
+    const a = createShortlist(store);
+    a.add(menuA);
+    a.markSent();
+    const b = createShortlist(store);
+    expect(b.sentAt()).toBe(a.sentAt());
+  });
+
+  it('add() after sending invalidates the sent state', () => {
+    const s = createShortlist(fakeStorage());
+    s.add(menuA);
+    s.markSent();
+    s.add(menuB);
+    expect(s.sentAt()).toBe('');
+  });
+
+  it('remove() after sending invalidates the sent state', () => {
+    const s = createShortlist(fakeStorage());
+    s.add(menuA);
+    s.markSent();
+    s.remove(menuA.id);
+    expect(s.sentAt()).toBe('');
+  });
+
+  it('setNotes() after sending invalidates the sent state', () => {
+    const s = createShortlist(fakeStorage());
+    s.add(menuA);
+    s.markSent();
+    s.setNotes('no onion');
+    expect(s.sentAt()).toBe('');
+  });
+
+  it('setEventField() after sending invalidates the sent state', () => {
+    const s = createShortlist(fakeStorage());
+    s.add(menuA);
+    s.markSent();
+    s.setEventField('guests', '300');
+    expect(s.sentAt()).toBe('');
+  });
+
+  it('clear() after sending invalidates the sent state', () => {
+    const s = createShortlist(fakeStorage());
+    s.add(menuA);
+    s.markSent();
+    s.clear();
+    expect(s.sentAt()).toBe('');
+  });
+
+  it('a v1 payload with no sentAt key reads back as empty', () => {
+    const store = fakeStorage({
+      vaav_shortlist_v1: JSON.stringify({ v: 1, items: [], notes: '', event: {} })
+    });
+    expect(createShortlist(store).sentAt()).toBe('');
+  });
+});
+
 describe('formatEventDate', () => {
   it('formats a valid YYYY-MM-DD date', () => {
     expect(formatEventDate('2026-08-12')).toBe('12 Aug 2026');
