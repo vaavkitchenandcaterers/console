@@ -466,13 +466,59 @@ const VAAV_REVIEWS = [
 (function () {
   const S = window.VaavShortlist;
   const body = document.getElementById('vaav-sl-body');
+  // Copy under review — see docs/2026-08-30-send-seam-plan.md, open question:
+  // is "within the hour" a promise the kitchen actually keeps? Change these two
+  // strings and nothing else if the honest answer is "same day".
+  const REPLY_OPEN = 'We usually reply within the hour.';
+  const REPLY_CLOSED = 'The kitchen opens at 7 AM — we’ll reply then.';
+  function replyLine() {
+    const h = new Date().getHours();
+    return (h >= 7 && h < 21) ? REPLY_OPEN : REPLY_CLOSED;
+  }
   if (!S || !body) return;
 
   function esc(s) { return String(s).replace(/[&<>"]/g, function (c) {
     return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
 
+  function renderSent() {
+    const st = S.getState();
+    const names = st.items.map(function (it) { return esc(it.name); }).join(', ');
+    const when = st.event && st.event.date ? ' · ' + esc(st.event.date) : '';
+    const guests = st.event && st.event.guests ? ' · ' + esc(st.event.guests) + ' guests' : '';
+    body.innerHTML =
+      '<div class="vaav-sl-sent" role="status">' +
+        '<span class="vaav-sl-sent-ic" aria-hidden="true">' +
+          '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>' +
+        '</span>' +
+        '<h3 class="vaav-sl-sent-h" tabindex="-1">Sent to VAAV</h3>' +
+        '<p class="vaav-sl-sent-list">' + names + when + guests + '</p>' +
+        '<p class="vaav-sl-sent-reply">' + replyLine() + '</p>' +
+      '</div>' +
+      '<a class="vaav-sl-send vaav-sl-again" href="#" target="_blank" rel="noopener noreferrer">Send again on WhatsApp</a>' +
+      '<button type="button" class="vaav-sl-edit">Edit my feast</button>' +
+      '<p class="vaav-sl-help">Didn’t open? Call <a href="tel:+919655356333">+91 96553 56333</a>.</p>';
+
+    const again = body.querySelector('.vaav-sl-again');
+    const refresh = function () { again.href = waLink(S.buildMessage()); };
+    refresh();
+    again.addEventListener('mousedown', refresh);
+    again.addEventListener('touchstart', refresh, { passive: true });
+    again.addEventListener('focus', refresh);
+
+    body.querySelector('.vaav-sl-edit').addEventListener('click', function () {
+      S.setNotes(S.getState().notes); // any mutator clears sentAt — see Task 1
+      render();
+      const first = body.querySelector('.vaav-sl-remove');
+      if (first) first.focus();
+    });
+
+    const h = body.querySelector('.vaav-sl-sent-h');
+    if (h) h.focus();
+  }
+
   function render() {
     const st = S.getState();
+    if (st.items.length && S.sentAt()) { renderSent(); return; }
     if (!st.items.length) {
       body.innerHTML = '<p class="vaav-sl-empty">Your feast is empty. Add set menus from the menu explorer to send them to us together.</p>';
       return;
@@ -517,6 +563,12 @@ const VAAV_REVIEWS = [
       send.addEventListener('mousedown', refresh);
       send.addEventListener('touchstart', refresh, { passive: true });
       send.addEventListener('focus', refresh);
+      send.addEventListener('click', function () {
+        // Deferred one tick so the browser's default navigation to WhatsApp is
+        // already underway before this DOM node is replaced. Not a delay for
+        // effect — the operation itself is instant.
+        setTimeout(function () { S.markSent(); }, 0);
+      });
     }
   }
 

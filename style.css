@@ -536,6 +536,18 @@ body.vaav-sl-open .vaav-sl-pill,body.vaav-sl-open .wa-float,body.vaav-sl-open .m
 .vaav-sl-send:hover{background:var(--green-ink)}
 .vaav-sl-clear{background:transparent;border:0;color:var(--muted);font-family:'Catamaran',sans-serif;font-weight:700;text-decoration:underline;cursor:pointer;padding:6px;align-self:center;min-height:44px}
 .vaav-sl-help{font-size:.8rem;color:var(--muted);text-align:center}
+/* sent state — replaces the form once the enquiry has gone */
+.vaav-sl-sent{text-align:center;padding:26px 8px 20px}
+.vaav-sl-sent-ic{display:inline-flex;align-items:center;justify-content:center;width:52px;height:52px;
+  border-radius:50%;background:var(--wa);color:var(--white);margin-bottom:14px}
+.vaav-sl-sent-ic svg{width:26px;height:26px}
+.vaav-sl-sent-h{font-family:'Cormorant',serif;font-size:1.6rem;margin-bottom:6px}
+.vaav-sl-sent-h:focus-visible{outline:3px solid var(--yellow-deep);outline-offset:4px}
+.vaav-sl-sent-list{font-size:.94rem;color:var(--ink);margin-bottom:6px}
+.vaav-sl-sent-reply{font-size:.9rem;color:var(--muted)}
+.vaav-sl-edit{display:block;width:100%;min-height:44px;margin-top:10px;background:none;border:1.5px solid var(--border);
+  border-radius:12px;font-family:'Catamaran',sans-serif;font-weight:700;font-size:.95rem;color:var(--muted);cursor:pointer}
+.vaav-sl-edit:hover,.vaav-sl-edit:focus-visible{color:var(--green-deep);border-color:var(--green-deep)}
 .mc-add{margin-top:10px;width:100%;display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:48px;
   background:var(--yellow);border:1.5px solid var(--yellow);color:var(--green-ink);
   font-family:'Catamaran',sans-serif;font-weight:800;font-size:1rem;border-radius:10px;padding:12px 14px;cursor:pointer;transition:background .15s,color .15s}
