@@ -289,3 +289,46 @@ describe('formatEventDate', () => {
     expect(formatEventDate('')).toBe('');
   });
 });
+
+describe('labels', () => {
+  const labelled = {
+    id: 'tiffin:Tiffin 1', cat: 'Tiffin', name: 'Tiffin 1',
+    label: 'Morning tiffin spread', groups: [['Items', ['Idli', 'Sambar']]]
+  };
+
+  it('stores the label with the item', () => {
+    const s = createShortlist(fakeStorage());
+    s.add(labelled);
+    expect(s.getState().items[0].label).toBe('Morning tiffin spread');
+  });
+
+  it('stores an empty label when none is given', () => {
+    const s = createShortlist(fakeStorage());
+    s.add(menuA);
+    expect(s.getState().items[0].label).toBe('');
+  });
+
+  it('the label survives a reload', () => {
+    const store = fakeStorage();
+    createShortlist(store).add(labelled);
+    expect(createShortlist(store).getState().items[0].label).toBe('Morning tiffin spread');
+  });
+
+  it('the message header carries label then internal name', () => {
+    const s = createShortlist(fakeStorage());
+    s.add(labelled);
+    expect(s.buildMessage()).toContain('*1. Morning tiffin spread — Tiffin 1* (Tiffin)');
+  });
+
+  it('the message header is unchanged for an unlabelled item', () => {
+    const s = createShortlist(fakeStorage());
+    s.add(menuA);
+    expect(s.buildMessage()).toContain('*1. Set A* (Lunch)');
+  });
+
+  it('a label identical to the name is not repeated', () => {
+    const s = createShortlist(fakeStorage());
+    s.add(Object.assign({}, labelled, { label: 'Tiffin 1' }));
+    expect(s.buildMessage()).toContain('*1. Tiffin 1* (Tiffin)');
+  });
+});

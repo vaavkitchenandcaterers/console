@@ -291,7 +291,7 @@ const VAAV_REVIEWS = [
         if (S.has(addBtn.dataset.id)) {
           S.remove(addBtn.dataset.id);
         } else {
-          S.add({ id: addBtn.dataset.id, cat: data.label, name: menu.name, groups: menu.groups });
+          S.add({ id: addBtn.dataset.id, cat: data.label, name: menu.name, label: menu.label || '', groups: menu.groups });
           if (S.flyToPill) S.flyToPill(addBtn);
         }
         render();

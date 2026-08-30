@@ -6,7 +6,7 @@ window.VAAV_MENUS = {
     tamil: "டிபன்",
     note: "Crisp dosai, soft idli and ghee pongal for morning functions, seemanthams and office breakfasts. Every spread comes with <strong>fresh chutney and hot sambar.</strong>",
     menus: [
-      { name: "Tiffin 1", groups: [["Items", ["Sweet Kesari","Idli","Rava Upma","Sambar","Coconut Chutney"]]] },
+      { name: "Tiffin 1", label: "Simple morning tiffin", occasions: ["seemantham","housewarming","corporate"], groups: [["Items", ["Sweet Kesari","Idli","Rava Upma","Sambar","Coconut Chutney"]]] },
       { name: "Tiffin 2", groups: [["Items", ["Semiya Kesari","Poori","Urulai Masala","Pongal","Sambar","Chutney (2 types)"]]] },
       { name: "Tiffin 3", groups: [["Items", ["Pineapple Pudding","Medhu Vadai","Idli","Pongal","Sambar","Chutney (2 types)"]]] },
       { name: "Tiffin 4", groups: [["Items", ["Gulab Jamun","Medu Vadai","Idli","Semiya Sewai","Khichadi","Sambar","Chutney (2 types)"]]] },
@@ -33,7 +33,7 @@ window.VAAV_MENUS = {
     tamil: "மதிய உணவு",
     note: "The classic banana-leaf sappadu — from a simple rice, sambar and rasam plate to a full feast with payasam, poriyal and varuval. <strong>Pick the size that fits your day.</strong>",
     menus: [
-      { name: "Lunch 1", groups: [["Items", ["White Rice","Sambar","Rasam","Poriyal"]]] },
+      { name: "Lunch 1", label: "Lunch 1", occasions: [], groups: [["Items", ["White Rice","Sambar","Rasam","Poriyal"]]] },
       { name: "Lunch 2", groups: [["Items", ["Sweet Payasam","White Rice","Sambar","Rasam","Buttermilk","Koottu","Appalam","Pickle"]]] },
       { name: "Lunch 3", groups: [["Items", ["Semiya Payasam","White Rice","Sambar","Rasam","Buttermilk","Varuval","Vathal","Appalam","Pickle"]]] },
       { name: "Lunch 4", groups: [["Items", ["Kaju Katli","Masal Vadai","White Rice","Sambar","Vatha Kulambu","Rasam","Buttermilk","Poriyal","Kootu","Appalam","Pickle"]]] },
@@ -60,7 +60,7 @@ window.VAAV_MENUS = {
     tamil: "இரவு உணவு",
     note: "Grand evening spreads for weddings and receptions — sweets, starters, biryani and a full main course. <strong>Built to impress a hall full of guests.</strong>",
     menus: [
-      { name: "Dinner 1", groups: [["Sweet",["Gulab Jamun"]],["Starter",["Gobi 65"]],["Main Course",["Veg Biryani","Onion Raita","Phulka","Chana Masala","Bisi Bele Bath","Bagalabath","Potato Chips","Mango Pickle"]]] },
+      { name: "Dinner 1", label: "Dinner 1", occasions: [], groups: [["Sweet",["Gulab Jamun"]],["Starter",["Gobi 65"]],["Main Course",["Veg Biryani","Onion Raita","Phulka","Chana Masala","Bisi Bele Bath","Bagalabath","Potato Chips","Mango Pickle"]]] },
       { name: "Dinner 2", groups: [["Sweet",["Angoori Rasamalai"]],["Starter",["Baby Corn 65"]],["Main Course",["Poori","Chana Masala","Idiyappam","White Kuruma","Heart Idli","Kara Chutney","Tiffin Sambar","Jackfruit Biryani","Cucumber Onion Raita"]]] },
       { name: "Dinner 3", groups: [["Sweet",["Makkan Peda"]],["Starter",["Veg Cutlet"]],["Main Course",["Idli","Tiffin Sambar","Jackfruit Biryani","Onion Raita","Bisi Bele Bath","Bagalabath","Poriyal","Veg Varuval","Appalam","Mango Pickle"]]] },
       { name: "Dinner 4", groups: [["Sweet",["Kaju Katli"]],["Starter",["Veg Roll"]],["Main Course",["Mushroom Biryani","Onion Raita","White Rice","Sambar","Vatha Kuzhambu","Rasam","Poriyal","Veg Varuval","Appalam","Mango Pickle"]]] },
