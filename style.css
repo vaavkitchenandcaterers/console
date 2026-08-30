@@ -118,6 +118,8 @@ nav.scrolled{box-shadow:0 8px 26px -16px rgba(20,61,29,.45);background:rgba(247,
 
 /* ---------- 404 page ---------- */
 #notfound{padding:110px 0 100px;text-align:center}
+.nf-icon{width:64px;height:64px;border-radius:50%;background:var(--cream-deep);color:var(--green-deep);display:flex;align-items:center;justify-content:center;margin:0 auto 22px}
+.nf-icon svg{width:28px;height:28px}
 #notfound .eyebrow{display:block;margin-bottom:16px}
 #notfound h1{font-size:clamp(1.9rem,4.4vw,2.7rem);max-width:15ch;margin:0 auto 18px}
 #notfound .nf-lede{color:var(--muted);font-size:1.05rem;line-height:1.6;max-width:46ch;margin:0 auto 30px}

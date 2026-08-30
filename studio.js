@@ -97,7 +97,34 @@ window.Studio = (function () {
     }
     return { hash:hash, check:check, isUnlocked:isUnlocked, unlock:unlock, mount:mount, PASS_HASH:PASS_HASH };
   })();
-  S._boot = function () { S.Gate.mount(); };
+  S.Net = (function () {
+    let el;
+    function render () {
+      if (!el) return;
+      if (!navigator.onLine) {
+        el.hidden = false; el.className = 'net-banner offline';
+        el.innerHTML = '<span class="nb-dot" aria-hidden="true"></span>No internet connection — your work is saved on this device, but Print, Send and Backup need a connection.';
+        return;
+      }
+      const conn = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
+      if (conn && /2g/.test(conn.effectiveType || '')) {
+        el.hidden = false; el.className = 'net-banner slow';
+        el.innerHTML = '<span class="nb-dot" aria-hidden="true"></span>Slow connection detected — Print, Send and Backup may take longer than usual.';
+        return;
+      }
+      el.hidden = true;
+    }
+    function mount () {
+      el = document.getElementById('net-banner'); if (!el) return;
+      render();
+      window.addEventListener('online', render);
+      window.addEventListener('offline', render);
+      const conn = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
+      if (conn && conn.addEventListener) conn.addEventListener('change', render);
+    }
+    return { mount: mount, render: render };
+  })();
+  S._boot = function () { S.Net.mount(); S.Gate.mount(); };
   S.App = (function () {
     const state = { quote: null };
     function touch(){ state.quote.updatedAt = new Date().toISOString().slice(0,10); S.Store.set(S.KEYS.DRAFT, state.quote); if (S.Preview && S.Preview.render) S.Preview.render(state.quote); }
@@ -329,7 +356,7 @@ window.Studio = (function () {
     function mount(reopen){ if(reopen||arguments[0]===true){} }
     function openModal(){ const list=all().slice().reverse();
       const rows = list.length ? list.map(function(q){ return '<div class="q-row"><div><div class="d-strong">'+S.App.esc(q.number||'(draft)')+'</div><div class="d-meta">'+S.App.esc(q.customer.name||'—')+' · '+S.App.esc(q.customer.eventDate||'')+'</div></div>'
-        + '<div class="q-acts"><button type="button" data-open="'+q.id+'">Open</button><button type="button" data-dup="'+q.id+'">Duplicate</button><button type="button" data-del="'+q.id+'" aria-label="Delete">×</button></div></div>'; }).join('') : '<p class="d-meta">No saved quotes yet.</p>';
+        + '<div class="q-acts"><button type="button" data-open="'+q.id+'">Open</button><button type="button" data-dup="'+q.id+'">Duplicate</button><button type="button" data-del="'+q.id+'" aria-label="Delete">×</button></div></div>'; }).join('') : '<div class="state-empty"><span class="se-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3h6l4 4v13a1 1 0 0 1-1 1H8a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1Z"/><path d="M14 3v4h4"/></svg></span><h3>No saved quotes yet</h3><p>Quotes you save will show up here, ready to reopen, duplicate or send.</p></div>';
       S.modal('<h2>Saved quotes</h2><div class="q-list">'+rows+'</div>');
       const box=document.querySelector('.modal-box');
       box.querySelectorAll('[data-open]').forEach(function(b){ b.addEventListener('click',function(){ open(b.dataset.open); }); });
@@ -348,7 +375,12 @@ window.Studio = (function () {
     function mountBtns(){ document.getElementById('btn-backup').addEventListener('click', function(){
       S.modal('<h2>Backup</h2><p class="d-meta">Export your quotes + item library to a file, or import to restore / move to another device.</p><div class="q-acts"><button type="button" id="bk-exp">Export file</button><label class="bk-imp">Import file<input type="file" id="bk-imp" accept="application/json" hidden></label></div>');
       document.getElementById('bk-exp').addEventListener('click',function(){ const blob=new Blob([exportData()],{type:'application/json'}); const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='vaav-quotes-backup.json'; a.click(); URL.revokeObjectURL(a.href); });
-      document.getElementById('bk-imp').addEventListener('change',function(e){ const f=e.target.files[0]; if(!f)return; const r=new FileReader(); r.onload=function(){ if(importData(r.result)){ alert('Restored.'); S._closeModal&&S._closeModal(); } else alert('That file could not be read.'); }; r.readAsText(f); });
+      document.getElementById('bk-imp').addEventListener('change',function(e){ const f=e.target.files[0]; if(!f)return; const r=new FileReader();
+        r.onload=function(){ if(importData(r.result)){ alert('Restored.'); S._closeModal&&S._closeModal(); return; }
+          const box=document.querySelector('.modal-box'); if(!box)return; let err=box.querySelector('.state-error');
+          if(!err){ err=document.createElement('div'); err.className='state-error'; err.setAttribute('role','alert'); box.appendChild(err); }
+          err.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 9v4M12 17h.01"/><path d="M10.3 3.9 2.5 17a2 2 0 0 0 1.7 3h15.6a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0Z"/></svg><div><strong>Could not restore backup</strong>That file isn’t a valid VAAV backup — check you picked the right .json file.</div>'; };
+        r.onerror=function(){ e.target.value=''; }; r.readAsText(f); });
     }); }
     return { exportData:exportData, importData:importData, mount:mountBtns };
   })();
@@ -414,7 +446,7 @@ window.Studio = (function () {
           +'<div class="req-meta">'+esc(ev||'—')+'</div>'
           +'<div class="req-menus">'+esc(menuNames||(p.unparsed?'(couldn’t read menus — see text)':'—'))+(p.notes?' · “'+esc(p.notes.slice(0,40))+'”':'')+'</div></div>'
           +'<div class="req-acts"><button type="button" class="req-make" data-make="'+r.id+'">Make quote</button><button type="button" data-view="'+r.id+'">View text</button><button type="button" class="icon-btn" data-del="'+r.id+'" aria-label="Dismiss">×</button></div></div>';
-      }).join('') : '<p class="d-meta">No requests yet. Paste a customer’s WhatsApp enquiry above.</p>';
+      }).join('') : '<div class="state-empty"><span class="se-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v10Z"/></svg></span><h3>No requests yet</h3><p>Paste a customer’s WhatsApp enquiry above and it’ll show up here, ready to turn into a quote.</p></div>';
       S.modal('<h2>New requests</h2><div class="req-paste"><label class="vh" for="req-input">Paste enquiry</label>'
         +'<textarea id="req-input" rows="3" placeholder="Paste the customer’s WhatsApp enquiry here…"></textarea>'
         +'<button type="button" id="req-import" class="req-import">Import request</button><p id="req-msg" class="req-msg" role="status"></p></div>'

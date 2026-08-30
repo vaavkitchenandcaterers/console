@@ -124,3 +124,37 @@ button{cursor:pointer}
 .req-acts{display:flex;gap:6px;flex-shrink:0;flex-wrap:wrap}
 .req-acts button{min-height:34px;padding:5px 10px;border:1px solid var(--line);background:#fff;border-radius:6px;font-size:.8rem}
 .req-acts .req-make{background:var(--green-deep);color:#fff;border-color:var(--green-deep);font-weight:700}
+
+/* ---------- Connectivity banner (offline / slow) ---------- */
+.net-banner{display:flex;align-items:center;justify-content:center;gap:8px;padding:9px 16px;font-family:'Catamaran',sans-serif;font-weight:700;font-size:.82rem;text-align:center;position:sticky;top:0;z-index:25}
+.net-banner .nb-dot{width:7px;height:7px;border-radius:50%;background:currentColor;flex-shrink:0}
+.net-banner.offline{background:#f6e0dc;color:#7a2416}
+.net-banner.slow{background:#fff6d6;color:#6b5900}
+
+/* ---------- Loading (spinner / skeleton) ---------- */
+.spinner{width:16px;height:16px;border-radius:50%;border:2px solid rgba(20,61,29,.15);border-top-color:var(--green-deep);animation:spin .7s linear infinite;flex-shrink:0}
+@keyframes spin{to{transform:rotate(360deg)}}
+button.is-loading{position:relative;color:transparent !important;pointer-events:none}
+button.is-loading::after{content:'';position:absolute;inset:0;margin:auto;width:16px;height:16px;border-radius:50%;
+  border:2px solid rgba(20,61,29,.2);border-top-color:var(--green-deep);animation:spin .7s linear infinite}
+button.primary.is-loading::after{border-color:rgba(255,255,255,.4);border-top-color:#fff}
+.state-loading{display:flex;flex-direction:column;align-items:center;gap:10px;padding:34px 20px;color:var(--muted);font-size:.88rem}
+.skel{background:linear-gradient(90deg,var(--cream-deep) 25%,#f5efdf 37%,var(--cream-deep) 63%);background-size:400% 100%;
+  animation:skel 1.4s ease infinite;border-radius:6px}
+@keyframes skel{0%{background-position:100% 0}100%{background-position:0 0}}
+.skel-row{height:14px;width:100%;margin-bottom:8px}
+.skel-row:last-child{width:60%;margin-bottom:0}
+
+/* ---------- Empty state ---------- */
+.state-empty{display:flex;flex-direction:column;align-items:center;text-align:center;gap:6px;padding:34px 20px;color:var(--muted)}
+.state-empty .se-icon{width:44px;height:44px;border-radius:50%;background:var(--cream-deep);color:var(--green-deep);
+  display:flex;align-items:center;justify-content:center;margin-bottom:6px}
+.state-empty .se-icon svg{width:20px;height:20px}
+.state-empty h3{font-family:'Cormorant',serif;font-size:1.1rem;color:var(--green-ink);font-weight:700}
+.state-empty p{font-size:.85rem;max-width:32ch;line-height:1.5}
+
+/* ---------- Error state ---------- */
+.state-error{display:flex;gap:10px;align-items:flex-start;background:#f6e0dc;border:1px solid #e3b6ac;border-radius:10px;
+  padding:12px 14px;color:#7a2416;font-size:.86rem;line-height:1.45}
+.state-error svg{width:18px;height:18px;flex-shrink:0;margin-top:1px;color:#b3331f}
+.state-error strong{display:block;margin-bottom:2px}
