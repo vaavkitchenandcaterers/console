@@ -55,7 +55,7 @@ Pure refactor. The parser is currently trapped in an IIFE inside `studio.js` wit
 - Consumes: nothing.
 - Produces: `parseRequest(text: string, menus: object): { customer: {name, eventType, eventDate, guests}, menus: Array<{name, cat, groups}>, notes: string, unparsed: boolean }`. `menus` is the `window.VAAV_MENUS` shape: `{ [catKey]: { label: string, menus: Array<{name, groups}> } }`. Task 2 changes this function's matching rules; Tasks 3–6 depend on it being importable.
 
-- [ ] **Step 1: Write the characterization tests**
+- [x] **Step 1: Write the characterization tests**
 
 Create `request-parse.test.js`:
 
@@ -168,7 +168,7 @@ describe('parseRequest — current behaviour', () => {
 });
 ```
 
-- [ ] **Step 2: Run the tests to verify they fail**
+- [x] **Step 2: Run the tests to verify they fail**
 
 ```bash
 npx vitest run request-parse.test.js
@@ -176,7 +176,7 @@ npx vitest run request-parse.test.js
 
 Expected: FAIL — the whole file errors on `Failed to load ./request-parse.js`, because the module does not exist yet.
 
-- [ ] **Step 3: Create the module**
+- [x] **Step 3: Create the module**
 
 Create `request-parse.js`. This is the body lifted out of `studio.js`'s `S.Requests` IIFE, with two changes and no others: `menus` is a parameter instead of `window.VAAV_MENUS`, and it guards against `menus` being undefined.
 
@@ -252,7 +252,7 @@ export function parseRequest(text, menus) {
 }
 ```
 
-- [ ] **Step 4: Run the tests to verify they pass**
+- [x] **Step 4: Run the tests to verify they pass**
 
 ```bash
 npx vitest run request-parse.test.js
@@ -260,7 +260,7 @@ npx vitest run request-parse.test.js
 
 Expected: PASS — 13 tests. If the "unknown menu name" or "case-insensitively" test fails, you changed behaviour while moving the code; restore it rather than adjusting the test.
 
-- [ ] **Step 5: Wire it into the Studio**
+- [x] **Step 5: Wire it into the Studio**
 
 In `studio.js`, add as the **first line of the file**, above the `window.Studio = (function () {` line:
 
@@ -290,7 +290,7 @@ to:
 
 Leave line 50 (`<script src="/menu-data.js"></script>`) as a classic script. A module script is deferred, so it runs after the document is parsed but **before** `DOMContentLoaded` fires — `studio.js`'s boot listener on line 4 still fires, and `menu-data.js` has already run by then. This is the same arrangement `script.js` already uses on the public pages.
 
-- [ ] **Step 6: Verify the Studio still works**
+- [x] **Step 6: Verify the Studio still works**
 
 Start the preview (`vaav` launch config, port 8765) and open `http://localhost:8765/studio/`.
 
@@ -300,7 +300,7 @@ Start the preview (`vaav` launch config, port 8765) and open `http://localhost:8
 4. **Make quote** → the builder loads with both menus and 250 guests.
 5. Check `read_console_messages` for errors — a bare `import` in a non-module script throws a syntax error, so a clean console is the proof the `type="module"` change landed.
 
-- [ ] **Step 7: Commit**
+- [x] **Step 7: Commit**
 
 ```bash
 git add request-parse.js request-parse.test.js studio.js studio/index.html
@@ -321,7 +321,7 @@ The parser learns the new form **before** anything emits it, so the two can neve
 - Consumes: `parseRequest(text, menus)` from Task 1.
 - Produces: same signature. New rule — when the captured header text contains ` — ` (space, em dash U+2014, space), the segment **after the last** one is treated as the internal menu name and matched against `menu-data.js`; the whole string is tried first so a label that happens to contain an em dash cannot break an exact match. `menus[].name` in the result is always the resolved internal name when a set is found, so `R.toQuote()` keeps re-resolving correctly.
 
-- [ ] **Step 1: Write the failing tests**
+- [x] **Step 1: Write the failing tests**
 
 Append to `request-parse.test.js`:
 
@@ -371,7 +371,7 @@ describe('parseRequest — labelled headers', () => {
 
 The last two matter: a hyphen is not an em dash, and an unmatched header must keep behaving exactly as it did before Task 1 — falling back to the dishes typed in the message.
 
-- [ ] **Step 2: Run the tests to verify they fail**
+- [x] **Step 2: Run the tests to verify they fail**
 
 ```bash
 npx vitest run request-parse.test.js -t "labelled headers"
@@ -379,7 +379,7 @@ npx vitest run request-parse.test.js -t "labelled headers"
 
 Expected: FAIL — the first test reports `expected 'Morning tiffin spread — Tiffin 1' to be 'Tiffin 1'`, and the third fails the same way. The "still resolves an unlabelled header", "prefers a whole-string match", "keeps the whole header" and "hyphen" tests already pass — they describe behaviour Task 1 preserved.
 
-- [ ] **Step 3: Implement**
+- [x] **Step 3: Implement**
 
 In `request-parse.js`, replace the `findSet` function with a resolver that tries the whole string first, then the tail:
 
@@ -435,7 +435,7 @@ with:
 
 That second change is what makes `R.toQuote()` keep working: it re-resolves each parsed menu by name against `window.VAAV_MENUS`, so the name it receives has to be the internal one, not the labelled display string.
 
-- [ ] **Step 4: Run the full suite**
+- [x] **Step 4: Run the full suite**
 
 ```bash
 npm test
@@ -443,7 +443,7 @@ npm test
 
 Expected: PASS — all `request-parse.test.js` tests including the new describe, plus the 37 pre-existing `shortlist.test.js` tests. Pay attention to the Task 1 characterization test "matches a menu name case-insensitively": it asserts `r.menus[0].name` is `'tiffin 1'` (the raw lowercase input). **That test now legitimately fails** — the resolver returns the canonical `'Tiffin 1'`. Update that one assertion to `'Tiffin 1'` and add a line to its title: `it('normalises a case-insensitive match to the canonical name', …)`. This is the one place in this plan where changing a characterization test is correct, because Step 3 deliberately changed that behaviour for the better. Do not change any other test to make things pass.
 
-- [ ] **Step 5: Verify in the Studio**
+- [x] **Step 5: Verify in the Studio**
 
 At `http://localhost:8765/studio/` → Requests → paste each of these and confirm the card resolves the dishes from `menu-data.js` (not from the pasted text) in the first two cases:
 
@@ -453,7 +453,7 @@ At `http://localhost:8765/studio/` → Requests → paste each of these and conf
 
    It will **not** show "needs review". That badge renders only when `parsed.unparsed` is true, and `unparsed` means *nothing at all* was recognised — no header and no customer field. A header with an unknown menu name parses fine. That is pre-existing behaviour, correct, and outside this task; the gap it leaves — that staff get no signal when a menu failed to resolve — is a real finding for Plan 3's "parse-result preview" task.
 
-- [ ] **Step 6: Commit**
+- [x] **Step 6: Commit**
 
 ```bash
 git add request-parse.js request-parse.test.js
@@ -481,7 +481,7 @@ The label becomes a real field, travels with a shortlisted set, and appears in t
   - `buildMessage()` header becomes `*1. <label> — <name>* (<cat>)` when a label is present and differs from the name; otherwise unchanged.
   - Occasion vocabulary, fixed and closed: `wedding`, `reception`, `seemantham`, `housewarming`, `puja`, `birthday`, `corporate`, `temple`. Task 6 renders exactly these.
 
-- [ ] **Step 1: Write the failing tests**
+- [x] **Step 1: Write the failing tests**
 
 Append to `shortlist.test.js`:
 
@@ -592,7 +592,7 @@ describe('menu-data shape', () => {
 
 The last two tests are deliberately tolerant of missing fields — Task 5 tightens them.
 
-- [ ] **Step 2: Run the tests to verify they fail**
+- [x] **Step 2: Run the tests to verify they fail**
 
 ```bash
 npx vitest run
@@ -600,7 +600,7 @@ npx vitest run
 
 Expected: FAIL — the `labels` describe fails on `expected undefined to be 'Morning tiffin spread'` (the label is dropped by `add()`) and on the header assertion. `menu-data.test.js` should **pass** immediately except for the separator test if any name already contains an em dash — if that happens, stop and report, because it breaks the whole scheme.
 
-- [ ] **Step 3: Persist and emit the label**
+- [x] **Step 3: Persist and emit the label**
 
 In `shortlist.js`, in `add()`, change:
 
@@ -627,7 +627,7 @@ to:
         const lines = ["*" + (i + 1) + ". " + head + "* (" + it.cat + ")"];
 ```
 
-- [ ] **Step 4: Pass the label in from the menu card**
+- [x] **Step 4: Pass the label in from the menu card**
 
 In `script.js`, in the menu-card add handler, change:
 
@@ -641,7 +641,7 @@ to:
           S.add({ id: addBtn.dataset.id, cat: data.label, name: menu.name, label: menu.label || '', groups: menu.groups });
 ```
 
-- [ ] **Step 5: Add three worked examples to the data**
+- [x] **Step 5: Add three worked examples to the data**
 
 In `menu-data.js`, add `label` and `occasions` to the **first menu of each category only** — enough to prove the shape end to end and to give whoever does Task 5 a pattern to copy. Do not guess at the other 63.
 
@@ -655,7 +655,7 @@ Then do the same for the first `lunch` menu and the first `dinner` menu, keeping
 
 Leave those two new labels to whoever owns Task 5 if you are unsure what the sets are for; if so, use the menu's own name as the label (`label: "Lunch 1"`) and an empty `occasions: []`, and say so in your report. A placeholder that is honest is fine here; an invented occasion is not.
 
-- [ ] **Step 6: Run the full suite**
+- [x] **Step 6: Run the full suite**
 
 ```bash
 npm test
@@ -663,7 +663,7 @@ npm test
 
 Expected: PASS — `shortlist.test.js` (37 + 6 new), `request-parse.test.js`, `menu-data.test.js`.
 
-- [ ] **Step 7: Verify the round trip**
+- [x] **Step 7: Verify the round trip**
 
 This is the point of the whole milestone, so do it properly. At `http://localhost:8765/menu/`:
 
@@ -675,7 +675,7 @@ This is the point of the whole milestone, so do it properly. At `http://localhos
 
 If step 4 flags "needs review", Task 2 and Task 3 disagree about the separator — check that both use `—` with a single space either side.
 
-- [ ] **Step 8: Commit**
+- [x] **Step 8: Commit**
 
 ```bash
 git add menu-data.js menu-data.test.js shortlist.js shortlist.test.js script.js
@@ -696,7 +696,7 @@ The customer-facing change. Everything falls back to the internal name, so sets 
 - Consumes: `menu.label` from Task 3.
 - Produces: `displayName(menu)` in the menu-explorer IIFE — the single place that decides what a set is called on screen.
 
-- [ ] **Step 1: Add the display-name helper**
+- [x] **Step 1: Add the display-name helper**
 
 In the menu-explorer IIFE in `script.js`, directly above `syncAdd()`, add:
 
@@ -706,7 +706,7 @@ In the menu-explorer IIFE in `script.js`, directly above `syncAdd()`, add:
   function displayName(m) { return (m && m.label) ? m.label : (m ? m.name : ''); }
 ```
 
-- [ ] **Step 2: Relabel the picker pills**
+- [x] **Step 2: Relabel the picker pills**
 
 In `render()`, replace these three lines:
 
@@ -729,7 +729,7 @@ with:
 
 The accessible name now carries the occasion and the size — the two things being chosen between — instead of a position in a list.
 
-- [ ] **Step 3: Relabel the card**
+- [x] **Step 3: Relabel the card**
 
 In `render()`, replace:
 
@@ -769,7 +769,7 @@ with:
     html += '<button type="button" class="mc-add' + (inList ? ' added' : '') + '" data-id="' + slId + '" data-label="' + displayName(menu).replace(/"/g, '&quot;') + '" aria-pressed="' + (inList ? 'true' : 'false') + '">' +
 ```
 
-- [ ] **Step 4: Relabel the drawer**
+- [x] **Step 4: Relabel the drawer**
 
 In the drawer-content IIFE's `render()`, replace:
 
@@ -807,7 +807,7 @@ with:
     const names = st.items.map(function (it) { return esc(it.label || it.name); }).join(', ');
 ```
 
-- [ ] **Step 5: Restyle the pill**
+- [x] **Step 5: Restyle the pill**
 
 In `style.css`, replace the `.mp-n` and `.mp-sig` rules (lines 216–217) and the `.mp.active .mp-n` rule (line 221) with:
 
@@ -821,7 +821,7 @@ and widen the pill — in the `.mp` rule change `max-width:200px` to `max-width:
 
 Delete the two now-unused rules rather than leaving them: `.mp-n` and `.mp.active .mp-n` have no remaining markup.
 
-- [ ] **Step 6: Verify in the preview**
+- [x] **Step 6: Verify in the preview**
 
 At `http://localhost:8765/menu/`:
 
@@ -835,7 +835,7 @@ At `http://localhost:8765/menu/`:
 
 Two things learned running the earlier tasks, worth knowing here: `button.mc-add` is a **toggle**, so a second dispatched click removes the set again; and the Studio's request-dismiss × goes through `window.confirm()`, which returns false in a non-interactive session.
 
-- [ ] **Step 7: Commit**
+- [x] **Step 7: Commit**
 
 ```bash
 git add script.js style.css
