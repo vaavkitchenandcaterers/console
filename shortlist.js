@@ -51,6 +51,8 @@ export function createShortlist(storage) {
     },
     clear: function () { state = EMPTY(); write(state); emit(); },
     count: function () { return state.items.length; },
+    isFull: function () { return state.items.length >= CAP; },
+    isPersistent: function () { write(state); return !usingMem; },
     setNotes: function (str) { state.notes = str || ""; touch(state); write(state); },
     setEventField: function (key, val) {
       if (!(key in state.event)) return;

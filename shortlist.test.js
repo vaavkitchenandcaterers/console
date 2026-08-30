@@ -233,6 +233,48 @@ describe('sent state', () => {
   });
 });
 
+describe('capacity and persistence', () => {
+  function fill(s, n) {
+    for (let i = 0; i < n; i++) {
+      s.add({ id: 'x:' + i, cat: 'Lunch', name: 'Set ' + i, groups: [['Items', ['Rice']]] });
+    }
+  }
+
+  it('isFull() is false while there is room', () => {
+    const s = createShortlist(fakeStorage());
+    fill(s, 19);
+    expect(s.isFull()).toBe(false);
+  });
+
+  it('isFull() is true at the cap', () => {
+    const s = createShortlist(fakeStorage());
+    fill(s, s.CAP);
+    expect(s.isFull()).toBe(true);
+  });
+
+  it('add() is refused at the cap and count stays at CAP', () => {
+    const s = createShortlist(fakeStorage());
+    fill(s, s.CAP);
+    expect(s.add(menuA)).toBe(false);
+    expect(s.count()).toBe(s.CAP);
+  });
+
+  it('isPersistent() is true when storage accepts writes', () => {
+    expect(createShortlist(fakeStorage()).isPersistent()).toBe(true);
+  });
+
+  it('isPersistent() is false when storage refuses writes', () => {
+    expect(createShortlist(throwingStorage()).isPersistent()).toBe(false);
+  });
+
+  it('items still work after storage is refused', () => {
+    const s = createShortlist(throwingStorage());
+    expect(s.isPersistent()).toBe(false);
+    expect(s.add(menuA)).toBe(true);
+    expect(s.count()).toBe(1);
+  });
+});
+
 describe('formatEventDate', () => {
   it('formats a valid YYYY-MM-DD date', () => {
     expect(formatEventDate('2026-08-12')).toBe('12 Aug 2026');
