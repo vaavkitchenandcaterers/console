@@ -449,7 +449,9 @@ At `http://localhost:8765/studio/` → Requests → paste each of these and conf
 
 1. `*1. Tiffin 1* (Tiffin)` — old format.
 2. `*1. Morning tiffin spread — Tiffin 1* (Tiffin)` — new format.
-3. `*1. Nonsense name* (Tiffin)` followed by `Idli, Vadai` — unmatched, keeps the typed dishes and flags "needs review".
+3. `*1. Nonsense name* (Tiffin)` followed by `Idli, Vadai` — unmatched: the name is kept as typed and the dishes fall back to the ones in the message.
+
+   It will **not** show "needs review". That badge renders only when `parsed.unparsed` is true, and `unparsed` means *nothing at all* was recognised — no header and no customer field. A header with an unknown menu name parses fine. That is pre-existing behaviour, correct, and outside this task; the gap it leaves — that staff get no signal when a menu failed to resolve — is a real finding for Plan 3's "parse-result preview" task.
 
 - [ ] **Step 6: Commit**
 
