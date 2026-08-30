@@ -548,6 +548,11 @@ body.vaav-sl-open .vaav-sl-pill,body.vaav-sl-open .wa-float,body.vaav-sl-open .m
 .vaav-sl-edit{display:block;width:100%;min-height:44px;margin-top:10px;background:none;border:1.5px solid var(--border);
   border-radius:12px;font-family:'Catamaran',sans-serif;font-weight:700;font-size:.95rem;color:var(--muted);cursor:pointer}
 .vaav-sl-edit:hover,.vaav-sl-edit:focus-visible{color:var(--green-deep);border-color:var(--green-deep)}
+.vaav-sl-row{display:flex;gap:10px;margin-top:10px}
+.vaav-sl-row .vaav-sl-edit,.vaav-sl-row .vaav-sl-copy{flex:1;margin-top:0}
+.vaav-sl-copy{min-height:44px;background:none;border:1.5px solid var(--border);border-radius:12px;
+  font-family:'Catamaran',sans-serif;font-weight:700;font-size:.95rem;color:var(--muted);cursor:pointer}
+.vaav-sl-copy:hover,.vaav-sl-copy:focus-visible{color:var(--green-deep);border-color:var(--green-deep)}
 .mc-add{margin-top:10px;width:100%;display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:48px;
   background:var(--yellow);border:1.5px solid var(--yellow);color:var(--green-ink);
   font-family:'Catamaran',sans-serif;font-weight:800;font-size:1rem;border-radius:10px;padding:12px 14px;cursor:pointer;transition:background .15s,color .15s}

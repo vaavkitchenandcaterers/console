@@ -483,7 +483,7 @@ const VAAV_REVIEWS = [
   function renderSent() {
     const st = S.getState();
     const names = st.items.map(function (it) { return esc(it.name); }).join(', ');
-    const when = st.event && st.event.date ? ' · ' + esc(st.event.date) : '';
+    const when = st.event && st.event.date ? ' · ' + esc(formatEventDate(st.event.date)) : '';
     const guests = st.event && st.event.guests ? ' · ' + esc(st.event.guests) + ' guests' : '';
     body.innerHTML =
       '<div class="vaav-sl-sent" role="status">' +
@@ -495,7 +495,8 @@ const VAAV_REVIEWS = [
         '<p class="vaav-sl-sent-reply">' + replyLine() + '</p>' +
       '</div>' +
       '<a class="vaav-sl-send vaav-sl-again" href="#" target="_blank" rel="noopener noreferrer">Send again on WhatsApp</a>' +
-      '<button type="button" class="vaav-sl-edit">Edit my feast</button>' +
+      '<div class="vaav-sl-row"><button type="button" class="vaav-sl-copy">Copy message</button>' +
+      '<button type="button" class="vaav-sl-edit">Edit my feast</button></div>' +
       '<p class="vaav-sl-help">Didn’t open? Call <a href="tel:+919655356333">+91 96553 56333</a>.</p>';
 
     const again = body.querySelector('.vaav-sl-again');
@@ -504,6 +505,24 @@ const VAAV_REVIEWS = [
     again.addEventListener('mousedown', refresh);
     again.addEventListener('touchstart', refresh, { passive: true });
     again.addEventListener('focus', refresh);
+
+    const copyBtn = body.querySelector('.vaav-sl-copy');
+    copyBtn.addEventListener('click', function () {
+      const text = S.buildMessage();
+      const done = function () { copyBtn.textContent = 'Copied ✓'; };
+      const failed = function () {
+        const ta = document.createElement('textarea');
+        ta.value = text; ta.setAttribute('readonly', '');
+        ta.style.position = 'fixed'; ta.style.opacity = '0';
+        document.body.appendChild(ta); ta.select();
+        try { document.execCommand('copy'); done(); }
+        catch (e) { copyBtn.textContent = 'Press and hold to copy'; }
+        document.body.removeChild(ta);
+      };
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(done, failed);
+      } else { failed(); }
+    });
 
     body.querySelector('.vaav-sl-edit').addEventListener('click', function () {
       S.setNotes(S.getState().notes); // any mutator clears sentAt — see Task 1
