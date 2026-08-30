@@ -667,8 +667,8 @@ Expected: PASS — `shortlist.test.js` (37 + 6 new), `request-parse.test.js`, `m
 
 This is the point of the whole milestone, so do it properly. At `http://localhost:8765/menu/`:
 
-1. Add the first Tiffin set to the feast, open the drawer, and copy the message with **Copy message**.
-2. Confirm the header line reads `*1. Simple morning tiffin — Tiffin 1* (Tiffin)`.
+1. Add the first Tiffin set to the feast and open the drawer.
+2. Read the message out of the send control's `href` — do **not** click it, that navigates to an external origin. The "Copy message" button exists only in the *sent* panel, not in the form. In the console: `decodeURIComponent(document.querySelector('.vaav-sl-send').href.split('text=')[1])`. Confirm the header line reads `*1. Simple morning tiffin — Tiffin 1* (Tiffin)`.
 3. Go to `http://localhost:8765/studio/`, open Requests, paste it, Import.
 4. The card must show the menu resolved with its dishes from `menu-data.js`, **not** flagged "needs review".
 5. **Make quote** → the builder must load the menu with its full dish list.
@@ -831,7 +831,9 @@ At `http://localhost:8765/menu/`:
 4. Add it; the drawer lists it by its label; the sent panel does too.
 5. Pills do not overflow their row and long labels ellipsise rather than wrapping — check at 375px width with `resize_window`.
 6. Arrow-key navigation across the pill tablist still works and the selected pill still scrolls into view.
-7. Copy the message and confirm the header still carries `Simple morning tiffin — Tiffin 1`.
+7. Read the send control's `href` (as in Task 3 Step 7 — the Copy button is in the sent panel, not the form) and confirm the header still carries `Simple morning tiffin — Tiffin 1`.
+
+Two things learned running the earlier tasks, worth knowing here: `button.mc-add` is a **toggle**, so a second dispatched click removes the set again; and the Studio's request-dismiss × goes through `window.confirm()`, which returns false in a non-interactive session.
 
 - [ ] **Step 7: Commit**
 
