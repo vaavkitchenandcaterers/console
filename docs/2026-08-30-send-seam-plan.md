@@ -14,7 +14,7 @@
 - **No new external origins.** Every page ships a strict CSP in its `<head>` (`script-src 'self'`, `connect-src 'self'`). Do not add CDN scripts, fonts, or fetch targets. There are currently **zero** `fetch()` calls in the codebase and this plan adds none.
 - **No fake async.** Every operation in this plan is synchronous. Do not add a spinner, a delay, or a loading state to justify one. (The `.spinner` component in `studio.css` stays deliberately unwired.)
 - **Chrome is duplicated across 5 files.** `index.html`, `about/index.html`, `services/index.html`, `menu/index.html`, `contact/index.html` each carry their own copy of the topbar, nav and footer. This plan does not touch chrome — if a task tempts you to, stop and re-read the task.
-- **Design tokens are duplicated by design** between `style.css` (public site) and `studio.css` (Studio). This plan only touches `style.css`. Use existing tokens only: `--green-deep`, `--green-ink`, `--cream`, `--cream-deep`, `--kumkum`, `--muted`, `--border`, `--wa`, `--wa-deep`, `--gold-text`, `--ink`, `--white`.
+- **Design tokens are duplicated by design** between `style.css` (public site) and `studio.css` (Studio). This plan only touches `style.css`. Use existing tokens only: `--green-deep`, `--green-ink`, `--cream`, `--cream-deep`, `--kumkum`, `--muted`, `--border`, `--wa`, `--wa-deep`, `--gold-text`, `--ink`, `--white`, `--yellow`, `--yellow-deep`. (`--yellow-deep` is the global focus-ring colour at `style.css:42`; any new `:focus-visible` rule must match it.)
 - **The WhatsApp message format is a data contract.** `buildMessage()` in `shortlist.js` produces text that `S.Requests.parse()` in `studio.js` reads back with regexes. **No task in this plan may change the output of `buildMessage()`.** (That change is Plan 2, and it has to move both sides together.)
 - **Accessibility floor:** every interactive element ≥44×44px, visible focus preserved (`:focus-visible` is global), no removal of existing ARIA. New status regions use `role="status"`.
 - **Commit style:** Conventional Commits (`feat:`, `fix:`, `test:`, `refactor:`), matching the existing log. One commit per task.
@@ -512,11 +512,29 @@ Append to `style.css`:
 .vaav-sl-copy:hover,.vaav-sl-copy:focus-visible{color:var(--green-deep);border-color:var(--green-deep)}
 ```
 
-- [ ] **Step 4: Verify in the preview**
+- [ ] **Step 4: Fix the date format in the sent panel**
 
-At `http://localhost:8765/menu/`: add a menu, send, then click **Copy message**. The label must change to "Copied ✓", and pasting into any text field must reproduce the exact WhatsApp message including the `*1. Tiffin 1* (Tiffin)` header lines. Then check both buttons are ≥44px tall and reachable by keyboard in order.
+Found during Task 3 review: the panel prints the raw `<input type="date">` value (`2026-12-05`) while the message the customer actually sent says `5 Dec 2026`. Two renderings of the same fact, and the one on screen is the machine's. `formatEventDate` is already imported at `script.js:1`.
 
-- [ ] **Step 5: Commit**
+In `renderSent()`, change:
+
+```js
+    const when = st.event && st.event.date ? ' · ' + esc(st.event.date) : '';
+```
+
+to:
+
+```js
+    const when = st.event && st.event.date ? ' · ' + esc(formatEventDate(st.event.date)) : '';
+```
+
+Leave the date `<input>`'s `value` in `render()` alone — that one must stay ISO or the field will not populate.
+
+- [ ] **Step 5: Verify in the preview**
+
+At `http://localhost:8765/menu/`: add a menu, set an event date, send, and confirm the panel shows `5 Dec 2026` — the same form the WhatsApp message uses. Then click **Copy message**. The label must change to "Copied ✓", and pasting into any text field must reproduce the exact WhatsApp message including the `*1. Tiffin 1* (Tiffin)` header lines. Then check both buttons are ≥44px tall and reachable by keyboard in order.
+
+- [ ] **Step 6: Commit**
 
 ```bash
 git add script.js style.css
