@@ -69,8 +69,8 @@ describe('parseRequest — current behaviour', () => {
     expect(r.menus[0].groups).toEqual([['Starters', ['Soup', 'Salad']], ['Items', ['Rice', 'Kootu']]]);
   });
 
-  it('matches a menu name case-insensitively', () => {
-    expect(parseRequest('*1. tiffin 1* (Tiffin)', MENUS).menus[0].name).toBe('tiffin 1');
+  it('normalises a case-insensitive match to the canonical name', () => {
+    expect(parseRequest('*1. tiffin 1* (Tiffin)', MENUS).menus[0].name).toBe('Tiffin 1');
   });
 
   it('accepts hyphen and asterisk bullets for event details', () => {
@@ -102,5 +102,47 @@ describe('parseRequest — current behaviour', () => {
 
   it('survives a missing menus object', () => {
     expect(() => parseRequest(REAL_MESSAGE, undefined)).not.toThrow();
+  });
+});
+
+describe('parseRequest — labelled headers', () => {
+  it('resolves a labelled header to the internal menu', () => {
+    const r = parseRequest('*1. Morning tiffin spread — Tiffin 1* (Tiffin)', MENUS);
+    expect(r.menus[0].name).toBe('Tiffin 1');
+    expect(r.menus[0].cat).toBe('Tiffin');
+    expect(r.menus[0].groups).toEqual([['Items', ['Idli', 'Sambar']]]);
+  });
+
+  it('still resolves an unlabelled header', () => {
+    const r = parseRequest('*1. Tiffin 1* (Tiffin)', MENUS);
+    expect(r.menus[0].name).toBe('Tiffin 1');
+    expect(r.menus[0].groups).toEqual([['Items', ['Idli', 'Sambar']]]);
+  });
+
+  it('uses the last segment when the label itself contains an em dash', () => {
+    const r = parseRequest('*1. Wedding — grand — Lunch 1* (Lunch)', MENUS);
+    expect(r.menus[0].name).toBe('Lunch 1');
+  });
+
+  it('prefers a whole-string match over splitting', () => {
+    const menus = { lunch: { label: 'Lunch', menus: [
+      { name: 'Sadya — full leaf', groups: [['Items', ['Rice']]] }
+    ] } };
+    const r = parseRequest('*1. Sadya — full leaf* (Lunch)', menus);
+    expect(r.menus[0].name).toBe('Sadya — full leaf');
+    expect(r.menus[0].groups).toEqual([['Items', ['Rice']]]);
+  });
+
+  it('keeps the whole header as the name when nothing matches', () => {
+    const r = parseRequest('*1. Something custom — made up* (Lunch)\nRice, Kootu', MENUS);
+    expect(r.menus[0].name).toBe('Something custom — made up');
+    expect(r.menus[0].cat).toBe('Lunch');
+    expect(r.menus[0].groups).toEqual([['Items', ['Rice', 'Kootu']]]);
+  });
+
+  it('is not confused by a hyphen', () => {
+    const r = parseRequest('*1. Tiffin 1 - extra sweet* (Tiffin)\nIdli', MENUS);
+    expect(r.menus[0].name).toBe('Tiffin 1 - extra sweet');
+    expect(r.menus[0].groups).toEqual([['Items', ['Idli']]]);
   });
 });

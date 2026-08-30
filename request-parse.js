@@ -4,16 +4,28 @@
 
 const MENU_HEADER = /^\*\s*\d+\.\s*(.+?)\s*\*\s*\((.+?)\)\s*$/;
 
+const LABEL_SEP = ' — '; // space em-dash space, as emitted by buildMessage()
+
 function findSet(name, menus) {
   const M = menus || {};
-  name = (name || '').trim().toLowerCase();
+  const want = (name || '').trim().toLowerCase();
   let res = null;
   Object.keys(M).forEach(function (cat) {
     (M[cat].menus || []).forEach(function (mn) {
-      if (mn.name.toLowerCase() === name) res = { cat: cat, label: M[cat].label, groups: mn.groups };
+      if (mn.name.toLowerCase() === want) res = { cat: cat, label: M[cat].label, groups: mn.groups, name: mn.name };
     });
   });
   return res;
+}
+
+// A header may read "Occasion label — Tiffin 1". Try the whole string first, so a
+// menu whose own name contains an em dash still matches; then the last segment.
+function resolveSet(raw, menus) {
+  const whole = findSet(raw, menus);
+  if (whole) return whole;
+  const idx = (raw || '').lastIndexOf(LABEL_SEP);
+  if (idx === -1) return null;
+  return findSet(raw.slice(idx + LABEL_SEP.length), menus);
 }
 
 export function parseRequest(text, menus) {
@@ -29,7 +41,7 @@ export function parseRequest(text, menus) {
     const hm = line.match(MENU_HEADER);
     if (hm) {
       const nm = hm[1], catRaw = hm[2];
-      const set = findSet(nm, menus);
+      const set = resolveSet(nm, menus);
       let groups;
       if (set) {
         groups = set.groups.map(function (g) { return [g[0], g[1].slice()]; });
@@ -44,7 +56,7 @@ export function parseRequest(text, menus) {
         }
         if (!groups.length) groups = [['Items', []]];
       }
-      out.push({ name: nm, cat: set ? set.label : catRaw, groups: groups });
+      out.push({ name: set ? set.name : nm, cat: set ? set.label : catRaw, groups: groups });
       continue;
     }
 
