@@ -553,6 +553,13 @@ body.vaav-sl-open .vaav-sl-pill,body.vaav-sl-open .wa-float,body.vaav-sl-open .m
 .vaav-sl-copy{min-height:44px;background:none;border:1.5px solid var(--border);border-radius:12px;
   font-family:'Catamaran',sans-serif;font-weight:700;font-size:.95rem;color:var(--muted);cursor:pointer}
 .vaav-sl-copy:hover,.vaav-sl-copy:focus-visible{color:var(--green-deep);border-color:var(--green-deep)}
+.vaav-sl-confirm{margin-top:14px;padding:14px;border:1.5px solid var(--kumkum);border-radius:12px;background:var(--cream-deep)}
+.vaav-sl-confirm p{font-size:.94rem;margin-bottom:10px;color:var(--ink)}
+.vaav-sl-confirm-acts{display:flex;gap:10px}
+.vaav-sl-confirm-acts button{flex:1;min-height:44px;border-radius:10px;font-family:'Catamaran',sans-serif;
+  font-weight:700;font-size:.92rem;cursor:pointer}
+.vaav-sl-confirm-no{background:var(--white);border:1.5px solid var(--border);color:var(--ink)}
+.vaav-sl-confirm-yes{background:var(--kumkum);border:1.5px solid var(--kumkum);color:var(--white)}
 .mc-add{margin-top:10px;width:100%;display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:48px;
   background:var(--yellow);border:1.5px solid var(--yellow);color:var(--green-ink);
   font-family:'Catamaran',sans-serif;font-weight:800;font-size:1rem;border-radius:10px;padding:12px 14px;cursor:pointer;transition:background .15s,color .15s}

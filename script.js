@@ -568,7 +568,24 @@ const VAAV_REVIEWS = [
     body.querySelectorAll('.vaav-sl-remove').forEach(function (b) {
       b.addEventListener('click', function () { S.remove(b.dataset.id); });
     });
-    body.querySelector('.vaav-sl-clear').addEventListener('click', function () { S.clear(); });
+    const clearBtn = body.querySelector('.vaav-sl-clear');
+    clearBtn.addEventListener('click', function () {
+      const n = S.count();
+      const box = document.createElement('div');
+      box.className = 'vaav-sl-confirm';
+      box.innerHTML = '<p>Remove all ' + n + ' menu' + (n === 1 ? '' : 's') + ' from your feast?</p>' +
+        '<div class="vaav-sl-confirm-acts">' +
+        '<button type="button" class="vaav-sl-confirm-no">Keep them</button>' +
+        '<button type="button" class="vaav-sl-confirm-yes">Remove all</button></div>';
+      clearBtn.replaceWith(box);
+      const no = box.querySelector('.vaav-sl-confirm-no');
+      no.focus();
+      no.addEventListener('click', function () { render(); });
+      box.querySelector('.vaav-sl-confirm-yes').addEventListener('click', function () { S.clear(); });
+      box.addEventListener('keydown', function (e) {
+        if (e.key === 'Escape') { e.stopPropagation(); render(); }
+      });
+    });
     body.querySelector('#vaav-sl-notes').addEventListener('input', function (e) { S.setNotes(e.target.value); });
     [['name', 'vaav-sl-ev-name'], ['occasion', 'vaav-sl-ev-occasion'], ['guests', 'vaav-sl-ev-guests'], ['date', 'vaav-sl-ev-date']]
       .forEach(function (pair) {
