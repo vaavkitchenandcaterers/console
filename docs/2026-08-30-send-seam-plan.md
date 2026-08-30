@@ -627,7 +627,7 @@ Two honest lines using the flags from Task 2.
 
 **Interfaces:**
 - Consumes: `S.isPersistent()`, `S.isFull()` from Task 2.
-- Produces: nothing later tasks depend on.
+- Produces: `syncAdd(addBtn)` inside the menu-explorer IIFE — the only place the Add button's class, `aria-pressed`, label text and disabled state are decided. Any future state on that button goes here and nowhere else.
 
 - [ ] **Step 1: Add the storage line to the drawer**
 
@@ -641,23 +641,54 @@ In `render()` in `script.js`, immediately after the line that closes the item li
       '</p>';
 ```
 
-- [ ] **Step 2: Add the cap message to the menu card**
+- [ ] **Step 2: Add a single sync function for the Add button**
 
-In the menu-explorer IIFE, find the add-button sync block that reads `const has = window.VaavShortlist.has(addBtn.dataset.id);` and extend it so a full feast disables the control with its reason. Replace the block's body with:
+The button's state is currently computed in two places — once when the card is built (inside `render()`, right after `cardEl.innerHTML = html;`) and once in the `vaav:shortlistchange` listener at the end of the IIFE. They already duplicate each other, and adding a third state (full) to both would be the moment they drift. Replace both with one function.
+
+The real button is `.mc-add`: it carries `aria-pressed`, an `.added` class, and an inner `<span class="mc-add-txt">` holding the label — **not** a plain text node. Do not flatten it with `textContent`.
+
+Add this function inside the menu-explorer IIFE, at the same level as `render()` (above it):
 
 ```js
+  // Single source of truth for the Add button's state, so the initial render and
+  // the shortlistchange listener can't drift apart.
+  function syncAdd(addBtn) {
     const S = window.VaavShortlist;
+    if (!addBtn || !S) return;
     const has = S.has(addBtn.dataset.id);
     const full = !has && S.isFull();
-    addBtn.disabled = full;
+    const nm = addBtn.dataset.id.slice(addBtn.dataset.id.indexOf(':') + 1);
+    addBtn.classList.toggle('added', has);
     addBtn.classList.toggle('is-full', full);
-    addBtn.textContent = full ? 'Feast is full (20)' : (has ? 'Added ✓' : 'Add to feast');
+    addBtn.disabled = full;
+    addBtn.setAttribute('aria-pressed', has ? 'true' : 'false');
+    const txt = addBtn.querySelector('.mc-add-txt');
+    if (txt) txt.textContent = full ? 'Feast is full (20)' : (has ? '✓ In your feast' : '+ Add to my feast');
     addBtn.setAttribute('aria-label',
       full ? 'Feast is full — remove a menu from your feast to add another'
-           : (has ? 'Remove ' : 'Add ') + menu.name + (has ? ' from your feast' : ' to your feast'));
+           : (has ? 'Remove ' : 'Add ') + nm + (has ? ' from your feast' : ' to your feast'));
+  }
 ```
 
-Keep the surrounding guard (`if (!addBtn || !window.VaavShortlist) return;`) exactly as it is.
+In `render()`, replace this line:
+
+```js
+      addBtn.setAttribute('aria-label', (window.VaavShortlist.has(addBtn.dataset.id) ? 'Remove ' : 'Add ') + menu.name + (window.VaavShortlist.has(addBtn.dataset.id) ? ' from your feast' : ' to your feast'));
+```
+
+with:
+
+```js
+      syncAdd(addBtn);
+```
+
+And in the `vaav:shortlistchange` listener at the end of the IIFE, replace everything after the guard line `if (!addBtn || !window.VaavShortlist) return;` — that is, the six lines from `const has = …` through the closing `addBtn.setAttribute('aria-label', …);` — with:
+
+```js
+    syncAdd(addBtn);
+```
+
+Keep the guard, the `const addBtn = cardEl.querySelector('.mc-add');` line above it, and the explanatory comment above the listener exactly as they are.
 
 - [ ] **Step 3: Add the styles**
 
@@ -665,10 +696,11 @@ Append to `style.css`:
 
 ```css
 .vaav-sl-where{font-size:.82rem;color:var(--muted);margin:8px 0 4px;text-align:center}
-.menu-card .add-feast.is-full{opacity:.55;cursor:not-allowed}
+.mc-add.is-full{background:transparent;border-color:rgba(250,246,236,.35);color:rgba(250,246,236,.6);cursor:not-allowed}
+.mc-add.is-full:hover{background:transparent;border-color:rgba(250,246,236,.35)}
 ```
 
-Check the real class name on the add button in `script.js`'s `render()` for the menu card before writing this rule — if it is not `.add-feast`, use whatever the markup actually emits, and correct this line rather than adding a second class.
+Put these next to the existing `.mc-add.added` rules (`style.css:567`), not in the `.vaav-sl-*` block — the button lives on the dark card rail, which is why the disabled treatment uses the same translucent cream as `.added` rather than a token. The `:hover` override is needed because `.mc-add:hover` would otherwise still light up a disabled button.
 
 - [ ] **Step 4: Verify in the preview**
 
