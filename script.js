@@ -251,7 +251,9 @@ const VAAV_REVIEWS = [
     occEl.appendChild(mk('', 'All'));
     OCCASIONS.forEach(function (o) {
       const n = data.menus.filter(function (m) { return (m.occasions || []).indexOf(o[0]) !== -1; }).length;
-      if (n) occEl.appendChild(mk(o[0], o[1]));
+      // A chip with no sets in this category is normally hidden — but never the
+      // active one, or the filter becomes invisible and the user cannot clear it.
+      if (n || curOcc === o[0]) occEl.appendChild(mk(o[0], o[1]));
     });
   }
 
