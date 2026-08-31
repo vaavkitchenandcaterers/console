@@ -293,7 +293,23 @@ Four questions, all answerable from facts already on the site. Native `<details>
 
 Check the exact markup of `#home-cta` and `.cta-row` in `services/index.html` before writing this and match it — the class names above are from that page, and if they differ, use what is actually there.
 
-- [ ] **Step 5: Style the compliance strip**
+- [ ] **Step 5: Fix the copied breadcrumb schema**
+
+Found reviewing Task 1: the second JSON-LD block on the page is a `BreadcrumbList` copied from `services/index.html`, so it still ends at position 2 = Services and never names this page — while the visible breadcrumb has three levels. Not invalid, but the two disagree, and structured data that contradicts the page is worse than none.
+
+In `corporate/index.html`, in the `BreadcrumbList` block, change the position-2 entry's trailing `}` to `},` and add a third item:
+
+```json
+    { "@type": "ListItem", "position": 3, "name": "Corporate & bulk meals", "item": "https://vaavkitchenandcaterers.com/corporate/" }
+```
+
+Re-run the parse check from Task 1 Step 3, and additionally validate this second block:
+
+```bash
+node -e "const s=require('fs').readFileSync('corporate/index.html','utf8');const b=[...s.matchAll(/<script type=\"application\/ld\+json\">([\s\S]*?)<\/script>/g)];b.forEach(m=>JSON.parse(m[1]));const bc=b.map(m=>JSON.parse(m[1])).find(o=>o['@type']==='BreadcrumbList');if(bc.itemListElement.length!==3)throw new Error('expected 3 crumbs');console.log('both JSON-LD blocks ok, 3 crumbs')"
+```
+
+- [ ] **Step 6: Style the compliance strip**
 
 Append to `style.css`, near the other section styles:
 
@@ -311,11 +327,11 @@ Append to `style.css`, near the other section styles:
 
 `tabular-nums` on the values is deliberate: these are long digit strings someone will read against a certificate.
 
-- [ ] **Step 6: Verify**
+- [ ] **Step 7: Verify**
 
 At `http://localhost:8765/corporate/`, desktop and 375px:
 
-1. Headings run `h1` → `h2` with no skipped level. Check with a query of all headings in order.
+1. Headings run `h1` → `h2` with no skipped level **inside `<main>`**. Query headings scoped to `main` — `script.js` injects an `h2` reading "Your feast" into the shortlist drawer outside `<main>` on every page, and an unscoped query will surface it and look like a break.
 2. The three pattern cards render in the existing card style and stack to one column on mobile.
 3. The compliance strip renders two-up on desktop, one-up on mobile; the FSSAI and GST numbers are selectable text, not images; nothing overflows at 375px (`document.body.scrollWidth === clientWidth`).
 4. The FAQ `<details>` open and close by keyboard.
@@ -323,7 +339,7 @@ At `http://localhost:8765/corporate/`, desktop and 375px:
 6. `read_console_messages` clean.
 7. `npm test` — 67 still pass.
 
-- [ ] **Step 7: Commit**
+- [ ] **Step 8: Commit**
 
 ```bash
 git add corporate/index.html style.css
