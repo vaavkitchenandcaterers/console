@@ -464,9 +464,13 @@ stays at five links."
 
 ---
 
-## Needs the kitchen
+## Needs the kitchen — RESOLVED 31 Aug 2026
 
-The page ships without these because inventing them would be worse than omitting them. Each would materially strengthen it, and each is one sentence to answer:
+**Answer from the owner: all five are negotiable, case-specific, and settled in discussion with each vendor.** There are no fixed published values to add, and inventing one would have been worse than the gap — a buyer who read "up to 400 plates a day" and then negotiated 900 would have been misled by our own page.
+
+This changes the copy rather than filling it in. The page should state plainly that volumes, notice, delivery, invoicing and packaging are agreed per contract, which is both true and a better answer for the buyer than a number: it says the arrangement flexes to them. See the follow-up task below.
+
+The five, for the record:
 
 1. **Daily plate capacity.** "Up to N plates a day" is the single number a corporate buyer scans for. The site currently only claims 25–2,500 per *event*.
 2. **Notice period.** How many days ahead does a daily contract need to start? What notice to change a headcount for tomorrow?
@@ -503,3 +507,40 @@ Three corrections found during execution, for anyone re-reading this plan as a r
 Task 2 also picked up a fix for the `BreadcrumbList` copied from `services/` in Task 1, which stopped at Services and contradicted the visible three-level breadcrumb.
 
 **Known non-issue:** every page logs one `404` for `/favicon.ico`. The pages link `favicon-64.png` and browsers request `favicon.ico` regardless. Pre-existing sitewide, not introduced here.
+
+---
+
+### Task 4: State that the terms are negotiable
+
+Added 31 Aug 2026, after the owner confirmed all five open facts are case-specific and settled per vendor. Ship this instead of numbers.
+
+**Files:**
+- Modify: `corporate/index.html`
+
+- [ ] **Step 1: Add a line to "What comes with it"**
+
+In the `#included` section's `.corp-list`, add as the last item:
+
+```html
+      <li><strong>Terms set per contract.</strong> Daily volume, notice period, delivery window, invoicing cycle and packaging are agreed with you rather than fixed in advance — tell us how you need it to work and we'll quote to that.</li>
+```
+
+- [ ] **Step 2: Replace the delivery FAQ answer**
+
+The existing "How far do you deliver?" answer hedges. Replace that whole `<details>` with two that answer the real questions:
+
+```html
+      <details><summary>How much can you cook in a day, and how far do you deliver?</summary><p>Both depend on the contract. We cook in Perungalathur and serve across Chennai, and we've catered from thirty plates to two and a half thousand — tell us your volume, your sites and your delivery window and we'll tell you honestly whether we can hold the quality at that scale.</p></details>
+      <details><summary>What notice do you need, and how do you invoice?</summary><p>Both are set when we agree terms. Notice for a standing contract, the cut-off for changing tomorrow's headcount, and whether you're invoiced weekly, fortnightly or monthly are all part of that conversation rather than fixed in advance.</p></details>
+```
+
+- [ ] **Step 3: Verify**
+
+At `http://localhost:8765/corporate/`: the inclusions list ends with the terms line, the FAQ has five `<details>` (the four original minus the replaced delivery one, plus these two), and no `<details>` is duplicated. `read_console_messages` clean. `npm test` — 67 pass.
+
+- [ ] **Step 4: Commit**
+
+```bash
+git add corporate/index.html
+git commit -m "copy(corporate): say the terms are negotiable rather than inventing numbers"
+```
