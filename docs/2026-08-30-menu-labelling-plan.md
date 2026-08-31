@@ -943,7 +943,7 @@ Turns 66 options into eight. **Blocked on Task 5** — do not start it while any
 - Consumes: `menu.occasions` from Task 5; `displayName()` from Task 4.
 - Produces: nothing later depends on.
 
-- [ ] **Step 1: Add the container**
+- [x] **Step 1: Add the container**
 
 In `menu/index.html`, directly above the line `<div class="menu-picker" id="menuPicker" role="tablist" aria-label="Set menus"></div>`, insert:
 
@@ -951,7 +951,7 @@ In `menu/index.html`, directly above the line `<div class="menu-picker" id="menu
       <div class="occ-filter" id="occFilter" role="group" aria-label="Filter menus by occasion"></div>
 ```
 
-- [ ] **Step 2: Build and wire the chips**
+- [x] **Step 2: Build and wire the chips**
 
 In the menu-explorer IIFE in `script.js`, add near the other element lookups at the top:
 
@@ -1025,7 +1025,7 @@ Guard the empty case: after `const shown = …`, if `shown.length === 0`, render
     }
 ```
 
-- [ ] **Step 3: Style the chips**
+- [x] **Step 3: Style the chips**
 
 Append to `style.css`, next to the `.menu-picker` block:
 
@@ -1038,7 +1038,7 @@ Append to `style.css`, next to the `.menu-picker` block:
 .mc-none{padding:28px 4px;color:var(--muted);font-size:.98rem;text-align:center}
 ```
 
-- [ ] **Step 4: Verify in the preview**
+- [x] **Step 4: Verify in the preview**
 
 At `http://localhost:8765/menu/`:
 
@@ -1050,7 +1050,7 @@ At `http://localhost:8765/menu/`:
 6. Keyboard: chips are reachable in order, Enter and Space both activate, focus is visible.
 7. At 375px the chips wrap onto two or three rows without horizontal scroll.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add menu/index.html script.js style.css
