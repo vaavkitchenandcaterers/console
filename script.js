@@ -153,7 +153,14 @@ const VAAV_REVIEWS = [
   const noteEl = document.getElementById('catNote');
   const pickEl = document.getElementById('menuPicker');
   const cardEl = document.getElementById('menuCard');
+  const occEl = document.getElementById('occFilter');
+  const OCCASIONS = [
+    ['wedding', 'Wedding'], ['reception', 'Reception'], ['seemantham', 'Seemantham'],
+    ['housewarming', 'Housewarming'], ['puja', 'Puja'], ['birthday', 'Birthday'],
+    ['corporate', 'Corporate'], ['temple', 'Temple']
+  ];
   let curCat = 'tiffin', curIdx = 0;
+  let curOcc = '';
 
   order.forEach(cat => {
     const b = document.createElement('button');
@@ -226,6 +233,32 @@ const VAAV_REVIEWS = [
            : (has ? 'Remove ' : 'Add ') + nm + (has ? ' from your feast' : ' to your feast'));
   }
 
+  // Sets shown in the current category, narrowed by the selected occasion.
+  function visibleMenus(data) {
+    if (!curOcc) return data.menus;
+    return data.menus.filter(function (m) { return (m.occasions || []).indexOf(curOcc) !== -1; });
+  }
+
+  function renderOccFilter() {
+    if (!occEl) return;
+    const data = M[curCat];
+    occEl.innerHTML = '';
+    const mk = function (slug, label) {
+      const b = document.createElement('button');
+      b.type = 'button';
+      b.className = 'occ' + (curOcc === slug ? ' active' : '');
+      b.textContent = label;
+      b.setAttribute('aria-pressed', curOcc === slug ? 'true' : 'false');
+      b.onclick = function () { curOcc = (curOcc === slug) ? '' : slug; curIdx = 0; render(); };
+      return b;
+    };
+    occEl.appendChild(mk('', 'All'));
+    OCCASIONS.forEach(function (o) {
+      const n = data.menus.filter(function (m) { return (m.occasions || []).indexOf(o[0]) !== -1; }).length;
+      if (n) occEl.appendChild(mk(o[0], o[1]));
+    });
+  }
+
   function render() {
     const data = M[curCat];
     [...tabsEl.children].forEach(b => {
@@ -236,10 +269,21 @@ const VAAV_REVIEWS = [
     });
     if (panelEl) panelEl.setAttribute('aria-labelledby', `cattab-${curCat}`);
     noteEl.innerHTML = data.note;
+    renderOccFilter();
 
     // picker pills
     pickEl.innerHTML = '';
-    data.menus.forEach((m, i) => {
+    const shown = visibleMenus(data);
+    if (curIdx >= shown.length) curIdx = 0;
+    if (!shown.length) {
+      pickEl.innerHTML = '';
+      cardEl.className = 'menu-card is-empty';
+      cardEl.removeAttribute('aria-labelledby');
+      cardEl.innerHTML = '<p class="mc-none">No ' + M[curCat].label.toLowerCase() +
+        ' sets are tagged for this occasion yet — try another occasion, or another meal.</p>';
+      return;
+    }
+    shown.forEach((m, i) => {
       const p = document.createElement('button');
       const active = i === curIdx;
       p.className = 'mp' + (active ? ' active' : '');
@@ -262,7 +306,7 @@ const VAAV_REVIEWS = [
     if (activePill) activePill.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
 
     // selected menu card
-    const menu = data.menus[curIdx];
+    const menu = shown[curIdx];
     const total = menu.groups.reduce((s, g) => s + g[1].length, 0);
     let html = '<div class="mc-rail">';
     html += `<div class="mc-kicker">${data.label} menu</div>`;
