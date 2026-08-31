@@ -1005,7 +1005,12 @@ In `render()`, call `renderOccFilter();` immediately after `noteEl.innerHTML = d
     shown.forEach((m, i) => {
 ```
 
-Then find every remaining use of `data.menus[curIdx]` in `render()` (the card body reads the selected menu) and change it to `shown[curIdx]`. Read the function through before editing — there is more than one reference, and missing one shows the wrong dish list under the right pill, which is the single worst bug this task can produce.
+There are **exactly two** `data.menus` sites in `render()`, both of which must move to `shown` — verified against the current file:
+
+- `script.js:242` — `data.menus.forEach((m, i) => {`, the pill loop, replaced above.
+- `script.js:265` — `const menu = data.menus[curIdx];`, the selected-menu card. Change to `const menu = shown[curIdx];`.
+
+Miss the second and the card shows the wrong dish list under the right pill — the single worst bug this task can produce, and a silent one. `curIdx` indexes into `shown` after this change, which is consistent with the pill loop, with the `curIdx = 0` resets on category and filter switches, and with the keyboard handler's `pills.length`.
 
 Guard the empty case: after `const shown = …`, if `shown.length === 0`, render the picker empty and put a line in the card instead of a menu:
 
@@ -1013,6 +1018,7 @@ Guard the empty case: after `const shown = …`, if `shown.length === 0`, render
     if (!shown.length) {
       pickEl.innerHTML = '';
       cardEl.className = 'menu-card is-empty';
+      cardEl.removeAttribute('aria-labelledby');
       cardEl.innerHTML = '<p class="mc-none">No ' + M[curCat].label.toLowerCase() +
         ' sets are tagged for this occasion yet — try another occasion, or another meal.</p>';
       return;
