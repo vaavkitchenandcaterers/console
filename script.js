@@ -210,10 +210,6 @@ const VAAV_REVIEWS = [
     if (newPill) newPill.focus();
   });
 
-  // What a set is called on screen. The internal name ("Tiffin 1") stays the key
-  // everywhere else — ids, the WhatsApp header, the Studio's matching.
-  function displayName(m) { return (m && m.label) ? m.label : (m ? m.name : ''); }
-
   // Single source of truth for the Add button's state, so the initial render and
   // the shortlistchange listener can't drift apart.
   function syncAdd(addBtn) {
@@ -221,7 +217,7 @@ const VAAV_REVIEWS = [
     if (!addBtn || !S) return;
     const has = S.has(addBtn.dataset.id);
     const full = !has && S.isFull();
-    const nm = addBtn.dataset.label || addBtn.dataset.id.slice(addBtn.dataset.id.indexOf(':') + 1);
+    const nm = addBtn.dataset.id.slice(addBtn.dataset.id.indexOf(':') + 1);
     addBtn.classList.toggle('added', has);
     addBtn.classList.toggle('is-full', full);
     addBtn.disabled = full;
@@ -294,7 +290,7 @@ const VAAV_REVIEWS = [
       p.tabIndex = active ? 0 : -1;
       const dishes = (m.groups || []).reduce((s, g) => s + (g[1] ? g[1].length : 0), 0);
       const sig = (m.groups && m.groups[0] && m.groups[0][1] && m.groups[0][1][0]) ? m.groups[0][1][0] : '';
-      const nm = displayName(m);
+      const nm = m.name;
       const meta = sig ? `${dishes} dishes · ${sig}` : `${dishes} dishes`;
       p.innerHTML = `<span class="mp-txt"><span class="mp-name">${nm}</span><span class="mp-meta">${meta}</span></span>`;
       p.setAttribute('aria-label', `${nm}, ${meta}`);
@@ -310,12 +306,12 @@ const VAAV_REVIEWS = [
     const total = menu.groups.reduce((s, g) => s + g[1].length, 0);
     let html = '<div class="mc-rail">';
     html += `<div class="mc-kicker">${data.label} menu</div>`;
-    html += `<h3>${displayName(menu)}</h3>`;
+    html += `<h3>${menu.name}</h3>`;
     html += `<div class="count"><b>${total}</b> dishes in this set</div>`;
     const slId = curCat + ':' + menu.name;
     const inList = window.VaavShortlist && window.VaavShortlist.has(slId);
     html += '<div class="rail-cta">';
-    html += '<button type="button" class="mc-add' + (inList ? ' added' : '') + '" data-id="' + slId + '" data-label="' + displayName(menu).replace(/"/g, '&quot;') + '" aria-pressed="' + (inList ? 'true' : 'false') + '">' +
+    html += '<button type="button" class="mc-add' + (inList ? ' added' : '') + '" data-id="' + slId + '" aria-pressed="' + (inList ? 'true' : 'false') + '">' +
       '<span class="mc-add-txt">' + (inList ? '✓ In your feast' : '+ Add to my feast') + '</span></button>';
     html += '<p class="rail-note">Mix and match across any set — we’ll tailor it to your event.</p></div>';
     html += '</div><div class="mc-body"><div class="mc-groups">';
@@ -342,7 +338,7 @@ const VAAV_REVIEWS = [
         if (S.has(addBtn.dataset.id)) {
           S.remove(addBtn.dataset.id);
         } else {
-          S.add({ id: addBtn.dataset.id, cat: data.label, name: menu.name, label: menu.label || '', groups: menu.groups });
+          S.add({ id: addBtn.dataset.id, cat: data.label, name: menu.name, groups: menu.groups });
           if (S.flyToPill) S.flyToPill(addBtn);
         }
         render();
@@ -546,7 +542,7 @@ const VAAV_REVIEWS = [
 
   function renderSent() {
     const st = S.getState();
-    const names = st.items.map(function (it) { return esc(it.label || it.name); }).join(', ');
+    const names = st.items.map(function (it) { return esc(it.name); }).join(', ');
     const when = st.event && st.event.date ? ' · ' + esc(formatEventDate(st.event.date)) : '';
     const guests = st.event && st.event.guests ? ' · ' + esc(st.event.guests) + ' guests' : '';
     body.innerHTML =
@@ -609,9 +605,9 @@ const VAAV_REVIEWS = [
     let h = '<div class="vaav-sl-list">';
     st.items.forEach(function (it) {
       const total = (it.groups || []).reduce(function (s, g) { return s + (g[1] ? g[1].length : 0); }, 0);
-      h += '<div class="vaav-sl-item"><div><div class="vaav-sl-item-name">' + esc(it.label || it.name) + '</div>' +
+      h += '<div class="vaav-sl-item"><div><div class="vaav-sl-item-name">' + esc(it.name) + '</div>' +
         '<div class="vaav-sl-item-meta">' + esc(it.cat) + ' · ' + total + ' dishes</div></div>' +
-        '<button type="button" class="vaav-sl-remove" data-id="' + esc(it.id) + '" aria-label="Remove ' + esc(it.label || it.name) + '">' +
+        '<button type="button" class="vaav-sl-remove" data-id="' + esc(it.id) + '" aria-label="Remove ' + esc(it.name) + '">' +
         '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 6h18M8 6V4h8v2M19 6l-1 14H6L5 6"/></svg></button></div>';
     });
     h += '</div>';

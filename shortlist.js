@@ -42,7 +42,7 @@ export function createShortlist(storage) {
       if (!item || !item.id) return false;
       if (this.has(item.id)) return false;
       if (state.items.length >= CAP) return false;
-      state.items.push({ id: item.id, cat: item.cat, name: item.name, label: item.label || "", groups: item.groups });
+      state.items.push({ id: item.id, cat: item.cat, name: item.name, groups: item.groups });
       touch(state); write(state); emit(); return true;
     },
     remove: function (id) {
@@ -67,8 +67,7 @@ export function createShortlist(storage) {
       parts.push("Hello VAAV Kitchen,");
       parts.push("I'd like to enquire about catering. Here's what I've picked:");
       state.items.forEach(function (it, i) {
-        const head = (it.label && it.label !== it.name) ? it.label + " — " + it.name : it.name;
-        const lines = ["*" + (i + 1) + ". " + head + "* (" + it.cat + ")"];
+        const lines = ["*" + (i + 1) + ". " + it.name + "* (" + it.cat + ")"];
         (it.groups || []).forEach(function (g) {
           const label = g[0], dishes = g[1] || [];
           if (label && label.trim().toLowerCase() !== "items") lines.push(label + ": " + dishes.join(", "));

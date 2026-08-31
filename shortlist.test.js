@@ -290,45 +290,37 @@ describe('formatEventDate', () => {
   });
 });
 
-describe('labels', () => {
-  const labelled = {
+describe('the menu number is the name', () => {
+  const strayLabel = {
     id: 'tiffin:Tiffin 1', cat: 'Tiffin', name: 'Tiffin 1',
-    label: 'Morning tiffin spread', groups: [['Items', ['Idli', 'Sambar']]]
+    label: 'Simple morning tiffin', groups: [['Items', ['Idli', 'Sambar']]]
   };
 
-  it('stores the label with the item', () => {
+  it('does not store a label, even if one is passed in', () => {
     const s = createShortlist(fakeStorage());
-    s.add(labelled);
-    expect(s.getState().items[0].label).toBe('Morning tiffin spread');
+    s.add(strayLabel);
+    expect('label' in s.getState().items[0]).toBe(false);
   });
 
-  it('stores an empty label when none is given', () => {
+  it('the message header carries the menu name alone', () => {
     const s = createShortlist(fakeStorage());
-    s.add(menuA);
-    expect(s.getState().items[0].label).toBe('');
-  });
-
-  it('the label survives a reload', () => {
-    const store = fakeStorage();
-    createShortlist(store).add(labelled);
-    expect(createShortlist(store).getState().items[0].label).toBe('Morning tiffin spread');
-  });
-
-  it('the message header carries label then internal name', () => {
-    const s = createShortlist(fakeStorage());
-    s.add(labelled);
-    expect(s.buildMessage()).toContain('*1. Morning tiffin spread — Tiffin 1* (Tiffin)');
-  });
-
-  it('the message header is unchanged for an unlabelled item', () => {
-    const s = createShortlist(fakeStorage());
-    s.add(menuA);
-    expect(s.buildMessage()).toContain('*1. Set A* (Lunch)');
-  });
-
-  it('a label identical to the name is not repeated', () => {
-    const s = createShortlist(fakeStorage());
-    s.add(Object.assign({}, labelled, { label: 'Tiffin 1' }));
+    s.add(strayLabel);
     expect(s.buildMessage()).toContain('*1. Tiffin 1* (Tiffin)');
+  });
+
+  it('a stray label never reaches the message', () => {
+    const s = createShortlist(fakeStorage());
+    s.add(strayLabel);
+    expect(s.buildMessage()).not.toContain('Simple morning tiffin');
+    expect(s.buildMessage()).not.toContain(' — ');
+  });
+
+  it('numbers the items in order', () => {
+    const s = createShortlist(fakeStorage());
+    s.add(menuA);
+    s.add(menuB);
+    const msg = s.buildMessage();
+    expect(msg).toContain('*1. Set A* (Lunch)');
+    expect(msg).toContain('*2. Set B* (Dinner)');
   });
 });
