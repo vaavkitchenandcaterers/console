@@ -589,3 +589,8 @@ body.vaav-sl-open .vaav-sl-pill,body.vaav-sl-open .wa-float,body.vaav-sl-open .m
 .corp-list li{padding:12px 0;border-bottom:1px solid var(--border);font-size:.98rem;color:var(--ink)}
 .corp-list li:last-child{border-bottom:0}
 .corp-list strong{color:var(--green-deep)}
+
+/* link out of the corporate services block to /corporate/ */
+.svc-more{display:inline-block;margin-left:14px;font-family:'Catamaran',sans-serif;font-weight:700;font-size:.92rem;color:var(--green-deep);text-underline-offset:3px}
+.svc-more:hover,.svc-more:focus-visible{color:var(--kumkum)}
+@media(max-width:520px){.svc-more{display:block;margin:10px 0 0}}
