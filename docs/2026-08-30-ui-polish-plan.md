@@ -93,15 +93,24 @@ Then give the row room for the taller pill — in the `.menu-picker` rule change
 
 - [ ] **Step 2: Cap labels where they are authored**
 
-Two lines at ~20 characters each is ~40, but a label that fills both lines makes the pill row heavy and hard to scan. Cap at 28 — comfortably one-and-a-bit lines — and enforce it, so the constraint lives in the validator rather than in someone's memory.
+Two lines at ~20 characters each is ~40, but a label that fills both lines makes the pill row heavy and hard to scan. Cap at 28 — comfortably one-and-a-bit lines.
 
-In `menu-data.test.js`, in the `labels stay short enough for the picker pill` test (added by the labelling plan's Task 5), change `toBeLessThanOrEqual(38)` to `toBeLessThanOrEqual(28)`.
+**The cap has already drifted to three different values**, which is why this step exists at all. Found on inspection:
 
-If that test does not exist yet — the labelling plan's Task 5 has not run — add it in the strict form the labelling plan specifies but with 28, and say so in your report.
+| Location | Says |
+|---|---|
+| `docs/2026-08-30-menu-labelling-plan.md:870` — the authoring rule a human reads | 32 |
+| `docs/2026-08-30-menu-labelling-plan.md:893` — its own (not yet executed) test snippet | 38 |
+| `docs/2026-08-30-menu-labels-worksheet.md:5` — what the kitchen is told | 38 |
+| `menu-data.test.js` | no cap at all — the test does not exist yet |
 
-In `docs/2026-08-30-menu-labelling-plan.md`, Task 5 Step 1, change "Keep it under about 38 characters — longer labels ellipsise in the pill." to "Keep it to 28 characters or fewer — the picker pill wraps to at most two lines and the validator enforces 28."
+Set all three documents to **28**:
 
-Also update the same figure in `docs/2026-08-30-menu-labels-worksheet.md` ("Under 38 characters." → "28 characters or fewer.") so the person filling it in is not given a rule the tests will reject.
+- `docs/2026-08-30-menu-labelling-plan.md:870` — replace "Keep it under about 32 characters — longer labels ellipsise in the pill." with "Keep it to 28 characters or fewer — the picker pill wraps to at most two lines and the validator enforces 28."
+- `docs/2026-08-30-menu-labelling-plan.md:893` — change `toBeLessThanOrEqual(38)` to `toBeLessThanOrEqual(28)`.
+- `docs/2026-08-30-menu-labels-worksheet.md:5` — "Under 38 characters." → "28 characters or fewer."
+
+**Do not add the test to `menu-data.test.js` in this task.** The strict form dereferences `m.label.length` unconditionally and 63 of the 66 menus have no `label` yet, so it would throw rather than fail cleanly. The cap becomes enforceable the moment Task 5 supplies all 66 labels, and Task 5 Step 2 is where the test lands — now carrying 28 because this step corrected its snippet.
 
 - [ ] **Step 3: Verify in the preview**
 
@@ -116,7 +125,7 @@ At `http://localhost:8765/menu/`, with `resize_window` at 375×812:
 - [ ] **Step 4: Commit**
 
 ```bash
-git add style.css menu-data.test.js docs/2026-08-30-menu-labelling-plan.md docs/2026-08-30-menu-labels-worksheet.md
+git add style.css docs/2026-08-30-menu-labelling-plan.md docs/2026-08-30-menu-labels-worksheet.md
 git commit -m "fix(menu): wrap pill labels instead of clipping them unreadably"
 ```
 
