@@ -856,7 +856,7 @@ git commit -m "feat(menu): show occasion labels instead of set numbers"
 - Consumes: the shape established in Task 3.
 - Produces: every menu carries a non-empty `label` and at least one `occasions` entry — which is what unblocks Task 6.
 
-- [ ] **Step 1: Fill in the data**
+- [x] **Step 1: Fill in the data**
 
 For each of the 66 entries, add two keys after `name`, leaving `name` and `groups` untouched:
 
@@ -872,7 +872,7 @@ Rules for the label, because these are the words the customer chooses by:
 - Labels are customer-facing English with Tamil food words kept as they are said (`virundhu`, `sappadu`, `prasadam`) — matching the rest of the site.
 - `occasions` uses only: `wedding`, `reception`, `seemantham`, `housewarming`, `puja`, `birthday`, `corporate`, `temple`. Multiple are fine. Every set gets at least one.
 
-- [ ] **Step 2: Tighten the validation**
+- [x] **Step 2: Tighten the validation**
 
 In `menu-data.test.js`, replace the two tolerant tests with strict ones:
 
@@ -909,7 +909,7 @@ In `menu-data.test.js`, replace the two tolerant tests with strict ones:
 
 That last one is the check that makes Task 6 safe: a filter chip with nothing behind it is a dead end.
 
-- [ ] **Step 3: Run the suite**
+- [x] **Step 3: Run the suite**
 
 ```bash
 npm test
@@ -917,11 +917,11 @@ npm test
 
 Expected: PASS. Each failure message names the offending menu, so work through them one at a time.
 
-- [ ] **Step 4: Verify in the preview**
+- [x] **Step 4: Verify in the preview**
 
 At `http://localhost:8765/menu/`, switch through all three categories and read every pill. No pill shows a bare "Tiffin 12"-style name, none has a clipped label that becomes ambiguous, and the row still scrolls smoothly at 375px.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add menu-data.js menu-data.test.js

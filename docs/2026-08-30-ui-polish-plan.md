@@ -71,7 +71,7 @@ Ship this **before** Task 5 of the menu-labelling plan.
 - Consumes: `.mp-txt` / `.mp-name` / `.mp-meta` from the labelling milestone's Task 4.
 - Produces: a hard 28-character label cap enforced by test, and a pill that wraps to two lines rather than truncating.
 
-- [ ] **Step 1: Let the label wrap to two lines**
+- [x] **Step 1: Let the label wrap to two lines**
 
 The rule prefers a whole label over a truncated one. The pill has vertical room — `.menu-picker` reserves `min-height:62px` and the pill sits at 50px — so a second line costs nothing structurally.
 
@@ -91,7 +91,7 @@ Then give the row room for the taller pill — in the `.menu-picker` rule change
 
 `overflow-wrap:anywhere` is the guard against a single unbroken long word; normal prose still wraps at spaces.
 
-- [ ] **Step 2: Cap labels where they are authored**
+- [x] **Step 2: Cap labels where they are authored**
 
 Two lines at ~20 characters each is ~40, but a label that fills both lines makes the pill row heavy and hard to scan. Cap at 28 — comfortably one-and-a-bit lines.
 
@@ -112,7 +112,7 @@ Set all three documents to **28**:
 
 **Do not add the test to `menu-data.test.js` in this task.** The strict form dereferences `m.label.length` unconditionally and 63 of the 66 menus have no `label` yet, so it would throw rather than fail cleanly. The cap becomes enforceable the moment Task 5 supplies all 66 labels, and Task 5 Step 2 is where the test lands — now carrying 28 because this step corrected its snippet.
 
-- [ ] **Step 3: Verify in the preview**
+- [x] **Step 3: Verify in the preview**
 
 At `http://localhost:8765/menu/`, with `resize_window` at 375×812:
 
@@ -122,7 +122,7 @@ At `http://localhost:8765/menu/`, with `resize_window` at 375×812:
 4. The pill is still ≥44px tall and the row still scrolls horizontally without clipping the second line.
 5. Undo the temporary label (reload the page).
 
-- [ ] **Step 4: Commit**
+- [x] **Step 4: Commit**
 
 ```bash
 git add style.css docs/2026-08-30-menu-labelling-plan.md docs/2026-08-30-menu-labels-worksheet.md
@@ -202,7 +202,7 @@ There are two ways to comply, and the interesting part is that the better one re
 **Interfaces:**
 - Consumes: nothing. Produces: nothing.
 
-- [ ] **Step 1: Confirm it is used nowhere else**
+- [x] **Step 1: Confirm it is used nowhere else**
 
 ```bash
 grep -rn 'class="strip"\|\.strip\b\|@keyframes scroll' --include=*.html --include=*.css --include=*.js . | grep -v '^./dist/'
@@ -210,7 +210,7 @@ grep -rn 'class="strip"\|\.strip\b\|@keyframes scroll' --include=*.html --includ
 
 Expect hits only in `index.html` and `style.css`. If any other page uses it, STOP and report — this task assumes it is home-only.
 
-- [ ] **Step 2: Remove the markup**
+- [x] **Step 2: Remove the markup**
 
 In `index.html`, delete the whole block:
 
@@ -222,18 +222,18 @@ In `index.html`, delete the whole block:
 </div>
 ```
 
-- [ ] **Step 3: Remove the styles**
+- [x] **Step 3: Remove the styles**
 
 In `style.css`, delete the `.strip`, `.strip .track` and any `.strip span` rules, and the `@keyframes scroll` block. In the reduced-motion block at line ~479, remove `.strip .track,` from the selector list, leaving the remaining selectors intact — **do not delete the whole line**, it also disables the cycler and the medallion ring.
 
-- [ ] **Step 4: Verify**
+- [x] **Step 4: Verify**
 
 1. Load `/` in the preview. The trust band now follows the hero directly; check the vertical rhythm still reads — the hero's bottom padding and the trust band's top padding were previously separated by the strip's own height, so if the join looks tight, add the difference to `.trust-band` padding rather than reinstating the strip.
 2. `grep -rn 'keyframes scroll' style.css` returns nothing.
 3. Reduced-motion block still disables `.cyc-track` and `.medallion .ring` — verify by reading the line.
 4. `read_console_messages` clean; `document.body.scrollWidth === clientWidth` at 375px.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add index.html style.css
