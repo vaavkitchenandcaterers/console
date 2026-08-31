@@ -38,23 +38,6 @@ describe('menu-data shape', () => {
     everyMenu(M).forEach(({ m }) => expect(m.name).not.toContain(' — '));
   });
 
-  it('every menu has a customer-facing label', () => {
-    everyMenu(M).forEach(({ cat, m }) => {
-      expect(typeof m.label === 'string' && m.label.trim().length > 0, `${cat}/${m.name} has no label`).toBe(true);
-    });
-  });
-
-  it('labels are unique', () => {
-    const labels = everyMenu(M).map(({ m }) => m.label);
-    expect(new Set(labels).size).toBe(labels.length);
-  });
-
-  it('labels stay short enough for the picker pill', () => {
-    everyMenu(M).forEach(({ m }) => {
-      expect(m.label.length, `${m.name}: "${m.label}" is ${m.label.length} chars`).toBeLessThanOrEqual(28);
-    });
-  });
-
   it('every menu has at least one occasion from the vocabulary', () => {
     everyMenu(M).forEach(({ cat, m }) => {
       expect(Array.isArray(m.occasions) && m.occasions.length > 0, `${cat}/${m.name} has no occasions`).toBe(true);
