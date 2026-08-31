@@ -594,3 +594,8 @@ body.vaav-sl-open .vaav-sl-pill,body.vaav-sl-open .wa-float,body.vaav-sl-open .m
 .svc-more{display:inline-block;margin-left:14px;font-family:'Catamaran',sans-serif;font-weight:700;font-size:.92rem;color:var(--green-deep);text-underline-offset:3px}
 .svc-more:hover,.svc-more:focus-visible{color:var(--kumkum)}
 @media(max-width:520px){.svc-more{display:block;margin:10px 0 0}}
+
+/* kitchen photograph — shared by /corporate/ and /about/ */
+.kitchen-shot{margin:0}
+.kitchen-shot img{width:100%;height:auto;aspect-ratio:16/9;object-fit:cover;border-radius:14px;border:1px solid var(--border);background:var(--cream-deep)}
+.kitchen-shot figcaption{margin-top:10px;font-size:.88rem;color:var(--muted);text-align:center}
