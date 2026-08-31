@@ -59,7 +59,7 @@ So the correction called for is a **levels stretch**, not a brightness lift: the
 - Consumes: the source JPEG at the absolute path above.
 - Produces: two committed assets referenced by Task 2's `srcset`.
 
-- [ ] **Step 1: Generate both sizes**
+- [x] **Step 1: Generate both sizes**
 
 Run from the repo root. The stretch maps 20 → 0 and 212 → 255, slightly wider than the measured 24/207 points so nothing is driven hard against either end:
 
@@ -83,7 +83,7 @@ PY
 
 Note `im.point(lut * 3)` applies the same curve to all three channels, which keeps colour balance unchanged — a per-channel stretch would shift the white balance, and that would be altering the photograph rather than correcting it.
 
-- [ ] **Step 2: Check the result is a correction, not a distortion**
+- [x] **Step 2: Check the result is a correction, not a distortion**
 
 ```bash
 python - <<'PY'
@@ -101,11 +101,11 @@ Expected: mean rises from 117 to roughly 125–135, stddev rises from 44.7 to ro
 
 Also confirm `kitchen-800.jpg` is under 80 KB and `kitchen-1600.jpg` under 250 KB. If either is larger, drop quality to 78 and regenerate rather than shipping a heavy image to a phone on 3G at a wedding hall.
 
-- [ ] **Step 3: Look at it**
+- [x] **Step 3: Look at it**
 
 Open both files and actually look. You are checking two things a histogram cannot tell you: that the correction reads as natural rather than harsh, and that the image still shows what it is supposed to — a working kitchen with steel prep tables, stocked spice jars, a gas range and tiled splashback. If the stretch has made it look artificial, say so and widen the points.
 
-- [ ] **Step 4: Commit**
+- [x] **Step 4: Commit**
 
 ```bash
 git add kitchen-1600.jpg kitchen-800.jpg
@@ -129,7 +129,7 @@ has consented to its use on a public page."
 - Consumes: the two files from Task 1.
 - Produces: the `.kitchen-shot` figure, identical on both pages.
 
-- [ ] **Step 1: The figure markup**
+- [x] **Step 1: The figure markup**
 
 Use this block **verbatim on both pages** so they cannot drift:
 
@@ -153,13 +153,13 @@ The alt text describes what a sighted visitor gets from the image — the eviden
 
 `width` and `height` are stated so the browser reserves the space before the file arrives; without them the compliance strip below jumps as it loads.
 
-- [ ] **Step 2: Position it on each page**
+- [x] **Step 2: Position it on each page**
 
 On `corporate/index.html`, insert **immediately after** the `<section id="compliance">` block and before `<section id="corp-faq">`. The order matters: the numbers make the claim, the photograph substantiates it.
 
 On `about/index.html`, insert **immediately before** the `<section id="compliance">` block. On About the story comes first, the photograph illustrates it, and the numbers close it.
 
-- [ ] **Step 3: Style it**
+- [x] **Step 3: Style it**
 
 Append to `style.css`:
 
@@ -172,7 +172,7 @@ Append to `style.css`:
 
 `aspect-ratio` plus the `width`/`height` attributes means the space is reserved twice over — belt and braces against layout shift, which is the one thing a lazy-loaded image below the fold can still do badly.
 
-- [ ] **Step 4: Verify**
+- [x] **Step 4: Verify**
 
 At `http://localhost:8765/corporate/` and `/about/`, at desktop and 375px:
 
@@ -185,7 +185,7 @@ At `http://localhost:8765/corporate/` and `/about/`, at desktop and 375px:
 7. Both pages' figure markup is byte-identical — extract and compare the two `<section id="kitchen">` blocks programmatically, do not eyeball them.
 8. `npm test` — 67 pass.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add corporate/index.html about/index.html style.css
@@ -230,7 +230,7 @@ What a visitor fetches, before and after:
 - Consumes: `kitchen-1600.jpg` from Task 1 as the source — it already carries the levels stretch, so re-deriving from it keeps every variant tonally identical. Do **not** go back to the original in Downloads.
 - Produces: a `<picture>` element replacing the bare `<img>`, byte-identical on both pages.
 
-- [ ] **Step 1: Generate the variants**
+- [x] **Step 1: Generate the variants**
 
 From the repo root:
 
@@ -251,7 +251,7 @@ PY
 
 Expected, within a few hundred bytes: 102,578 / 45,296 / 16,910 / 22,831. `method=6` is the slowest, densest WebP encoder setting — worth it for a file generated once and served forever.
 
-- [ ] **Step 2: Confirm the variants match the JPEGs tonally**
+- [x] **Step 2: Confirm the variants match the JPEGs tonally**
 
 A format change must not become a second, unannounced edit to the photograph:
 
@@ -266,7 +266,7 @@ PY
 
 Each delta must be under 1.0. If any exceeds that, stop and report — it would mean the encoder shifted the image, not just the container.
 
-- [ ] **Step 3: Swap the `<img>` for a `<picture>`**
+- [x] **Step 3: Swap the `<img>` for a `<picture>`**
 
 Replace the `<img>` inside `.kitchen-shot` on **both** pages with this, verbatim and identical on each:
 
@@ -292,7 +292,7 @@ Three things changed besides the format:
 
 Keep `width`, `height`, `loading` and `decoding` on the `<img>` — they still apply, and the reserved space still comes from them plus the CSS `aspect-ratio`.
 
-- [ ] **Step 4: Verify**
+- [x] **Step 4: Verify**
 
 At `http://localhost:8765/corporate/` and `/about/`:
 
@@ -304,7 +304,7 @@ At `http://localhost:8765/corporate/` and `/about/`:
 6. `read_console_messages` clean.
 7. `npm test` — 67 pass.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add kitchen-1600.webp kitchen-800.webp kitchen-400.webp kitchen-400.jpg corporate/index.html about/index.html

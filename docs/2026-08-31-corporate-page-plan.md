@@ -517,7 +517,7 @@ Added 31 Aug 2026, after the owner confirmed all five open facts are case-specif
 **Files:**
 - Modify: `corporate/index.html`
 
-- [ ] **Step 1: Add a line to "What comes with it"**
+- [x] **Step 1: Add a line to "What comes with it"**
 
 In the `#included` section's `.corp-list`, add as the last item:
 
@@ -525,7 +525,7 @@ In the `#included` section's `.corp-list`, add as the last item:
       <li><strong>Terms set per contract.</strong> Daily volume, notice period, delivery window, invoicing cycle and packaging are agreed with you rather than fixed in advance — tell us how you need it to work and we'll quote to that.</li>
 ```
 
-- [ ] **Step 2: Replace the delivery FAQ answer**
+- [x] **Step 2: Replace the delivery FAQ answer**
 
 The existing "How far do you deliver?" answer hedges. Replace that whole `<details>` with two that answer the real questions:
 
@@ -534,11 +534,11 @@ The existing "How far do you deliver?" answer hedges. Replace that whole `<detai
       <details><summary>What notice do you need, and how do you invoice?</summary><p>Both are set when we agree terms. Notice for a standing contract, the cut-off for changing tomorrow's headcount, and whether you're invoiced weekly, fortnightly or monthly are all part of that conversation rather than fixed in advance.</p></details>
 ```
 
-- [ ] **Step 3: Verify**
+- [x] **Step 3: Verify**
 
 At `http://localhost:8765/corporate/`: the inclusions list ends with the terms line, the FAQ has five `<details>` (the four original minus the replaced delivery one, plus these two), and no `<details>` is duplicated. `read_console_messages` clean. `npm test` — 67 pass.
 
-- [ ] **Step 4: Commit**
+- [x] **Step 4: Commit**
 
 ```bash
 git add corporate/index.html
