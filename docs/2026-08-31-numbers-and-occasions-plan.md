@@ -45,7 +45,7 @@
 - Consumes: nothing.
 - Produces: shortlist items no longer carry `label`; `buildMessage()` emits `*N. <name>* (<cat>)` unconditionally. Task 2 depends on nothing reading `menu.label` after this task.
 
-- [ ] **Step 1: Write the failing tests**
+- [x] **Step 1: Write the failing tests**
 
 In `shortlist.test.js`, **replace the entire `describe('labels', …)` block** with:
 
@@ -88,7 +88,7 @@ describe('the menu number is the name', () => {
 
 These are regression guards, not just reverts: the first and third fail loudly if anyone reintroduces a label into the message contract.
 
-- [ ] **Step 2: Run the tests to verify they fail**
+- [x] **Step 2: Run the tests to verify they fail**
 
 ```bash
 npx vitest run shortlist.test.js -t "the menu number is the name"
@@ -96,7 +96,7 @@ npx vitest run shortlist.test.js -t "the menu number is the name"
 
 Expected: FAIL — the first test reports `expected true to be false` (the key is still stored), and the third finds `Simple morning tiffin` in the message.
 
-- [ ] **Step 3: Revert `shortlist.js`**
+- [x] **Step 3: Revert `shortlist.js`**
 
 In `add()`, change:
 
@@ -116,7 +116,7 @@ In `buildMessage()`, delete the `head` line entirely and restore the original he
         const lines = ["*" + (i + 1) + ". " + it.name + "* (" + it.cat + ")"];
 ```
 
-- [ ] **Step 4: Revert the six display sites in `script.js`**
+- [x] **Step 4: Revert the six display sites in `script.js`**
 
 All line numbers verified against the current file. Read each line before editing.
 
@@ -160,7 +160,7 @@ Note `data.label` on that line is the **category** label and stays.
 
 7. `script.js:549` in `renderSent()`, and `script.js:612` and `script.js:614` in the drawer `render()` — change all three `esc(it.label || it.name)` to `esc(it.name)`.
 
-- [ ] **Step 5: Run the full suite**
+- [x] **Step 5: Run the full suite**
 
 ```bash
 npm test
@@ -168,7 +168,7 @@ npm test
 
 Expected: PASS. The count moves from 72 to 70 — the 6-test `labels` describe is replaced by 4 tests. `request-parse.test.js` (19) and `menu-data.test.js` (10) are untouched and must stay green; a failure in `request-parse.test.js` means you edited the parser, which this task must not.
 
-- [ ] **Step 6: Verify in the preview**
+- [x] **Step 6: Verify in the preview**
 
 At `http://localhost:8765/menu/`:
 
@@ -179,7 +179,7 @@ At `http://localhost:8765/menu/`:
 5. Read `document.querySelector('.vaav-sl-send').href` — **do not click it** — and confirm the header is `*1. Tiffin 7* (Tiffin)` with no em dash.
 6. Clear the shortlist afterwards.
 
-- [ ] **Step 7: Commit**
+- [x] **Step 7: Commit**
 
 ```bash
 git add script.js shortlist.js shortlist.test.js
@@ -203,7 +203,7 @@ The occasion moves to the filter and the card kicker instead."
 - Consumes: Task 1 having removed every reader of `menu.label`.
 - Produces: menus carry `name`, `occasions`, `groups`. Categories keep `label`, `tamil`, `note`, `menus`.
 
-- [ ] **Step 1: Confirm nothing still reads it**
+- [x] **Step 1: Confirm nothing still reads it**
 
 ```bash
 grep -rn "\.label" --include=*.js --include=*.html . | grep -v "^./dist/\|node_modules\|/docs/"
@@ -213,7 +213,7 @@ Every surviving hit must be a **category** label (`data.label`, `M[cat].label`, 
 
 **Exempt `menu-data.test.js`.** It legitimately still reads `m.label` in the three tests Step 4 deletes; those hits are this task's own target, not a blocker. Everything outside that file must be clean.
 
-- [ ] **Step 2: Delete the 66 keys**
+- [x] **Step 2: Delete the 66 keys**
 
 Menu-level labels always appear inline between `name` and `occasions`. Category labels sit alone on their own indented line and must not match. Use a script, not a hand edit:
 
@@ -230,7 +230,7 @@ console.log("label: occurrences", before, "->", after);
 
 Expected output: `label: occurrences 69 -> 3`. If `after` is not exactly 3, STOP and restore with `git checkout menu-data.js` — the three survivors are the category labels.
 
-- [ ] **Step 3: Prove nothing else changed**
+- [x] **Step 3: Prove nothing else changed**
 
 ```bash
 node -e '
@@ -254,7 +254,7 @@ console.log("menus:",n,"diffs:",diffs);
 
 Expected: `menus: 66 diffs: 0`. Report this output verbatim.
 
-- [ ] **Step 4: Remove the label tests**
+- [x] **Step 4: Remove the label tests**
 
 In `menu-data.test.js`, delete these three tests entirely, keeping every other test in the file:
 
@@ -264,7 +264,7 @@ In `menu-data.test.js`, delete these three tests entirely, keeping every other t
 
 Keep `every menu has at least one occasion from the vocabulary` and `every occasion in the vocabulary has at least one menu` — those still guard the filter.
 
-- [ ] **Step 5: Run the suite and commit**
+- [x] **Step 5: Run the suite and commit**
 
 ```bash
 npm test
@@ -293,7 +293,7 @@ Dinner has no seemantham sets. Today, filtering Tiffin by Seemantham and switchi
 - Consumes: `curOcc`, the `OCCASIONS` table.
 - Produces: nothing later depends on.
 
-- [ ] **Step 1: Render the active chip regardless of count**
+- [x] **Step 1: Render the active chip regardless of count**
 
 In `renderOccFilter()`, change:
 
@@ -317,7 +317,7 @@ to:
 
 No new styling: the chip renders in its normal active state, which is exactly what it is. The empty-state message below already explains why nothing is listed.
 
-- [ ] **Step 2: Verify in the preview**
+- [x] **Step 2: Verify in the preview**
 
 At `http://localhost:8765/menu/`:
 
@@ -327,7 +327,7 @@ At `http://localhost:8765/menu/`:
 4. Switch back to Tiffin with no filter — the Seemantham chip renders normally alongside the others.
 5. Confirm no duplicate chip appears in step 2 (the active one must render once, not twice).
 
-- [ ] **Step 3: Commit**
+- [x] **Step 3: Commit**
 
 ```bash
 git add script.js
@@ -352,7 +352,7 @@ Numbers alone don't tell anyone which set to pick, so the page has to say that t
 - Consumes: the `OCCASIONS` slug→label table and `menu.occasions`.
 - Produces: `occasionLine(menu)` in the menu-explorer IIFE.
 
-- [ ] **Step 1: The intro and hint**
+- [x] **Step 1: The intro and hint**
 
 In `menu/index.html`, replace the intro paragraph (line ~106):
 
@@ -378,7 +378,7 @@ with:
       <p class="picker-hint">Menu numbers are just our shorthand — tap one to see every dish. Swipe for more →</p>
 ```
 
-- [ ] **Step 2: Give the filter row a visible label**
+- [x] **Step 2: Give the filter row a visible label**
 
 The row currently carries only an `aria-label`. It is now the primary way to navigate 66 sets, so it needs to speak to everyone. Replace the filter container line:
 
@@ -395,7 +395,7 @@ with:
 
 `aria-labelledby` pointing at the visible text replaces the invisible `aria-label`, so sighted and screen-reader users get the same wording.
 
-- [ ] **Step 3: Rename the "All" chip**
+- [x] **Step 3: Rename the "All" chip**
 
 In `renderOccFilter()` in `script.js`, change:
 
@@ -411,7 +411,7 @@ to:
 
 It reads as an answer to the question above it.
 
-- [ ] **Step 4: Put the occasion on the card**
+- [x] **Step 4: Put the occasion on the card**
 
 Add this helper in the menu-explorer IIFE, directly above `render()`:
 
@@ -439,7 +439,7 @@ to:
     html += `<div class="mc-kicker">${data.label} menu${occasionLine(menu)}</div>`;
 ```
 
-- [ ] **Step 5: Rewrite the empty state in customer words**
+- [x] **Step 5: Rewrite the empty state in customer words**
 
 In `render()`'s empty-filter branch, replace:
 
@@ -457,7 +457,7 @@ with:
 
 "Tagged" is our word for our data. "We don't lay out" is the kitchen talking.
 
-- [ ] **Step 6: Style the label and let the kicker wrap**
+- [x] **Step 6: Style the label and let the kicker wrap**
 
 In `style.css`, add above the `.occ-filter` rule:
 
@@ -467,7 +467,7 @@ In `style.css`, add above the `.occ-filter` rule:
 
 The kicker is now longer and must not clip — find the existing `.mc-kicker` rule and, if it sets `white-space:nowrap` or a fixed height, remove that and allow wrapping. If it does neither, leave it alone and say so.
 
-- [ ] **Step 7: Verify in the preview**
+- [x] **Step 7: Verify in the preview**
 
 At `http://localhost:8765/menu/`, at both desktop width and 375px:
 
@@ -479,7 +479,7 @@ At `http://localhost:8765/menu/`, at both desktop width and 375px:
 6. Filter to a combination with no sets (Dinner + Seemantham) and read the new empty-state line.
 7. `npm test` — 67 still pass.
 
-- [ ] **Step 8: Commit**
+- [x] **Step 8: Commit**
 
 ```bash
 git add menu/index.html script.js style.css
@@ -505,3 +505,11 @@ the occasion, and a card kicker naming what each set is cooked for."
 **Test count** — 72 today → 70 after Task 1 (6 replaced by 4) → 67 after Task 2 (3 removed). State it at each step so a mismatch is caught immediately.
 
 **What is deliberately kept** — `request-parse.js` still accepts `Label — Name`. It is not dead code to be cleaned up: it costs nothing, its 19 tests document the contract, and it protects any message already sent in that form.
+
+---
+
+## Executed
+
+All four tasks shipped 31 Aug 2026 — `8851e0e`, `ac2abed`, `9e33700`, `00cc619`. 67 tests pass.
+
+One note for anyone re-running the verification: Task 4 Step 7 check 6 says to "filter to a combination with no sets (Dinner + Seemantham)", but Task 3's own fix makes that unreachable from the Dinner tab — the chip only renders there when it is already active. The state is reached the way Task 3 Step 2 describes: select Seemantham on Tiffin, then switch to Dinner. The check is right, its route is not.
