@@ -248,13 +248,23 @@ const VAAV_REVIEWS = [
       b.onclick = function () { curOcc = (curOcc === slug) ? '' : slug; curIdx = 0; render(); };
       return b;
     };
-    occEl.appendChild(mk('', 'All'));
+    occEl.appendChild(mk('', 'Any occasion'));
     OCCASIONS.forEach(function (o) {
       const n = data.menus.filter(function (m) { return (m.occasions || []).indexOf(o[0]) !== -1; }).length;
       // A chip with no sets in this category is normally hidden — but never the
       // active one, or the filter becomes invisible and the user cannot clear it.
       if (n || curOcc === o[0]) occEl.appendChild(mk(o[0], o[1]));
     });
+  }
+
+  // What a set is cooked for, in the same words as the filter chips. Capped at
+  // three so the kicker stays one line on a phone.
+  function occasionLine(m) {
+    const names = (m.occasions || []).map(function (slug) {
+      const hit = OCCASIONS.filter(function (o) { return o[0] === slug; })[0];
+      return hit ? hit[1].toLowerCase() : slug;
+    }).slice(0, 3);
+    return names.length ? ' · often cooked for ' + names.join(', ') : '';
   }
 
   function render() {
@@ -277,8 +287,8 @@ const VAAV_REVIEWS = [
       pickEl.innerHTML = '';
       cardEl.className = 'menu-card is-empty';
       cardEl.removeAttribute('aria-labelledby');
-      cardEl.innerHTML = '<p class="mc-none">No ' + M[curCat].label.toLowerCase() +
-        ' sets are tagged for this occasion yet — try another occasion, or another meal.</p>';
+      cardEl.innerHTML = '<p class="mc-none">We don\'t lay out a ' + M[curCat].label.toLowerCase() +
+        ' spread for this occasion — try another meal, or pick another occasion.</p>';
       return;
     }
     shown.forEach((m, i) => {
@@ -307,7 +317,7 @@ const VAAV_REVIEWS = [
     const menu = shown[curIdx];
     const total = menu.groups.reduce((s, g) => s + g[1].length, 0);
     let html = '<div class="mc-rail">';
-    html += `<div class="mc-kicker">${data.label} menu</div>`;
+    html += `<div class="mc-kicker">${data.label} menu${occasionLine(menu)}</div>`;
     html += `<h3>${menu.name}</h3>`;
     html += `<div class="count"><b>${total}</b> dishes in this set</div>`;
     const slId = curCat + ':' + menu.name;

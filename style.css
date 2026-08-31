@@ -200,6 +200,7 @@ section{padding:90px 0}
 .cat-note{color:var(--muted);font-size:.98rem;line-height:1.6;margin-bottom:24px;max-width:56ch}
 .cat-note strong{color:var(--green-deep);font-weight:600}
 @media(max-width:560px){.cat-tabs{display:grid;grid-template-columns:1fr;gap:6px;border-radius:18px;width:100%;min-height:154px}.cat-tab{border-radius:12px;justify-content:flex-start}.cat-tab .ct{margin-left:auto}}
+.occ-label{font-family:'Catamaran',sans-serif;font-weight:800;font-size:.78rem;text-transform:uppercase;letter-spacing:.12em;color:var(--muted);margin:0 0 8px}
 .occ-filter{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 14px}
 .occ{min-height:44px;padding:8px 16px;border-radius:24px;border:1px solid var(--border);background:var(--white);color:var(--muted);font-family:'Catamaran',sans-serif;font-weight:700;font-size:.86rem;cursor:pointer;transition:.16s}
 .occ:hover{border-color:var(--green);color:var(--green-deep)}
