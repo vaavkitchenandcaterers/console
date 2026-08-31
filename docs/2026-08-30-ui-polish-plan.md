@@ -145,7 +145,7 @@ Counts as found: `index.html` 1.7×10, 1.9×4, 2×1, 2.4×1 · `contact/index.ht
 **Interfaces:**
 - Consumes: nothing. Produces: nothing. Purely visual.
 
-- [ ] **Step 1: Inventory**
+- [x] **Step 1: Inventory**
 
 ```bash
 grep -rno 'stroke-width="[0-9.]*"' --include=*.html --include=*.js . | grep -v '^./dist/' | sed 's/.*stroke-width/stroke-width/' | sort | uniq -c | sort -rn
@@ -153,7 +153,7 @@ grep -rno 'stroke-width="[0-9.]*"' --include=*.html --include=*.js . | grep -v '
 
 Record the total and the per-file counts before changing anything, so Step 4 can prove completeness.
 
-- [ ] **Step 2: Normalise**
+- [x] **Step 2: Normalise**
 
 Set every `stroke-width` on an **outline** icon to `1.8`, excluding `dist/`:
 
@@ -167,18 +167,18 @@ Then **review the diff icon by icon** — `sed` is a blunt instrument and two ca
 - **The Google "G" logo** in the reviews link uses four brand-coloured `fill` paths. Brand assets must not be restyled — confirm it was untouched.
 - **The hero decoration** (`.hd-leaf1`, `stroke-width="2.4"`) is a large decorative flourish, not an icon in a text row. At 1.8 it may read as thin at its rendered size. Look at it; if it weakens, restore 2.4 and note it as a deliberate exception in your report — one decorative illustration is allowed its own weight, a UI icon is not.
 
-- [ ] **Step 3: Round the caps and joins**
+- [x] **Step 3: Round the caps and joins**
 
 Any outline icon missing `stroke-linecap="round"` or `stroke-linejoin="round"` gets both, so terminals match across the set. Add them by hand to the icons that lack them — do not `sed` this one, because attribute order and self-closing forms vary and a blind insert will corrupt markup.
 
-- [ ] **Step 4: Verify**
+- [x] **Step 4: Verify**
 
 1. Re-run the Step 1 inventory. Expect a single line: `stroke-width="1.8"`, at the same total count, minus any deliberate exception you documented.
 2. `npm test` — 69 tests still pass. (Icons are untested; a failure means `sed` hit something it should not have.)
 3. In the preview, load `/`, `/menu/`, `/contact/`, `/services/`, `/about/`, `/404.html` and the Studio. Confirm no icon has visibly broken geometry and check `read_console_messages` for SVG parse errors.
 4. Screenshot the contact page's detail grid (kitchen / phone / email / hours) — four icons in a column is where mismatched weights were most visible and where the fix should read most clearly.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add -A -- ':!dist'

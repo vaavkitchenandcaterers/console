@@ -434,7 +434,7 @@ const VAAV_REVIEWS = [
     const chip = document.createElement('div');
     chip.className = 'feast-chip';
     chip.setAttribute('aria-hidden', 'true');
-    chip.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="#faf6ec" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>';
+    chip.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="#faf6ec" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>';
     document.body.appendChild(chip);
     return chip;
   }
@@ -484,7 +484,7 @@ const VAAV_REVIEWS = [
   drawer.setAttribute('aria-labelledby', 'vaav-sl-title');
   drawer.innerHTML =
     '<div class="vaav-sl-head"><h2 id="vaav-sl-title">Your feast</h2>' +
-    '<button type="button" class="vaav-sl-close" aria-label="Close your feast"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12"/></svg></button></div>' +
+    '<button type="button" class="vaav-sl-close" aria-label="Close your feast"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12"/></svg></button></div>' +
     '<div id="vaav-sl-body" class="vaav-sl-body"></div>';
   document.body.appendChild(backdrop);
   document.body.appendChild(drawer);
@@ -552,7 +552,7 @@ const VAAV_REVIEWS = [
     body.innerHTML =
       '<div class="vaav-sl-sent" role="status">' +
         '<span class="vaav-sl-sent-ic" aria-hidden="true">' +
-          '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>' +
+          '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>' +
         '</span>' +
         '<h3 class="vaav-sl-sent-h" tabindex="-1">Sent to VAAV</h3>' +
         '<p class="vaav-sl-sent-list">' + names + when + guests + '</p>' +
