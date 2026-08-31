@@ -209,7 +209,9 @@ The occasion moves to the filter and the card kicker instead."
 grep -rn "\.label" --include=*.js --include=*.html . | grep -v "^./dist/\|node_modules\|/docs/"
 ```
 
-Every surviving hit must be a **category** label (`data.label`, `M[cat].label`, `set.label`) or an unrelated DOM `label`. If any hit reads a *menu's* label, STOP — Task 1 is incomplete.
+Every surviving hit must be a **category** label (`data.label`, `M[cat].label`, `set.label`) or an unrelated DOM `label`. If any hit in *site or app code* reads a menu's label, STOP — Task 1 is incomplete.
+
+**Exempt `menu-data.test.js`.** It legitimately still reads `m.label` in the three tests Step 4 deletes; those hits are this task's own target, not a blocker. Everything outside that file must be clean.
 
 - [ ] **Step 2: Delete the 66 keys**
 
