@@ -68,7 +68,7 @@ A real page at `/corporate/` with correct chrome, head and schema. No body conte
 - Consumes: `/style.css`, `/script.js`, `/logo.png`, `/favicon-64.png`.
 - Produces: the route `/corporate/`, and the `.corp-*` class namespace Task 2 uses.
 
-- [ ] **Step 1: Copy the skeleton**
+- [x] **Step 1: Copy the skeleton**
 
 Create `corporate/index.html` by copying `services/index.html` **whole**, then deleting its `<main>` contents. Keep verbatim, with no edits: the doctype and `<html lang="en">`, the charset/viewport/CSP/referrer metas, the favicon and apple-touch-icon links, the font preconnects and the Google Fonts `<link>`, the stylesheet link, the topbar, the entire `<nav>` block, the footer, the `.mobile-actionbar`, the `.wa-float`, and the closing `<script type="module" src="/script.js"></script>`.
 
@@ -77,7 +77,7 @@ Two edits inside the copied chrome:
 1. In the nav, move `aria-current="page"` off `/services/` — **no nav link gets it on this page**, because Corporate is not in the nav. Remove the attribute entirely rather than moving it.
 2. In the footer's `.footer-links` list, add a sixth item after Contact: `<li><a href="/corporate/">Corporate</a></li>`. (Task 3 mirrors this into the other five pages.)
 
-- [ ] **Step 2: Rewrite the head**
+- [x] **Step 2: Rewrite the head**
 
 Replace the title, description, canonical, OG and Twitter tags with:
 
@@ -102,7 +102,7 @@ Change the prefetch line to `<link rel="prefetch" href="/contact/"><link rel="pr
 
 Keep the `author`, `theme-color` and `referrer` metas exactly as copied.
 
-- [ ] **Step 3: Add the registration numbers to the schema**
+- [x] **Step 3: Add the registration numbers to the schema**
 
 Keep the copied `FoodEstablishment` JSON-LD block as it is, and add these two members immediately after the `"priceRange"` line. They are the same business, so the `@id` stays `#business` — this is the one page that states its credentials, and search engines reconcile them by `@id`.
 
@@ -117,7 +117,7 @@ Validate the JSON parses before moving on:
 node -e "const s=require('fs').readFileSync('corporate/index.html','utf8');const m=s.match(/<script type=\"application\/ld\+json\">([\s\S]*?)<\/script>/);JSON.parse(m[1]);console.log('JSON-LD ok')"
 ```
 
-- [ ] **Step 4: Write the hero**
+- [x] **Step 4: Write the hero**
 
 Inside `<main id="main">`, the only content for this task:
 
@@ -137,7 +137,7 @@ Inside `<main id="main">`, the only content for this task:
 
 The CTA carries `data-wa-context`, which `script.js` turns into a prefilled WhatsApp message naming what the person was reading — the same pattern every other page uses.
 
-- [ ] **Step 5: Verify the route**
+- [x] **Step 5: Verify the route**
 
 Start the preview (`vaav` config, port 8765) and load `http://localhost:8765/corporate/`.
 
@@ -149,7 +149,7 @@ Start the preview (`vaav` config, port 8765) and load `http://localhost:8765/cor
 6. The breadcrumb reads Home / Services / Corporate & bulk meals.
 7. On mobile width, the `.mobile-actionbar` appears and `.wa-float` hides, as on every other page.
 
-- [ ] **Step 6: Commit**
+- [x] **Step 6: Commit**
 
 ```bash
 git add corporate/index.html
@@ -173,7 +173,7 @@ What a corporate buyer needs to decide: can you cook this volume, will you show 
 - Consumes: `.cards`, `.svc-item`, `.faq-list`, `.sec-head` from `style.css`.
 - Produces: `.compliance` and its child classes, used again on `/about/` in Task 3.
 
-- [ ] **Step 1: Three supply patterns**
+- [x] **Step 1: Three supply patterns**
 
 After the hero section, inside the same `<main>`:
 
@@ -222,7 +222,7 @@ After the hero section, inside the same `<main>`:
 
 The numbered eyebrows encode a real distinction — frequency, from daily through standing contract to one-off — not decoration.
 
-- [ ] **Step 2: What's included**
+- [x] **Step 2: What's included**
 
 ```html
 <section id="included">
@@ -242,7 +242,7 @@ The numbered eyebrows encode a real distinction — frequency, from daily throug
 </section>
 ```
 
-- [ ] **Step 3: The compliance strip**
+- [x] **Step 3: The compliance strip**
 
 Numbers, not badges. A badge graphic is a design element; a licence number is checkable, and a procurement person will check it.
 
@@ -259,7 +259,7 @@ Numbers, not badges. A badge graphic is a design element; a licence number is ch
 </section>
 ```
 
-- [ ] **Step 4: A short FAQ and the closing CTA**
+- [x] **Step 4: A short FAQ and the closing CTA**
 
 Four questions, all answerable from facts already on the site. Native `<details>`, matching `/contact/`.
 
@@ -293,7 +293,7 @@ Four questions, all answerable from facts already on the site. Native `<details>
 
 Check the exact markup of `#home-cta` and `.cta-row` in `services/index.html` before writing this and match it — the class names above are from that page, and if they differ, use what is actually there.
 
-- [ ] **Step 5: Fix the copied breadcrumb schema**
+- [x] **Step 5: Fix the copied breadcrumb schema**
 
 Found reviewing Task 1: the second JSON-LD block on the page is a `BreadcrumbList` copied from `services/index.html`, so it still ends at position 2 = Services and never names this page — while the visible breadcrumb has three levels. Not invalid, but the two disagree, and structured data that contradicts the page is worse than none.
 
@@ -309,7 +309,7 @@ Re-run the parse check from Task 1 Step 3, and additionally validate this second
 node -e "const s=require('fs').readFileSync('corporate/index.html','utf8');const b=[...s.matchAll(/<script type=\"application\/ld\+json\">([\s\S]*?)<\/script>/g)];b.forEach(m=>JSON.parse(m[1]));const bc=b.map(m=>JSON.parse(m[1])).find(o=>o['@type']==='BreadcrumbList');if(bc.itemListElement.length!==3)throw new Error('expected 3 crumbs');console.log('both JSON-LD blocks ok, 3 crumbs')"
 ```
 
-- [ ] **Step 6: Style the compliance strip**
+- [x] **Step 6: Style the compliance strip**
 
 Append to `style.css`, near the other section styles:
 
@@ -327,7 +327,7 @@ Append to `style.css`, near the other section styles:
 
 `tabular-nums` on the values is deliberate: these are long digit strings someone will read against a certificate.
 
-- [ ] **Step 7: Verify**
+- [x] **Step 7: Verify**
 
 At `http://localhost:8765/corporate/`, desktop and 375px:
 
@@ -339,7 +339,7 @@ At `http://localhost:8765/corporate/`, desktop and 375px:
 6. `read_console_messages` clean.
 7. `npm test` — 67 still pass.
 
-- [ ] **Step 8: Commit**
+- [x] **Step 8: Commit**
 
 ```bash
 git add corporate/index.html style.css
@@ -363,7 +363,7 @@ A page nobody can reach is not a page. Three routes in, plus the sitemap, plus t
 - Consumes: `.compliance` from Task 2.
 - Produces: nothing.
 
-- [ ] **Step 1: Link from the services block**
+- [x] **Step 1: Link from the services block**
 
 In `services/index.html`, in the "Corporate & bulk meal catering" `.svc-item-body`, add a second link after the existing WhatsApp button:
 
@@ -379,7 +379,7 @@ and style it in `style.css`:
 @media(max-width:520px){.svc-more{display:block;margin:10px 0 0}}
 ```
 
-- [ ] **Step 2: Footer link on the remaining five pages**
+- [x] **Step 2: Footer link on the remaining five pages**
 
 `corporate/index.html` already has it from Task 1. Add the same sixth item to the `.footer-links` list in `index.html`, `about/index.html`, `services/index.html`, `menu/index.html` and `contact/index.html`:
 
@@ -395,7 +395,7 @@ grep -c 'href="/corporate/"' index.html about/index.html services/index.html men
 
 Expected: `1` for every page except `services/index.html`, which is `2` (footer plus the Step 1 link).
 
-- [ ] **Step 3: A contact FAQ answer**
+- [x] **Step 3: A contact FAQ answer**
 
 In `contact/index.html`, add as the last item in the `.faq-list`:
 
@@ -403,7 +403,7 @@ In `contact/index.html`, add as the last item in the `.faq-list`:
       <details><summary>Do you do office lunches or hostel contracts?</summary><p>Yes — daily office lunches, hostel and mess contracts, and one-off bulk orders, all GST-invoiced. <a href="/corporate/">See how corporate catering works</a> or message us with your headcount.</p></details>
 ```
 
-- [ ] **Step 4: The compliance strip on About**
+- [x] **Step 4: The compliance strip on About**
 
 In `about/index.html`, insert before the `#reviews` section:
 
@@ -422,7 +422,7 @@ In `about/index.html`, insert before the `#reviews` section:
 
 Identical markup to `/corporate/` — the same facts stated the same way in both places, so they cannot drift into disagreeing.
 
-- [ ] **Step 5: Sitemap**
+- [x] **Step 5: Sitemap**
 
 In `sitemap.xml`, add after the `/services/` entry:
 
@@ -443,7 +443,7 @@ Validate it parses:
 node -e "const s=require('fs').readFileSync('sitemap.xml','utf8');const n=(s.match(/<loc>/g)||[]).length;if(n!==6)throw new Error('expected 6 urls, got '+n);console.log('sitemap ok, 6 urls')"
 ```
 
-- [ ] **Step 6: Verify**
+- [x] **Step 6: Verify**
 
 1. From `/services/`, the corporate block's new link reaches `/corporate/`.
 2. From every page's footer, the Corporate link reaches it.
@@ -452,7 +452,7 @@ node -e "const s=require('fs').readFileSync('sitemap.xml','utf8');const n=(s.mat
 5. `read_console_messages` clean on `/about/`, `/services/` and `/contact/`.
 6. `npm test` — 67 pass.
 
-- [ ] **Step 7: Commit**
+- [x] **Step 7: Commit**
 
 ```bash
 git add services/index.html about/index.html contact/index.html index.html menu/index.html sitemap.xml style.css
@@ -487,3 +487,19 @@ Once answered, they belong in the "What comes with it" list and the FAQ, and the
 **Type consistency** — `.compliance` / `.cmp-k` / `.cmp-v` are defined in Task 2 Step 5 and used in Task 2 Step 3 and Task 3 Step 4 with identical markup. `.corp-list` is defined and used in Task 2 only. `.svc-more` is defined and used in Task 3 Step 1 only.
 
 **Risk** — the largest is chrome drift: this is the sixth copy of a nav and footer that have no single source. Task 1 Step 5 check 2 compares computed nav height against `/services/` for exactly that reason, and Task 3 Step 2's grep proves all six footers gained the link.
+
+---
+
+## Executed
+
+All three tasks shipped 31 Aug 2026 — `69cd646`, `9baa8d6`, `31b97df`. 67 tests pass.
+
+Three corrections found during execution, for anyone re-reading this plan as a record:
+
+1. **Task 2 Step 4's `#home-cta` class names were wrong.** `.cta-row` and `.btn.wa` do not exist anywhere in the repo; the real markup is `.home-cta-inner` / `.home-cta-actions` / `.wa-big`. The step flagged this as a check and the check fired — the page uses the real classes.
+2. **Task 3 Step 2's grep expectation is order-dependent.** It says `contact/index.html` should report `1`, which holds only if the grep runs strictly between Steps 2 and 3. Step 3 adds a second `/corporate/` link to that file, so after the whole task the correct value is `2`.
+3. **`sitemap.xml` on disk is CRLF**, while Step 5's snippet is LF. Pasting verbatim would have produced mixed line endings.
+
+Task 2 also picked up a fix for the `BreadcrumbList` copied from `services/` in Task 1, which stopped at Services and contradicted the visible three-level breadcrumb.
+
+**Known non-issue:** every page logs one `404` for `/favicon.ico`. The pages link `favicon-64.png` and browsers request `favicon.ico` regardless. Pre-existing sitewide, not introduced here.
