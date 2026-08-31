@@ -579,3 +579,13 @@ body.vaav-sl-open .vaav-sl-pill,body.vaav-sl-open .wa-float,body.vaav-sl-open .m
   background:var(--green-deep);display:flex;align-items:center;justify-content:center;
   pointer-events:none;z-index:120;will-change:transform,opacity}
 .feast-chip svg{width:14px;height:14px}
+
+/* compliance strip — registration numbers stated plainly, used on /corporate/ and /about/ */
+.compliance{display:grid;gap:1px;background:var(--border);border:1px solid var(--border);border-radius:14px;overflow:hidden;margin:0}
+.compliance li{display:flex;flex-wrap:wrap;gap:4px 18px;align-items:baseline;background:var(--cream);padding:14px 18px}
+.cmp-k{font-family:'Catamaran',sans-serif;font-weight:800;font-size:.7rem;text-transform:uppercase;letter-spacing:.14em;color:var(--muted);flex:0 0 150px}
+.cmp-v{font-size:.98rem;color:var(--ink);font-variant-numeric:tabular-nums;overflow-wrap:anywhere}
+@media(min-width:760px){.compliance{grid-template-columns:1fr 1fr}}
+.corp-list li{padding:12px 0;border-bottom:1px solid var(--border);font-size:.98rem;color:var(--ink)}
+.corp-list li:last-child{border-bottom:0}
+.corp-list strong{color:var(--green-deep)}
