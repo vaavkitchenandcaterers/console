@@ -156,13 +156,6 @@ nav.scrolled{box-shadow:0 8px 26px -16px rgba(20,61,29,.45);background:rgba(247,
 .medallion .ring::after{animation:spin 60s linear infinite}
 @keyframes spin{to{transform:rotate(360deg)}}
 
-/* scrolling occasions strip */
-.strip{background:var(--green-deep);color:var(--cream);padding:16px 0;overflow:hidden;white-space:nowrap}
-.strip .track{display:inline-block;animation:scroll 28s linear infinite;font-family:'Catamaran',sans-serif;font-weight:700;letter-spacing:.05em}
-.strip .track span{margin:0 26px;opacity:.95}
-.strip .track span::before{content:"●";color:var(--yellow);margin-right:26px;font-size:.6em;vertical-align:middle}
-@keyframes scroll{from{transform:translateX(0)}to{transform:translateX(-50%)}}
-
 /* ---------- Sections ---------- */
 section{padding:90px 0}
 .sec-head{max-width:34rem;margin-bottom:48px}
@@ -476,7 +469,7 @@ footer .fb{font-family:'Catamaran',sans-serif;font-weight:800;color:var(--yellow
 /* reduced motion */
 @media(prefers-reduced-motion:reduce){
   *{scroll-behavior:auto}
-  .strip .track,.cyc-track,.medallion .ring,.medallion .ring::after{animation:none}
+  .cyc-track,.medallion .ring,.medallion .ring::after{animation:none}
   .hero h1 .word,.reveal{opacity:1;transform:none;animation:none}
   .svc-reveal{opacity:1;transform:none;transition:none}
   .mc-group li{opacity:1;transform:none;animation:none}
