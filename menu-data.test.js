@@ -38,18 +38,32 @@ describe('menu-data shape', () => {
     everyMenu(M).forEach(({ m }) => expect(m.name).not.toContain(' — '));
   });
 
-  it('any label present is a non-empty string', () => {
-    everyMenu(M).forEach(({ m }) => {
-      if ('label' in m) expect(typeof m.label === 'string' && m.label.trim().length > 0).toBe(true);
+  it('every menu has a customer-facing label', () => {
+    everyMenu(M).forEach(({ cat, m }) => {
+      expect(typeof m.label === 'string' && m.label.trim().length > 0, `${cat}/${m.name} has no label`).toBe(true);
     });
   });
 
-  it('any occasions present come from the fixed vocabulary', () => {
+  it('labels are unique', () => {
+    const labels = everyMenu(M).map(({ m }) => m.label);
+    expect(new Set(labels).size).toBe(labels.length);
+  });
+
+  it('labels stay short enough for the picker pill', () => {
     everyMenu(M).forEach(({ m }) => {
-      if ('occasions' in m) {
-        expect(Array.isArray(m.occasions)).toBe(true);
-        m.occasions.forEach(o => expect(OCCASIONS).toContain(o));
-      }
+      expect(m.label.length, `${m.name}: "${m.label}" is ${m.label.length} chars`).toBeLessThanOrEqual(28);
     });
+  });
+
+  it('every menu has at least one occasion from the vocabulary', () => {
+    everyMenu(M).forEach(({ cat, m }) => {
+      expect(Array.isArray(m.occasions) && m.occasions.length > 0, `${cat}/${m.name} has no occasions`).toBe(true);
+      m.occasions.forEach(o => expect(OCCASIONS).toContain(o));
+    });
+  });
+
+  it('every occasion in the vocabulary has at least one menu', () => {
+    const used = new Set(everyMenu(M).flatMap(({ m }) => m.occasions));
+    OCCASIONS.forEach(o => expect(used.has(o), `no menu is tagged "${o}"`).toBe(true));
   });
 });
