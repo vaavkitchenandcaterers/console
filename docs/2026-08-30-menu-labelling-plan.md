@@ -867,7 +867,7 @@ For each of the 66 entries, add two keys after `name`, leaving `name` and `group
 Rules for the label, because these are the words the customer chooses by:
 
 - Name the **occasion or the moment**, not the size: "Wedding morning tiffin", "Puja prasadam spread", "Office lunch box". Not "Menu 7", not "Premium package".
-- Keep it under about 32 characters — longer labels ellipsise in the pill.
+- Keep it to 28 characters or fewer — the picker pill wraps to at most two lines and the validator enforces 28.
 - Two sets may share a theme but not an identical label; if two are genuinely close, distinguish them by what differs ("… with 2 sweets").
 - Labels are customer-facing English with Tamil food words kept as they are said (`virundhu`, `sappadu`, `prasadam`) — matching the rest of the site.
 - `occasions` uses only: `wedding`, `reception`, `seemantham`, `housewarming`, `puja`, `birthday`, `corporate`, `temple`. Multiple are fine. Every set gets at least one.
@@ -890,7 +890,7 @@ In `menu-data.test.js`, replace the two tolerant tests with strict ones:
 
   it('labels stay short enough for the picker pill', () => {
     everyMenu(M).forEach(({ m }) => {
-      expect(m.label.length, `${m.name}: "${m.label}" is ${m.label.length} chars`).toBeLessThanOrEqual(38);
+      expect(m.label.length, `${m.name}: "${m.label}" is ${m.label.length} chars`).toBeLessThanOrEqual(28);
     });
   });
 

@@ -2,7 +2,7 @@
 
 One line per set. Fill the two blank columns, then hand this back and the labels go into `menu-data.js` (Task 5 of [the menu-labelling plan](2026-08-30-menu-labelling-plan.md)).
 
-**Label** — name the occasion or the moment the set is cooked for, not its size. "Wedding morning tiffin", "Puja prasadam spread", "Office lunch box". Under 38 characters. Every label must be different from every other. Tamil food words stay as they are said — virundhu, sappadu, prasadam.
+**Label** — name the occasion or the moment the set is cooked for, not its size. "Wedding morning tiffin", "Puja prasadam spread", "Office lunch box". 28 characters or fewer. Every label must be different from every other. Tamil food words stay as they are said — virundhu, sappadu, prasadam.
 
 **Occasions** — one or more of: `wedding` `reception` `seemantham` `housewarming` `puja` `birthday` `corporate` `temple`. Every set needs at least one, and every one of those eight needs at least one set, or its filter chip would lead nowhere.
 
