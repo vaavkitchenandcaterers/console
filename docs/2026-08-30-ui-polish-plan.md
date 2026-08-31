@@ -58,7 +58,7 @@ Rules checked and found **already satisfied** — no task needed, do not "fix" t
 
 ### Task 1: The pill label must be readable
 
-**This is a regression, not an enhancement.** The menu-labelling milestone replaced the pill's number circle with a text label ellipsised at one line. Today only `Tiffin 1` has a label so nothing clips, but `menu-data.test.js` permits labels up to 38 characters and the pill's text column measures ~137px — roughly 20 characters at `.92rem`. The moment the 66 real labels arrive, long ones clip to "Wedding morning tiff…" with **no way for a sighted pointer or touch user to read the rest**. The `aria-label` carries the full text, so screen-reader users are fine and everyone else is not, which is the inverted version of the usual bug.
+**This is a regression, not an enhancement.** The menu-labelling milestone replaced the pill's number circle with a text label ellipsised at one line. Today only `Tiffin 1` has a label so nothing clips, and nothing caps label length at all — the 38 lives only in an unexecuted test snippet inside the labelling plan. The pill's text column measures **190px**, about 28 characters at `.92rem`. *(Measured during execution. This step was written against an estimate of ~137px / ~20 characters, which was wrong — 28-character labels sit on one line and the second line is headroom for the occasional longer one, not the normal case. The fix stands: the old `nowrap` + `text-overflow:ellipsis` still clipped anything past ~28 characters with no way to read it.)* The moment the 66 real labels arrive, long ones clip to "Wedding morning tiff…" with **no way for a sighted pointer or touch user to read the rest**. The `aria-label` carries the full text, so screen-reader users are fine and everyone else is not, which is the inverted version of the usual bug.
 
 Ship this **before** Task 5 of the menu-labelling plan.
 
@@ -193,7 +193,7 @@ git commit -m "style(icons): one stroke weight and rounded terminals across the 
 
 There are two ways to comply, and the interesting part is that the better one removes UI rather than adding it. A play/pause button on a decorative marquee is a control nobody wants, sitting on an element that carries no information — the strip lists "Weddings · House warming · Seemantham · Corporate lunch · Temple prasadam · Birthday feasts", which is the same six occasions the Services section states properly, twenty pixels below. It is `aria-hidden="true"`, so it says nothing to a screen reader either. It is decoration that costs a WCAG failure and 28 seconds of perpetual motion next to the primary CTA.
 
-**Remove it.** If the movement is wanted for its own sake, say so and I will build the paused-by-default variant instead — but that is a control added to justify an element, which is backwards.
+**Remove it.** Confirmed by the site owner on 30 Aug 2026 — the alternative offered was a paused-by-default variant with a play control, and removal was chosen. Do not reinstate the strip or add a pause button.
 
 **Files:**
 - Modify: `index.html` (the `.strip` block, ~lines 172–177)
