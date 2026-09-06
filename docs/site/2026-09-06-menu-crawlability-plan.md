@@ -1,6 +1,6 @@
 # Menu Crawlability — Implementation Plan
 
-> **For agentic workers:** REQUIRED SUB-SKILL: Use subagent-driven development (recommended) or executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
+> **For agentic workers:** REQUIRED SUB-SKILL: Use subagent-driven development (recommended) or executing-plans to implement this plan task-by-task. Steps use checkbox (`- [x]`) syntax for tracking.
 
 **Goal:** Give the three menu categories real URLs with their dishes in the HTML, so that a search engine can rank "tiffin catering menu Chennai" against a page that exists. Today all 66 set menus and every dish name are injected by `script.js` into an empty `<div id="menu">`, and the three categories share one URL — so there is nothing to rank and nothing to return.
 
@@ -17,7 +17,7 @@
 ## Global Constraints
 
 - **No build step at deploy time.** The generator runs **locally**, and its output is committed like any other source file. Do not add a `command` to `netlify.toml`, and do not move the site into `dist/`. `dist/` remains a stale artefact; do not touch it.
-- **⚠ The deploy is not wired to this repository, and `netlify.toml` is in the wrong place for it.** Verified 6 Sep 2026 — see "Deploy prerequisite" below. This plan **cannot ship** until that is resolved. Implement it if you like; it will not reach production.
+- **~~The deploy is not wired to this repository.~~ RESOLVED 6 Sep 2026.** Netlify now builds from `vaavkitchenandcaterers/console` @ `main` and publishes `site/` via the root `netlify.toml`. Verified in production. The prerequisite section below is kept as a record of what was wrong and how it was fixed.
 - **`menu-data.js` stays the single source of truth.** The generator reads it; nothing is retyped. If a dish name is wrong, it is fixed in `menu-data.js` and the pages are regenerated — never edited by hand.
 - **Generated files are never hand-edited.** Each one carries a header comment saying so. Task 4 adds a test that fails if a generated page drifts from the data.
 - **No new external origins.** Copy the CSP meta tag from `menu/index.html` **byte for byte**. It permits Google Fonts and Google Maps frames and nothing else.
@@ -30,11 +30,15 @@
 - **Commit style:** Conventional Commits. One commit per task.
 - **Git Bash, not PowerShell.** Heredocs for multi-line commit messages, never `@'…'@`.
 
-## Deploy prerequisite — BLOCKING
+## Deploy prerequisite — RESOLVED 6 Sep 2026
 
 Verified against production on 6 Sep 2026.
 
-**Production is frozen at 15 July 2026.** `vaavkitchenandcaterers.com` is served by Netlify from `SurendharVr/vaav-kitchen-site` @ `master` = `7da804c`, whose last push was 2026-07-15. The 53 commits made between then and 31 August have never been pushed anywhere. What that means live, right now:
+> **Resolved.** The Netlify site was repointed to this repository, the production branch moved from
+> `master` to `main`, and a root `netlify.toml` with `publish = "site"` was committed. Everything below
+> describes the state before that fix.
+
+**Production was frozen at 15 July 2026.** `vaavkitchenandcaterers.com` is served by Netlify from `SurendharVr/vaav-kitchen-site` @ `master` = `7da804c`, whose last push was 2026-07-15. The 53 commits made between then and 31 August have never been pushed anywhere. What that means live, right now:
 
 | Check | Live result |
 |---|---|
@@ -105,7 +109,7 @@ A Node script that turns `menu-data.js` into three HTML files. This task is done
 - Consumes: `menu-data.js` (via the `new Function('window', src)` pattern proven in `menu-data.test.js`).
 - Produces: `renderCategoryPage(catKey, data)` and `slug(name)` from the template module; three files on disk.
 
-- [ ] **Step 1: The slug helper and template module**
+- [x] **Step 1: The slug helper and template module**
 
 Create `tools/menu-page-template.mjs` exporting two things.
 
@@ -121,7 +125,7 @@ Create `tools/menu-page-template.mjs` exporting two things.
 3. Set `aria-current="page"` on the `/menu/` nav link — these pages live under Menu.
 4. Escape every value from the data with an `esc()` helper (`& < > "`), **except** `data.note`, which is authored HTML containing `<strong>` and is inserted raw. This is the one exception; everything else is escaped.
 
-- [ ] **Step 2: The head block**
+- [x] **Step 2: The head block**
 
 Per category, distinct title and description — never templated boilerplate that would read as duplicate content:
 
@@ -135,7 +139,7 @@ Lunch and dinner follow the same shape with their own counts (20, 26) and their 
 
 **Canonical policy:** each category page is self-canonical. `/menu/` stays canonical for itself. They are not duplicates — `/menu/` is a one-at-a-time explorer, the category pages are full listings.
 
-- [ ] **Step 3: The body**
+- [x] **Step 3: The body**
 
 ```
 breadcrumb: Home / Menu / Tiffin        (nav.breadcrumb, matching menu/index.html)
@@ -156,7 +160,7 @@ CTA:        one WhatsApp button with data-wa-context="{label} catering"
 
 Heading order must be strictly `h1 → h2 → h3` with no skips. Give each `<article>` an `id` of the menu slug so `/menu/dinner/#dinner-5` deep-links to one set — that is what makes per-set pages unnecessary for now.
 
-- [ ] **Step 4: The generator entry point**
+- [x] **Step 4: The generator entry point**
 
 Create `tools/build-menu-pages.mjs`. It loads the data, iterates `['tiffin','lunch','dinner']`, calls `renderCategoryPage`, and writes `menu/<cat>/index.html` with `\n` line endings and a trailing newline. It must create the directories if absent and print one line per file written.
 
@@ -166,7 +170,7 @@ Add to `package.json`:
 "build:menu": "node tools/build-menu-pages.mjs"
 ```
 
-- [ ] **Step 5: Verify idempotence**
+- [x] **Step 5: Verify idempotence**
 
 The generator must be a pure function of the data. Run it twice; the second run must produce no diff.
 
@@ -196,19 +200,19 @@ Generate the three pages, style the set list, and confirm the dishes are in the 
 - Consumes: the generator from Task 1.
 - Produces: the routes `/menu/tiffin/`, `/menu/lunch/`, `/menu/dinner/`, and the `.set` / `.set-occ` class namespace.
 
-- [ ] **Step 1: Generate**
+- [x] **Step 1: Generate**
 
 ```bash
 npm run build:menu
 ```
 
-- [ ] **Step 2: Style the set list**
+- [x] **Step 2: Style the set list**
 
 Add to `style.css`, using existing tokens only. Reuse `.mc-group`'s dish-list treatment rather than inventing a second one — the dishes should look the same here as in the explorer card. The set list is a single column on mobile and two columns from 760px up.
 
 **Write this block mobile-first** (`min-width` query), not as a `max-width` override. The stylesheet is currently 18 `max-width` queries to 1 `min-width`, which contradicts the README's "mobile-first" claim; new CSS should not deepen that.
 
-- [ ] **Step 3: Verify the dishes are actually in the HTML**
+- [x] **Step 3: Verify the dishes are actually in the HTML**
 
 This is the whole point of the plan. It must pass.
 
@@ -222,7 +226,7 @@ grep -c '<article class="set"' menu/tiffin/index.html menu/lunch/index.html menu
 Expected: 20, 20, 26. Also check the dish counts — `grep -c '<li>' ` should land near 184 / 273 / 518.
 If any set count is 0, the generator wrote a shell and the task is not done.
 
-- [ ] **Step 4: Verify the routes and the chrome**
+- [x] **Step 4: Verify the routes and the chrome**
 
 Start the preview (`vaav` launch config, port 8765) and check each route returns 200, the CSP matches `/menu/` byte for byte, there is exactly one `<h1>`, and the console is clean.
 
@@ -246,13 +250,13 @@ A page nothing links to is a page nothing crawls.
 **Files:**
 - Modify: `menu/index.html`, `sitemap.xml`
 
-- [ ] **Step 1: Link from `/menu/`**
+- [x] **Step 1: Link from `/menu/`**
 
 Add a short block above the explorer — not below it, where a crawler and a skimming reader would both miss it — linking to all three category pages. Frame it as what it is: "Prefer to read the whole list? Every tiffin set · every lunch set · every dinner set."
 
 The explorer keeps its place as the primary experience. This block exists so the category pages are reachable by crawl and by readers who want a flat list.
 
-- [ ] **Step 2: Enrich the `Menu` schema**
+- [x] **Step 2: Enrich the `Menu` schema**
 
 `/menu/` already carries a `Menu` block with `hasMenuSection` naming the three categories and their counts, but **no `hasMenuItem` at all** — which is why the schema currently confirms the categories exist while exposing none of their content. Add `hasMenuItem` to each section, generated from the data, and give each section a `url` pointing at its new page.
 
@@ -266,13 +270,13 @@ for (const m of s.matchAll(/<script type=\"application\/ld\+json\">([\s\S]*?)<\/
 console.log('all JSON-LD ok')"
 ```
 
-- [ ] **Step 3: Sitemap**
+- [x] **Step 3: Sitemap**
 
 Add the three URLs with `changefreq: monthly`, `priority: 0.8` (below `/menu/` at 0.9, above `/about/` at 0.6). Set `lastmod` to the date the pages are generated.
 
 Since `lastmod` was stale for five of six pages before `065a4ed`, have the generator print the line to paste, or write the block itself — do not hand-maintain it a second time.
 
-- [ ] **Step 4: Confirm the crawl path**
+- [x] **Step 4: Confirm the crawl path**
 
 Every new URL must be reachable from `/` by following `<a href>` only, with JavaScript disabled.
 
@@ -295,7 +299,7 @@ Generated files that are committed will rot the first time someone edits `menu-d
 **Files:**
 - Create: `menu-pages.test.js`
 
-- [ ] **Step 1: The sync test**
+- [x] **Step 1: The sync test**
 
 Following the `loadMenus()` pattern already in `menu-data.test.js`, assert:
 
@@ -305,7 +309,7 @@ Following the `loadMenus()` pattern already in `menu-data.test.js`, assert:
 - Slugs are unique across the dataset (guards the `id` anchors).
 - No generated page contains `href="#"`.
 
-- [ ] **Step 2: Run the whole suite**
+- [x] **Step 2: Run the whole suite**
 
 ```bash
 npm test
@@ -313,7 +317,7 @@ npm test
 
 All existing suites (`menu-data`, `request-parse`, `shortlist`) plus the new one must pass.
 
-- [ ] **Step 3: Document it**
+- [x] **Step 3: Document it**
 
 `README.md` currently says "Static, fast, mobile-first, no build step." That stays true at deploy time and should not be softened — but the file table needs the generator, and the rule needs stating plainly: **edit `menu-data.js`, then run `npm run build:menu`; never edit `menu/*/index.html` by hand.**
 
