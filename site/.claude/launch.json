@@ -1,0 +1,17 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "vaav",
+      "runtimeExecutable": "node",
+      "runtimeArgs": ["server.cjs"],
+      "port": 8765
+    },
+    {
+      "name": "vaav-vite",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["run", "dev"],
+      "port": 5173
+    }
+  ]
+}

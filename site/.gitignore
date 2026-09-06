@@ -1,0 +1,11 @@
+# OS / editor
+.DS_Store
+Thumbs.db
+.vscode/
+
+# Node (only if deps ever get installed locally)
+node_modules/
+
+# Build artifacts — regenerated from source; not version-controlled
+dist/
+vaav-site.zip
