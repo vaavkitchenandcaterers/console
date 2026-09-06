@@ -12,8 +12,14 @@ Internal console and web presence for Vaav Kitchen and Caterers.
 │   └── photos/           kitchen and dish photography, incl. layered sources
 ├── archive/prototype/    the June 2026 static prototype, superseded by site/
 ├── data/                 quotes backup
-└── docs/decisions.md     architecture decision record
+└── docs/
+    ├── decisions.md      architecture decision record
+    └── site/             design and implementation docs for the website
 ```
+
+`docs/` sits outside `site/` deliberately. `site/` is the Netlify publish
+directory, so anything inside it is served publicly — these are internal
+working documents and belong outside it. See ADR-0005.
 
 The internal console application itself has not been built yet; only the
 website currently lives here. See [docs/decisions.md](docs/decisions.md).

@@ -97,3 +97,43 @@ Netlify access and cannot be done from the repository: repoint the site to this
 repo and change the production branch from `master` to `main`. Confirm the
 custom domain and TLS certificate carry over, and leave the old site
 unpublished rather than deleted until the new deploy is verified.
+
+---
+
+## ADR-0005 — Keep documentation outside the publish directory
+
+**Date:** 2026-09-06
+**Status:** accepted
+
+**Context.** ADR-0004 made `site/` the Netlify publish directory. Everything
+inside it is therefore served publicly. Verified against production on
+6 Sep 2026: `/docs/2026-08-31-corporate-page-plan.md` and the other 21 design
+and plan documents returned HTTP 200, crawlable — `robots.txt` does not
+disallow them and only the directory index was absent.
+
+This was not caused by the move. The previous deploy published the old
+repository's root, which also contained `docs/`, by the same mechanism. The
+monorepo layout is simply the first arrangement in which the documents can be
+kept out of the served tree without a hosting rule.
+
+**Decision.** Move `site/docs/` to `docs/site/`, alongside this file. Internal
+documents live under the repository-root `docs/` tree, which is outside the
+publish directory and therefore never served. Cross-references inside the moved
+documents were rewritten from `docs/<name>.md` to `docs/site/<name>.md`.
+
+**Consequence.** Design and plan documents are no longer public. Nothing about
+the site's build or deploy changes — `publish = "site"` is untouched, and no
+redirect or `robots.txt` rule is needed, because the files are not in the
+deployed tree at all.
+
+**Do not move them back under `site/`.** Doing so republishes them. If a
+document genuinely needs to be public, that is a deliberate act: put it in
+`site/` knowingly, not by relocating the whole tree.
+
+**Not addressed here.** `site/` still serves `package.json`, `server.cjs`,
+`menu-data.js`, `studio.js` and the `*.test.js` files. Those are either
+required at runtime or harmless. Separately, the quote studio's passcode gate
+is an unsalted SHA-256 hash in the public `studio.js`, guarding customer names,
+phone numbers, venues and event dates — that is a real weakness and is
+addressed by the server-side auth in `docs/2026-09-06-console-design.md` (S1),
+not by this decision.

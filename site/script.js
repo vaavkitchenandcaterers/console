@@ -538,7 +538,7 @@ const VAAV_REVIEWS = [
 (function () {
   const S = window.VaavShortlist;
   const body = document.getElementById('vaav-sl-body');
-  // Copy under review — see docs/2026-08-30-send-seam-plan.md, open question:
+  // Copy under review — see docs/site/2026-08-30-send-seam-plan.md, open question:
   // is "within the hour" a promise the kitchen actually keeps? Change these two
   // strings and nothing else if the honest answer is "same day".
   const REPLY_OPEN = 'We usually reply within the hour.';

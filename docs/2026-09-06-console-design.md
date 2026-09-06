@@ -4,7 +4,7 @@
 **Status:** Draft for review — not yet an implementation plan
 **Feature:** The internal console: a mobile-first quote studio backed by a real server, plus the deal pipeline the current tool is missing.
 
-Supersedes the operating model of `site/studio/` (see `site/docs/2026-07-11-quotation-studio-design.md` and `site/docs/2026-07-12-studio-requests-design.md`). Stack is deliberately unchosen — ADR-0002 in `docs/decisions.md` remains open.
+Supersedes the operating model of `site/studio/` (see `docs/site/2026-07-11-quotation-studio-design.md` and `docs/site/2026-07-12-studio-requests-design.md`). Stack is deliberately unchosen — ADR-0002 in `docs/decisions.md` remains open.
 
 ---
 
@@ -412,4 +412,4 @@ Things a catering console usually ships with, left out because no user or busine
 
 ## 14. Not yet covered
 
-This is a design brief, not an implementation plan. Still to be written before build: data migration steps, API surface, auth mechanism, hosting and deploy changes, and the task-level plan in the format used across `site/docs/*-plan.md`.
+This is a design brief, not an implementation plan. Still to be written before build: data migration steps, API surface, auth mechanism, hosting and deploy changes, and the task-level plan in the format used across `docs/site/*-plan.md`.

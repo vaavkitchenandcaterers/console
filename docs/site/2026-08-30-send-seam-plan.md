@@ -317,7 +317,7 @@ After Send, the drawer stops showing a form the customer has already submitted a
 At the top of the drawer-content IIFE in `script.js`, directly under `const body = document.getElementById('vaav-sl-body');`, add:
 
 ```js
-  // Copy under review — see docs/2026-08-30-send-seam-plan.md, open question:
+  // Copy under review — see docs/site/2026-08-30-send-seam-plan.md, open question:
   // is "within the hour" a promise the kitchen actually keeps? Change these two
   // strings and nothing else if the honest answer is "same day".
   const REPLY_OPEN = 'We usually reply within the hour.';

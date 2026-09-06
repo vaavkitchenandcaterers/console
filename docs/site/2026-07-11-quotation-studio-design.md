@@ -4,7 +4,7 @@
 **Status:** Approved (design), pending implementation plan
 **Feature:** Internal, passcode-gated quote builder where VAAV selects/customizes menus, prices them, and produces a branded PDF + WhatsApp quote for a customer.
 
-This is **feature 2 of 2** from the original request. Feature 1 (customer menu-share → WhatsApp) shipped; see `docs/2026-07-11-menu-share-whatsapp-design.md`. The two connect conceptually (a customer enquiry feeds a quote) but share no code.
+This is **feature 2 of 2** from the original request. Feature 1 (customer menu-share → WhatsApp) shipped; see `docs/site/2026-07-11-menu-share-whatsapp-design.md`. The two connect conceptually (a customer enquiry feeds a quote) but share no code.
 
 ---
 

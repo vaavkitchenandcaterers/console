@@ -48,7 +48,7 @@ Rules checked and found **already satisfied** — no task needed, do not "fix" t
 | File | Responsibility | Change |
 |------|----------------|--------|
 | `style.css` | Public-site styling. Pill clamp rules; marquee removal. | Modify |
-| `docs/2026-08-30-menu-labelling-plan.md` | The label-length rule in its Task 5. | Modify — tighten the cap |
+| `docs/site/2026-08-30-menu-labelling-plan.md` | The label-length rule in its Task 5. | Modify — tighten the cap |
 | `menu-data.test.js` | Label validation. | Modify — tighten the cap |
 | `index.html` | Hosts the marquee strip; carries 16 inline icons. | Modify |
 | `about/index.html`, `services/index.html`, `menu/index.html`, `contact/index.html`, `studio/index.html` | Inline icons. | Modify — Task 2 |
@@ -65,7 +65,7 @@ Ship this **before** Task 5 of the menu-labelling plan.
 **Files:**
 - Modify: `style.css` (the `.mp-name` rule added by the labelling milestone)
 - Modify: `menu-data.test.js` (the label-length test)
-- Modify: `docs/2026-08-30-menu-labelling-plan.md` (Task 5's authoring rule, so the worksheet and the validator agree)
+- Modify: `docs/site/2026-08-30-menu-labelling-plan.md` (Task 5's authoring rule, so the worksheet and the validator agree)
 
 **Interfaces:**
 - Consumes: `.mp-txt` / `.mp-name` / `.mp-meta` from the labelling milestone's Task 4.
@@ -99,16 +99,16 @@ Two lines at ~20 characters each is ~40, but a label that fills both lines makes
 
 | Location | Says |
 |---|---|
-| `docs/2026-08-30-menu-labelling-plan.md:870` — the authoring rule a human reads | 32 |
-| `docs/2026-08-30-menu-labelling-plan.md:893` — its own (not yet executed) test snippet | 38 |
-| `docs/2026-08-30-menu-labels-worksheet.md:5` — what the kitchen is told | 38 |
+| `docs/site/2026-08-30-menu-labelling-plan.md:870` — the authoring rule a human reads | 32 |
+| `docs/site/2026-08-30-menu-labelling-plan.md:893` — its own (not yet executed) test snippet | 38 |
+| `docs/site/2026-08-30-menu-labels-worksheet.md:5` — what the kitchen is told | 38 |
 | `menu-data.test.js` | no cap at all — the test does not exist yet |
 
 Set all three documents to **28**:
 
-- `docs/2026-08-30-menu-labelling-plan.md:870` — replace "Keep it under about 32 characters — longer labels ellipsise in the pill." with "Keep it to 28 characters or fewer — the picker pill wraps to at most two lines and the validator enforces 28."
-- `docs/2026-08-30-menu-labelling-plan.md:893` — change `toBeLessThanOrEqual(38)` to `toBeLessThanOrEqual(28)`.
-- `docs/2026-08-30-menu-labels-worksheet.md:5` — "Under 38 characters." → "28 characters or fewer."
+- `docs/site/2026-08-30-menu-labelling-plan.md:870` — replace "Keep it under about 32 characters — longer labels ellipsise in the pill." with "Keep it to 28 characters or fewer — the picker pill wraps to at most two lines and the validator enforces 28."
+- `docs/site/2026-08-30-menu-labelling-plan.md:893` — change `toBeLessThanOrEqual(38)` to `toBeLessThanOrEqual(28)`.
+- `docs/site/2026-08-30-menu-labels-worksheet.md:5` — "Under 38 characters." → "28 characters or fewer."
 
 **Do not add the test to `menu-data.test.js` in this task.** The strict form dereferences `m.label.length` unconditionally and 63 of the 66 menus have no `label` yet, so it would throw rather than fail cleanly. The cap becomes enforceable the moment Task 5 supplies all 66 labels, and Task 5 Step 2 is where the test lands — now carrying 28 because this step corrected its snippet.
 
@@ -125,7 +125,7 @@ At `http://localhost:8765/menu/`, with `resize_window` at 375×812:
 - [x] **Step 4: Commit**
 
 ```bash
-git add style.css docs/2026-08-30-menu-labelling-plan.md docs/2026-08-30-menu-labels-worksheet.md
+git add style.css docs/site/2026-08-30-menu-labelling-plan.md docs/site/2026-08-30-menu-labels-worksheet.md
 git commit -m "fix(menu): wrap pill labels instead of clipping them unreadably"
 ```
 

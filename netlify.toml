@@ -8,7 +8,7 @@
 #
 # No `command`, deliberately. Nothing is built at deploy time; the site is
 # served exactly as committed. The menu page generator described in
-# site/docs/2026-09-06-menu-crawlability-plan.md runs locally and its output
+# docs/site/2026-09-06-menu-crawlability-plan.md runs locally and its output
 # is committed like any other source file.
 #
 # _headers, robots.txt and sitemap.xml are read from the publish directory,

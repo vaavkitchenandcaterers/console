@@ -4,7 +4,7 @@
 **Status:** Approved (design), pending implementation plan
 **Feature:** A paste-to-import "New requests" inbox inside the quotation studio, so a customer's WhatsApp enquiry (from the menu-share feature) can be turned into a ready-to-price draft quote.
 
-Extends the quotation studio (`docs/2026-07-11-quotation-studio-design.md`). Consumes the message format produced by the menu-share feature (`docs/2026-07-11-menu-share-whatsapp-design.md`).
+Extends the quotation studio (`docs/site/2026-07-11-quotation-studio-design.md`). Consumes the message format produced by the menu-share feature (`docs/site/2026-07-11-menu-share-whatsapp-design.md`).
 
 ---
 
