@@ -39,8 +39,7 @@ Every one of these is already in the repository or published on the site.
 | Tiffin 20 · Lunch 20 · Dinner 26 sets | `Menu` JSON-LD on `/menu/`, counts verified against the data |
 | Dish entries per category: tiffin 184, lunch 273, dinner 518 (975 total, 288 unique names) | Counted from `menu-data.js`, 6 Sep 2026 |
 | All 66 slugs are unique with no collisions | Verified against `menu-data.js`, 6 Sep 2026 |
-| Tamil names: டிபன் · மதிய உணவு · இரவு உணவு | `menu-data.js` `tamil` |
-| Category labels and Tamil names, e.g. Tiffin / டிபன் | `menu-data.js` `label`, `tamil` |
+| Category labels and Tamil names: Tiffin / டிபன் · Lunch / மதிய உணவு · Dinner / இரவு உணவு | `menu-data.js` `label`, `tamil` |
 | Category notes (HTML, includes `<strong>`) | `menu-data.js` `note` |
 | Section descriptions, e.g. "Crisp dosai, soft idli and ghee pongal for morning functions — 20 set menus." | `Menu` JSON-LD `hasMenuSection[].description` on `/menu/` |
 | Occasion vocabulary: wedding, reception, seemantham, housewarming, puja, birthday, corporate, temple | `menu-data.test.js` `OCCASIONS`; every one has ≥1 menu |
