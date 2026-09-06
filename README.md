@@ -58,6 +58,14 @@ git log cdce541^2           # the real site history, all 122 commits
 - Record any significant technical choice in `docs/decisions.md`.
 - Never commit secrets. Local environment files (`.env*`) are ignored; commit a
   `.env.example` with placeholder values instead.
+- **API keys never go in the client.** The deployed `site/` is static, so
+  anything in its HTML, CSS or JS is public — treat any key placed there as
+  already leaked. Today the site needs none: the Google Maps embed uses the
+  keyless `/maps/embed?pb=…` iframe, and fonts and `wa.me`/`tel:` links need no
+  key. If a feature ever needs one (a Maps JS key, an email/form backend, an
+  analytics token), put the call behind a serverless function or restrict the
+  key by HTTP referrer and API scope — do not inline it. See the public-repo
+  note in `parked/studio/README.md` for why "hidden in the JS" is not hidden.
 - Large binaries are expensive forever. Prefer web-sized derivatives over
   layered sources unless the source genuinely needs versioning.
 
