@@ -1,0 +1,23 @@
+# Netlify reads this file from the base directory — the repository root by
+# default — and resolves `publish` relative to it.
+#
+# This repository is a monorepo: the root holds the console brief, brand
+# assets and the archived prototype, and the website itself lives in site/.
+# So the publish root is site/, not the repository root. Without this file a
+# deploy from this repo would publish a directory containing no index.html.
+#
+# No `command`, deliberately. Nothing is built at deploy time; the site is
+# served exactly as committed. The menu page generator described in
+# site/docs/2026-09-06-menu-crawlability-plan.md runs locally and its output
+# is committed like any other source file.
+#
+# _headers, robots.txt and sitemap.xml are read from the publish directory,
+# so site/_headers is served as /_headers, site/robots.txt as /robots.txt,
+# and so on. They need no separate configuration.
+#
+# site/netlify.toml is kept for the alternative wiring, in which the Netlify
+# base directory is set to site/ and that file is read instead of this one.
+# Only one of the two is ever used, decided by the base directory setting.
+
+[build]
+  publish = "site"

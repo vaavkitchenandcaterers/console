@@ -63,3 +63,37 @@ the next release — this is the main outstanding risk of the move.
 **Alternative rejected.** Leaving the site in its own repository. That preserved
 the existing deploy wiring, but left the 53 unpushed commits as the only copy
 and kept the assets unversioned.
+
+---
+
+## ADR-0004 — Publish the site from `site/` via a root `netlify.toml`
+
+**Date:** 2026-09-06
+**Status:** accepted (repository side); the Netlify dashboard change is outstanding
+
+**Context.** ADR-0003 folded the website into this repository under `site/`.
+That broke an assumption nobody had written down: Netlify reads `netlify.toml`
+from the base directory, which defaults to the repository root, and resolves
+`publish` relative to it. This root has no `netlify.toml`, no `index.html`, no
+`_headers` and no `robots.txt` — they all moved under `site/`. Repointing the
+existing Netlify site at this repository would therefore have published a
+directory with no homepage.
+
+Verified against production on 6 Sep 2026: `vaavkitchenandcaterers.com` is
+still served from `SurendharVr/vaav-kitchen-site` @ `7da804c`, last pushed
+2026-07-15. `/corporate/` and `/kitchen-800.webp` return 404 live, and the
+link fix in `065a4ed` is absent.
+
+**Decision.** Commit a `netlify.toml` at the repository root declaring
+`publish = "site"` and no build command. The alternative — setting the base
+directory to `site/` in the Netlify UI, which would make it read
+`site/netlify.toml` — works equally well but puts the wiring in a dashboard
+instead of in version control.
+
+**Consequence.** The repository is deployable as it stands. `site/netlify.toml`
+is retained so the alternative wiring still works; exactly one of the two files
+is read, decided by the base directory setting. The remaining step needs
+Netlify access and cannot be done from the repository: repoint the site to this
+repo and change the production branch from `master` to `main`. Confirm the
+custom domain and TLS certificate carry over, and leave the old site
+unpublished rather than deleted until the new deploy is verified.

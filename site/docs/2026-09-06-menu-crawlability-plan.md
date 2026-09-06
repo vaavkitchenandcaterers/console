@@ -48,7 +48,7 @@ Verified against production on 6 Sep 2026.
 
 One of these must happen first:
 
-1. **Add a root `netlify.toml`** with `[build] publish = "site"`, then repoint the Netlify site to `vaavkitchenandcaterers/console` and set the production branch to `main`. `_headers`, `robots.txt` and `sitemap.xml` are read from the publish directory, so they resolve correctly once `site/` is the publish root. **Recommended** — the config stays version-controlled.
+1. **Add a root `netlify.toml`** with `[build] publish = "site"`. **Done** — the file is committed at the repository root, so the repo is now deployable. What remains is the dashboard half, which needs Netlify access: repoint the site to `vaavkitchenandcaterers/console` and set the production branch to `main`. `_headers`, `robots.txt` and `sitemap.xml` are read from the publish directory, so they resolve correctly once `site/` is the publish root. **Recommended** — the config stays version-controlled.
 2. **Set the base directory to `site` in the Netlify UI**, which makes it read `site/netlify.toml` with its existing `publish = "."`. Works, but the wiring lives in a dashboard instead of the repository.
 
 Either way the production branch changes from `master` to `main`. Confirm the custom domain and HTTPS certificate carry over before switching, and keep the old site unpublished rather than deleted until the new deploy is verified.
