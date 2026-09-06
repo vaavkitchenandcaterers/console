@@ -265,7 +265,7 @@ EOF
 - Consumes: nothing from Task 1. The new `mediaConditionFor()` helper is local to this task's tests.
 - Produces: nothing consumed later.
 
-- [ ] **Step 1: Write the failing test**
+- [x] **Step 1: Write the failing test**
 
 Append to `site/responsive.test.js`:
 
@@ -308,7 +308,7 @@ describe('layout breakpoints', () => {
 });
 ```
 
-- [ ] **Step 2: Run the test and confirm it fails**
+- [x] **Step 2: Run the test and confirm it fails**
 
 ```bash
 cd site && npx vitest run responsive.test.js -t "layout breakpoints"
@@ -322,7 +322,7 @@ expected '@media(max-width:900px)' to match /max-width:\s*800px/
 
 The hero test passes already — it is a guard against moving the wrong rule, not a change.
 
-- [ ] **Step 3: Move the three nav rules into a new 800px block**
+- [x] **Step 3: Move the three nav rules into a new 800px block**
 
 In `site/style.css`, the block at lines 464–473 currently reads:
 
@@ -362,7 +362,7 @@ Cut the three nav lines — `.nav-links{display:none}`, `.menu-toggle{display:bl
 
 Copy the `.nav-links.open` declaration **verbatim** from the original — it is long and its full value is not reproduced here. Move the line, do not retype it.
 
-- [ ] **Step 4: Run the test and confirm it passes**
+- [x] **Step 4: Run the test and confirm it passes**
 
 ```bash
 cd site && npx vitest run responsive.test.js -t "layout breakpoints"
@@ -370,7 +370,7 @@ cd site && npx vitest run responsive.test.js -t "layout breakpoints"
 
 Expected: **4 passed**.
 
-- [ ] **Step 5: Run the whole suite**
+- [x] **Step 5: Run the whole suite**
 
 ```bash
 cd site && npm test
@@ -378,7 +378,7 @@ cd site && npm test
 
 Expected: **77 passed** across 4 files.
 
-- [ ] **Step 6: Commit**
+- [x] **Step 6: Commit**
 
 ```bash
 cd "C:/Users/ASUS/Downloads/Leads"

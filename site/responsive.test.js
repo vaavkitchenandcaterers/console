@@ -85,3 +85,40 @@ describe('heading type scale', () => {
     }
   });
 });
+
+/**
+ * Return the @media condition of the block containing `needle`, or null if the
+ * needle sits outside any media block. Assumes no nested @media, which is
+ * verified for this stylesheet (maximum brace depth is 1).
+ */
+export function mediaConditionFor(needle) {
+  const idx = CSS.indexOf(needle);
+  if (idx === -1) throw new Error(`needle not found: ${needle}`);
+  const before = CSS.slice(0, idx);
+  const start = before.lastIndexOf('@media');
+  if (start === -1) return null;
+  const between = CSS.slice(start, idx);
+  const opens = (between.match(/\{/g) || []).length;
+  const closes = (between.match(/\}/g) || []).length;
+  if (opens - closes < 1) return null; // that media block already closed
+  return CSS.slice(start, CSS.indexOf('{', start)).trim();
+}
+
+describe('layout breakpoints', () => {
+  it('the navigation collapses at 800px, not 900px', () => {
+    expect(mediaConditionFor('.nav-links{display:none}')).toMatch(/max-width:\s*800px/);
+  });
+
+  it('the open mobile menu is styled at the same width as the collapse', () => {
+    expect(mediaConditionFor('.nav-links.open{')).toMatch(/max-width:\s*800px/);
+  });
+
+  it('the menu toggle appears at the same width as the collapse', () => {
+    expect(mediaConditionFor('.menu-toggle{display:block}')).toMatch(/max-width:\s*800px/);
+  });
+
+  it('the hero grid still collapses at 900px', () => {
+    const needle = '.hero-grid,#about .about-grid,.contact-grid{grid-template-columns:1fr';
+    expect(mediaConditionFor(needle)).toMatch(/max-width:\s*900px/);
+  });
+});
