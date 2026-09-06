@@ -9,3 +9,25 @@
   Permissions-Policy: geolocation=(), microphone=(), camera=(), payment=()
   Strict-Transport-Security: max-age=31536000; includeSubDomains
   Cross-Origin-Opener-Policy: same-origin
+
+# Images are cached for 30 days rather than a year with `immutable`, because
+# they are not fingerprinted: the filenames carry no content hash, so a cached
+# copy can only be replaced by waiting out max-age or by renaming the file.
+# Thirty days removes the per-request revalidation these assets currently pay
+# on every page load, while keeping the worst case bounded — a photo replaced
+# in place still reaches returning visitors within a month.
+#
+# To publish an image change immediately, rename the file. The reference in the
+# HTML changes with it, so the new URL is fetched and the old cache is bypassed.
+#
+# CSS and JS deliberately keep the site default (max-age=0, must-revalidate).
+# They change often and are not fingerprinted either, and correctness there
+# matters more than one revalidation round-trip.
+/*.webp
+  Cache-Control: public, max-age=2592000
+/*.jpg
+  Cache-Control: public, max-age=2592000
+/*.jpeg
+  Cache-Control: public, max-age=2592000
+/*.png
+  Cache-Control: public, max-age=2592000
