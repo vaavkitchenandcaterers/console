@@ -31,9 +31,20 @@ npm test         # vitest
 npm run build    # production build to dist/
 ```
 
-`site/` retains its full commit history — it was grafted in with `git subtree`
-from the standalone `vaav-kitchen-site` repository, so `git log site/` shows
-every change back to the original July 2026 commit.
+### History
+
+`site/` was grafted in from the standalone `vaav-kitchen-site` repository with
+`git subtree`, and all 122 of its commits are present — plain `git log` shows
+them, back to the original July 2026 commit.
+
+One caveat: `git subtree` merges history without rewriting paths, so those old
+commits still refer to `index.html` rather than `site/index.html`. Path-filtered
+log therefore does **not** reach them, and neither does `--follow`:
+
+```bash
+git log -- site/            # only the merge commit — misleading
+git log cdce541^2           # the real site history, all 122 commits
+```
 
 ## Contributing
 

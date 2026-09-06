@@ -53,7 +53,9 @@ layered Photoshop source was committed separately from the other assets so it
 can be dropped independently.
 
 **Consequence.** `console` is now a monorepo: the site and the future internal
-console share it. `git log site/` still reaches the original July 2026 commit.
+console share it. All 122 site commits are reachable, but via `git log cdce541^2`
+rather than `git log -- site/` — subtree merges history without rewriting paths,
+so pre-merge commits still name `index.html`, not `site/index.html`.
 The previously unpushed work now has an off-machine copy. The site's own
 deployment, which pointed at the old repository, must be repointed here before
 the next release — this is the main outstanding risk of the move.
