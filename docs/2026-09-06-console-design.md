@@ -10,7 +10,9 @@ Supersedes the operating model of `site/studio/` (see `docs/site/2026-07-11-quot
 
 ## 0. The read
 
-Grounded in the existing `site/studio/` and the three live quotes in `data/vaav-quotes-backup.json`.
+Grounded in the existing `site/studio/`.
+
+> **Amended 6 Sep 2026.** An earlier version cited three quotes from a `data/vaav-quotes-backup.json` in this repository as evidence, including the ₹3,60,000 / ₹6,24,000 / ₹48,000 figures used below to size the stakes. The owner has since confirmed that file was **test data**, and it has been deleted. Treat those amounts as illustrative of the order of magnitude the studio is built for, not as observed revenue. The structural findings are unaffected — they come from `studio.js`, `menu-data.js` and the design specs, not from the quote records.
 
 | Question | Answer | Evidence |
 |---|---|---|

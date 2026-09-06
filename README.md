@@ -11,7 +11,6 @@ Internal console and web presence for Vaav Kitchen and Caterers.
 │   ├── brand/            logo variants
 │   └── photos/           kitchen and dish photography, incl. layered sources
 ├── archive/prototype/    the June 2026 static prototype, superseded by site/
-├── data/                 quotes backup
 └── docs/
     ├── decisions.md      architecture decision record
     └── site/             design and implementation docs for the website
