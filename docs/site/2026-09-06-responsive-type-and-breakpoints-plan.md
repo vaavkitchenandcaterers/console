@@ -19,7 +19,11 @@
 - **Do not touch `.menu-picker`.** Its 92%-hidden overflow is a known, scoped-out issue.
 - **Do not widen the container.** The 1140px cap is correct; §5 of the spec closes this with measurements.
 - **Accept the 1150–1400px trade-off.** Headings render a few px smaller in that band. This is intended. Do not "fix" it by raising the ceiling.
-- **Commit style:** Conventional Commits. One commit per task.
+- **Commit style:** Conventional Commits. One commit per task. Each commit stages this plan file too, so the
+  checkbox ticks land with the work rather than stranding in the working tree.
+- **Ticking checkboxes:** Task 1, 2 and 3 reuse identical step labels ("Write the failing test", "Run the test
+  and confirm it fails", "Commit"). Scope any find-and-replace to the text between `### Task N:` and the next
+  `### Task`, or you will tick a later task's boxes.
 - **Git Bash, not PowerShell.** Heredocs for multi-line commit messages, never `@'…'@`.
 
 ## Facts you may use
@@ -59,7 +63,7 @@ The defect: a bare `vw` middle term cannot exceed the `rem` minimum until the vi
 **Interfaces:**
 - Produces: `clampFor(selector)` returning `{min, intercept, slope, max}` in px, and `at(clamp, vw)` returning the rendered px at a viewport width. Task 2 adds to the same file but does not use these.
 
-- [ ] **Step 1: Write the failing test**
+- [x] **Step 1: Write the failing test**
 
 Create `site/responsive.test.js`:
 
@@ -153,7 +157,7 @@ describe('heading type scale', () => {
 });
 ```
 
-- [ ] **Step 2: Run the test and confirm it fails**
+- [x] **Step 2: Run the test and confirm it fails**
 
 ```bash
 cd site && npx vitest run responsive.test.js
@@ -168,7 +172,7 @@ expected 41.6 to be greater than 41.6
 
 That 41.6 is the frozen minimum — exactly the defect. If the tests pass here, the parser is wrong; stop and fix the parser before touching CSS.
 
-- [ ] **Step 3: Rewrite the hero and 404 values**
+- [x] **Step 3: Rewrite the hero and 404 values**
 
 In `site/style.css` line 112, replace:
 
@@ -190,7 +194,7 @@ clamp(1.5rem,1.157rem + 1.714vw,2.7rem)
 
 Keep the rest of each declaration byte-identical — only the `clamp(...)` changes.
 
-- [ ] **Step 4: Rewrite the five section headings**
+- [x] **Step 4: Rewrite the five section headings**
 
 At lines 162, 300, 362, 373 and 394, replace every `clamp(2rem,4vw,2.9rem)` with:
 
@@ -207,7 +211,7 @@ grep -c 'clamp(1.5rem,1.1rem + 2vw,2.9rem)' style.css
 
 Expected output: `5`
 
-- [ ] **Step 5: Run the test and confirm it passes**
+- [x] **Step 5: Run the test and confirm it passes**
 
 ```bash
 cd site && npx vitest run responsive.test.js
@@ -215,7 +219,7 @@ cd site && npx vitest run responsive.test.js
 
 Expected: **6 passed**.
 
-- [ ] **Step 6: Run the whole suite**
+- [x] **Step 6: Run the whole suite**
 
 ```bash
 cd site && npm test
@@ -223,7 +227,7 @@ cd site && npm test
 
 Expected: **73 passed** across 4 files — the 67 baseline plus the 6 new ones. Any drop below 67 means collateral damage; stop and investigate.
 
-- [ ] **Step 7: Commit**
+- [x] **Step 7: Commit**
 
 ```bash
 cd "C:/Users/ASUS/Downloads/Leads"
@@ -378,7 +382,7 @@ Expected: **77 passed** across 4 files.
 
 ```bash
 cd "C:/Users/ASUS/Downloads/Leads"
-git add site/responsive.test.js site/style.css
+git add site/responsive.test.js site/style.css docs/site/2026-09-06-responsive-type-and-breakpoints-plan.md
 git commit -F - <<'EOF'
 fix(nav): collapse the navigation at 800px instead of 900px
 
@@ -467,7 +471,7 @@ to:
 
 ```bash
 cd "C:/Users/ASUS/Downloads/Leads"
-git add docs/site/2026-09-06-responsive-type-and-breakpoints-design.md
+git add docs/site/2026-09-06-responsive-type-and-breakpoints-design.md docs/site/2026-09-06-responsive-type-and-breakpoints-plan.md
 git commit -F - <<'EOF'
 docs: mark the responsive type and breakpoint spec implemented
 
