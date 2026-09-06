@@ -17,3 +17,30 @@
 # rather than redirected.
 
 https://vaavkitchenandcaterers.netlify.app/*  https://vaavkitchenandcaterers.com/:splat  301!
+
+# Every page is also reachable at its explicit index.html — /services/ and
+# /services/index.html both returned 200, so each page had a second URL. Both
+# carry the same canonical, pointing at the clean form, and none of the
+# index.html URLs are indexed, so this was never the active problem; it is
+# closed here because a duplicate surface that costs nothing to remove should
+# not be left open.
+#
+# Listed one per page rather than pattern-matched: a Netlify splat only binds
+# at the end of a path, so no single rule covers both /about/index.html and
+# /menu/tiffin/index.html. Nine pages is few enough to be explicit, and the
+# list is checked by the redirect test below.
+#
+# These need the forcing bang for the same reason as the rule above: each
+# index.html is a real file in the publish directory and would otherwise be
+# served rather than redirected. Requests for the clean URL are unaffected —
+# a rule matches the requested path, and "/" is not "/index.html".
+
+/index.html               /               301!
+/about/index.html         /about/         301!
+/contact/index.html       /contact/       301!
+/corporate/index.html     /corporate/     301!
+/services/index.html      /services/      301!
+/menu/index.html          /menu/          301!
+/menu/tiffin/index.html   /menu/tiffin/   301!
+/menu/lunch/index.html    /menu/lunch/    301!
+/menu/dinner/index.html   /menu/dinner/   301!
