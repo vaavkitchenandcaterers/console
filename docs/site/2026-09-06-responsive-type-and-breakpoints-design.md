@@ -1,7 +1,7 @@
 # Responsive Type Scale and the 900px Cliff — Design Spec
 
 **Date:** 2026-09-06
-**Status:** Approved (design), pending implementation plan
+**Status:** Implemented 2026-09-06. See `docs/site/2026-09-06-responsive-type-and-breakpoints-plan.md`.
 **Feature:** Make heading type fluid across the full device range, and split the shared 900px breakpoint so the navigation and the hero stop collapsing together.
 
 ---

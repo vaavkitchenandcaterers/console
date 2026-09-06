@@ -413,7 +413,7 @@ The tests prove the arithmetic. This task proves the browser agrees, and records
 
 **Interfaces:** none.
 
-- [ ] **Step 1: Serve the site locally**
+- [x] **Step 1: Serve the site locally**
 
 ```bash
 cd site && node server.cjs
@@ -421,7 +421,7 @@ cd site && node server.cjs
 
 Expected: a line naming port 8765. Leave it running; use the `vaav` launch config if driving a browser tool.
 
-- [ ] **Step 2: Check the type curve in a real browser**
+- [x] **Step 2: Check the type curve in a real browser**
 
 > **Measure `window.innerWidth`, not `document.documentElement.clientWidth`.** This browser renders a 15px
 > scrollbar, so `clientWidth` reads 15px smaller. Both `vw` units and media queries use `innerWidth`, so a
@@ -436,7 +436,7 @@ getComputedStyle(document.querySelector('.hero h1')).fontSize
 
 Expected, within a pixel: `28 · 30.2 · 45.6 · 46.9 · 49.4 · 50.6 · 55.7 · 62.0 · 72`. The sequence must strictly increase. A repeated value means a dead zone survived.
 
-- [ ] **Step 3: Check the breakpoint split**
+- [x] **Step 3: Check the breakpoint split**
 
 At the same URL, confirm:
 
@@ -450,7 +450,7 @@ Confirm with `matchMedia('(max-width:800px)').matches` rather than inferring fro
 
 The 805px row is the point of this change: full navigation, hero still single-column.
 
-- [ ] **Step 4: Confirm no page scrolls sideways**
+- [x] **Step 4: Confirm no page scrolls sideways**
 
 For each of `/`, `/menu/`, `/services/`, `/corporate/`, `/about/`, `/contact/` at 320px:
 
@@ -460,7 +460,7 @@ document.documentElement.scrollWidth - document.documentElement.clientWidth
 
 Expected: `0` on every page. This was true before the change and must stay true.
 
-- [ ] **Step 5: Update the spec status**
+- [x] **Step 5: Update the spec status**
 
 In `docs/site/2026-09-06-responsive-type-and-breakpoints-design.md`, change:
 
@@ -474,7 +474,7 @@ to:
 **Status:** Implemented 2026-09-06. See `docs/site/2026-09-06-responsive-type-and-breakpoints-plan.md`.
 ```
 
-- [ ] **Step 6: Commit**
+- [x] **Step 6: Commit**
 
 ```bash
 cd "C:/Users/ASUS/Downloads/Leads"
@@ -489,7 +489,7 @@ six pages still have zero horizontal overflow at 320px.
 EOF
 ```
 
-- [ ] **Step 7: Push and confirm the deploy**
+- [x] **Step 7: Push and confirm the deploy**
 
 ```bash
 cd "C:/Users/ASUS/Downloads/Leads" && git push origin main
