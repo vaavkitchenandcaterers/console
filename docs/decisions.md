@@ -137,3 +137,39 @@ is an unsalted SHA-256 hash in the public `studio.js`, guarding customer names,
 phone numbers, venues and event dates — that is a real weakness and is
 addressed by the server-side auth in `docs/2026-09-06-console-design.md` (S1),
 not by this decision.
+
+---
+
+## ADR-0006 — Park the quote studio outside the deployed site
+
+**Date:** 2026-09-06
+**Status:** accepted
+
+**Context.** The quote studio was an internal tool served from the public
+marketing site at `/studio/` — noindex'd, `Disallow`ed in `robots.txt`, and
+gated by a client-side passcode, but sharing an origin and a CSP with pages
+meant for customers. Its passcode is an unsalted SHA-256 in the publicly
+readable `studio.js`, guarding customer names, phone numbers, venues and event
+dates. It is also superseded by the console specified in
+`docs/2026-09-06-console-design.md`, which does the same job with server-side
+storage and adds the deal pipeline the studio never had.
+
+**Decision.** Move `studio/index.html`, `studio.js`, `studio.css`,
+`request-parse.js` and `request-parse.test.js` to `parked/studio/`, outside the
+`site/` publish directory. `/studio/` now returns 404. `menu-data.js` stays in
+`site/` — it is shared with the public menu page. `Disallow: /studio/` was
+removed from `robots.txt` because the path no longer exists.
+
+**Consequence.** The public deployment no longer carries an internal tool. The
+code is kept, not deleted, and its parser tests keep running: `site/vitest.config.js`
+gained a `../parked/**/*.test.js` include and a `server.fs.allow` entry so Vite
+will load files above its root. Verified — 67 tests pass across three files,
+including the studio's 19 parser tests.
+
+`parked/studio/README.md` records how to bring it back, including the two steps
+that are easy to miss: restoring the `robots.txt` rule, and simplifying the
+vitest config again.
+
+**Not addressed.** The passcode weakness travels with the code. If the studio is
+ever redeployed as-is it needs real access control in front of it — the
+permanent fix is screen S1 of the console brief.
