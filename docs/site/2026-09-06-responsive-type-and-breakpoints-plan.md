@@ -423,6 +423,11 @@ Expected: a line naming port 8765. Leave it running; use the `vaav` launch confi
 
 - [ ] **Step 2: Check the type curve in a real browser**
 
+> **Measure `window.innerWidth`, not `document.documentElement.clientWidth`.** This browser renders a 15px
+> scrollbar, so `clientWidth` reads 15px smaller. Both `vw` units and media queries use `innerWidth`, so a
+> `clientWidth`-based reading will look 15px off and appear to fail when nothing is wrong. Set the window
+> width to the values below and confirm `innerWidth` matches before reading the font size.
+
 At `http://localhost:8765/`, for each width in **320, 375, 768, 800, 865, 895, 1024, 1185, 1440**, record the computed hero font size:
 
 ```js
@@ -435,11 +440,13 @@ Expected, within a pixel: `28 · 30.2 · 45.6 · 46.9 · 49.4 · 50.6 · 55.7 ·
 
 At the same URL, confirm:
 
-| Width | `.menu-toggle` display | `.hero-grid` columns |
+| `innerWidth` | `.menu-toggle` display | `.hero-grid` columns |
 |---|---|---|
 | 795px | `block` | 1 |
 | 805px | `none` | 1 |
 | 905px | `none` | 2 |
+
+Confirm with `matchMedia('(max-width:800px)').matches` rather than inferring from the rendered layout — it evaluates the same width the stylesheet does.
 
 The 805px row is the point of this change: full navigation, hero still single-column.
 

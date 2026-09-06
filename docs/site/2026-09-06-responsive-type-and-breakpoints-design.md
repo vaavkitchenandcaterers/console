@@ -24,7 +24,7 @@ A bare `vw` middle term cannot exceed the `rem` minimum until the viewport is al
 
 ### The measured cliff
 
-| Viewport | Hamburger | Hero columns | h1 |
+| `clientWidth` | Hamburger | Hero columns | h1 |
 |---|---|---|---|
 | 753px | shown | 1 | 42.24px |
 | 785px | shown | 1 | 44px |
@@ -32,7 +32,7 @@ A bare `vw` middle term cannot exceed the `rem` minimum until the viewport is al
 | **895px** | **hidden** | **2** | 50.05px |
 | 985px | hidden | 2 | 55px |
 
-Thirty pixels flips the whole page from phone layout to full desktop. The heading moves 1.65px across the same jump. The layout shouts; the type whispers.
+Thirty pixels flips the whole page from phone layout to full desktop. (Widths in that table are `clientWidth`; this browser adds a 15px scrollbar, so the media query sees 880px and 910px and the crossing is the 900px breakpoint exactly.) The heading moves 1.65px across the same jump. The layout shouts; the type whispers.
 
 ## 2. Scope
 
