@@ -109,7 +109,7 @@ nav.scrolled{box-shadow:0 8px 26px -16px rgba(20,61,29,.45);background:rgba(247,
 @keyframes floaty{0%,100%{transform:translateY(0)}50%{transform:translateY(-13px)}}
 @media(max-width:760px){.hd-leaf2,.hd-anise{display:none}.hd-leaf1{width:46px;opacity:.4}}
 .hero-grid{display:grid;grid-template-columns:1.05fr .95fr;gap:56px;align-items:center}
-.hero h1{font-size:clamp(2.6rem,5.5vw,4.5rem);color:var(--green-deep);letter-spacing:-.01em}
+.hero h1{font-size:clamp(1.75rem,0.964rem + 3.929vw,4.5rem);color:var(--green-deep);letter-spacing:-.01em}
 .hero h1 em{font-style:italic;color:var(--kumkum)}
 .hero p.lead{font-size:1.2rem;color:var(--muted);margin:22px 0 32px;max-width:34ch}
 .hero-cta{display:flex;gap:16px;flex-wrap:wrap;align-items:center}
@@ -121,7 +121,7 @@ nav.scrolled{box-shadow:0 8px 26px -16px rgba(20,61,29,.45);background:rgba(247,
 .nf-icon{width:64px;height:64px;border-radius:50%;background:var(--cream-deep);color:var(--green-deep);display:flex;align-items:center;justify-content:center;margin:0 auto 22px}
 .nf-icon svg{width:28px;height:28px}
 #notfound .eyebrow{display:block;margin-bottom:16px}
-#notfound h1{font-size:clamp(1.9rem,4.4vw,2.7rem);max-width:15ch;margin:0 auto 18px}
+#notfound h1{font-size:clamp(1.5rem,1.157rem + 1.714vw,2.7rem);max-width:15ch;margin:0 auto 18px}
 #notfound .nf-lede{color:var(--muted);font-size:1.05rem;line-height:1.6;max-width:46ch;margin:0 auto 30px}
 #notfound .nf-actions{display:flex;gap:18px;justify-content:center;align-items:center;flex-wrap:wrap;margin-bottom:22px}
 #notfound .nf-help{color:var(--muted);font-size:.95rem}
@@ -159,7 +159,7 @@ nav.scrolled{box-shadow:0 8px 26px -16px rgba(20,61,29,.45);background:rgba(247,
 /* ---------- Sections ---------- */
 section{padding:90px 0}
 .sec-head{max-width:34rem;margin-bottom:48px}
-.sec-head h2{font-size:clamp(2rem,4vw,2.9rem);color:var(--green-deep);margin-top:10px}
+.sec-head h2{font-size:clamp(1.5rem,1.1rem + 2vw,2.9rem);color:var(--green-deep);margin-top:10px}
 
 /* services */
 .cards{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;list-style:none;margin:0;padding:0}
@@ -297,7 +297,7 @@ section{padding:90px 0}
 
 /* about */
 #about .about-grid{display:grid;grid-template-columns:1fr 1fr;gap:60px;align-items:center}
-#about h1,#about h2{font-size:clamp(2rem,4vw,2.9rem);color:var(--green-deep);margin:10px 0 18px}
+#about h1,#about h2{font-size:clamp(1.5rem,1.1rem + 2vw,2.9rem);color:var(--green-deep);margin:10px 0 18px}
 .about-lede{color:var(--muted);font-size:1.05rem;line-height:1.6}
 .about-lede+a.btn{margin:22px 0 4px}
 .menu-intro+a.btn{margin:4px 0 20px}
@@ -359,7 +359,7 @@ section{padding:90px 0}
 /* home final CTA band */
 #home-cta{background:var(--green-deep);color:var(--cream);text-align:center}
 #home-cta .eyebrow{color:var(--yellow)}
-#home-cta h2{color:var(--white);font-size:clamp(2rem,4vw,2.9rem);margin:10px 0 14px}
+#home-cta h2{color:var(--white);font-size:clamp(1.5rem,1.1rem + 2vw,2.9rem);margin:10px 0 14px}
 .home-cta-inner{max-width:620px;margin:0 auto}
 .home-cta-inner > p{color:rgba(247,243,231,.85);font-size:1.05rem;line-height:1.6;margin-bottom:26px}
 .home-cta-actions{display:flex;gap:14px;justify-content:center;align-items:center;flex-wrap:wrap;margin-bottom:16px}
@@ -370,7 +370,7 @@ section{padding:90px 0}
 #home-cta .wa-call:hover,#home-cta .wa-call:focus-visible{color:var(--yellow)}
 
 /* contact page */
-#contact h1{color:var(--white);font-size:clamp(2rem,4vw,2.9rem);margin:10px 0 8px}
+#contact h1{color:var(--white);font-size:clamp(1.5rem,1.1rem + 2vw,2.9rem);margin:10px 0 8px}
 .contact-intro{color:rgba(247,243,231,.85);font-size:1.05rem;line-height:1.6;max-width:60ch;margin-bottom:26px}
 #contact .breadcrumb,#contact .breadcrumb span[aria-current]{color:rgba(247,243,231,.72)}
 #contact .breadcrumb a{color:var(--yellow)}
@@ -391,7 +391,7 @@ section{padding:90px 0}
 /* contact */
 #contact{background:var(--green-deep);color:var(--cream)}
 #contact .eyebrow{color:var(--yellow)}
-#contact h2{color:var(--white);font-size:clamp(2rem,4vw,2.9rem);margin-top:10px}
+#contact h2{color:var(--white);font-size:clamp(1.5rem,1.1rem + 2vw,2.9rem);margin-top:10px}
 .contact-grid{display:grid;grid-template-columns:1fr 1fr;gap:56px;margin-top:30px}
 .info-list{list-style:none;margin:0;padding:0}
 .wa-cta{display:flex;align-items:center}
