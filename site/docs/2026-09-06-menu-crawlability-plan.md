@@ -16,7 +16,8 @@
 
 ## Global Constraints
 
-- **No build step at deploy time.** `netlify.toml` sets `publish = "."`. The generator runs **locally**, and its output is committed like any other source file. Netlify must keep publishing the repository root verbatim — do not add a `command` to `netlify.toml`, and do not move the site into `dist/`. `dist/` remains a stale artefact; do not touch it.
+- **No build step at deploy time.** The generator runs **locally**, and its output is committed like any other source file. Do not add a `command` to `netlify.toml`, and do not move the site into `dist/`. `dist/` remains a stale artefact; do not touch it.
+- **⚠ The deploy is not wired to this repository, and `netlify.toml` is in the wrong place for it.** Verified 6 Sep 2026 — see "Deploy prerequisite" below. This plan **cannot ship** until that is resolved. Implement it if you like; it will not reach production.
 - **`menu-data.js` stays the single source of truth.** The generator reads it; nothing is retyped. If a dish name is wrong, it is fixed in `menu-data.js` and the pages are regenerated — never edited by hand.
 - **Generated files are never hand-edited.** Each one carries a header comment saying so. Task 4 adds a test that fails if a generated page drifts from the data.
 - **No new external origins.** Copy the CSP meta tag from `menu/index.html` **byte for byte**. It permits Google Fonts and Google Maps frames and nothing else.
@@ -28,6 +29,29 @@
 - **Every WhatsApp CTA ships with a real `href`.** As of `065a4ed` the site has no `href="#"` left. Generated pages must not reintroduce one — bake the `wa.me` URL in, and let `script.js` overwrite it with the identical value.
 - **Commit style:** Conventional Commits. One commit per task.
 - **Git Bash, not PowerShell.** Heredocs for multi-line commit messages, never `@'…'@`.
+
+## Deploy prerequisite — BLOCKING
+
+Verified against production on 6 Sep 2026.
+
+**Production is frozen at 15 July 2026.** `vaavkitchenandcaterers.com` is served by Netlify from `SurendharVr/vaav-kitchen-site` @ `master` = `7da804c`, whose last push was 2026-07-15. The 53 commits made between then and 31 August have never been pushed anywhere. What that means live, right now:
+
+| Check | Live result |
+|---|---|
+| `/corporate/` | **HTTP 404** — the whole page does not exist |
+| `/kitchen-800.webp` | **HTTP 404** — the WebP work is absent |
+| `href="#"` on the homepage | **6** — the `065a4ed` fix is not deployed |
+| static `wa.me` links | **0** |
+| `sitemap.xml` | 5 URLs, all `lastmod` 2026-07-11 |
+
+**Repointing Netlify at `vaavkitchenandcaterers/console` will not work on its own.** Netlify reads `netlify.toml` from the base directory, which defaults to the repository root, and resolves `publish` relative to it. In this repository the root holds `README.md`, `archive/`, `assets/`, `data/`, `docs/` and `site/` — and **no `netlify.toml`, no `index.html`, no `_headers`, no `robots.txt`**. Those all live under `site/`. A naive repoint would publish a directory with no homepage.
+
+One of these must happen first:
+
+1. **Add a root `netlify.toml`** with `[build] publish = "site"`, then repoint the Netlify site to `vaavkitchenandcaterers/console` and set the production branch to `main`. `_headers`, `robots.txt` and `sitemap.xml` are read from the publish directory, so they resolve correctly once `site/` is the publish root. **Recommended** — the config stays version-controlled.
+2. **Set the base directory to `site` in the Netlify UI**, which makes it read `site/netlify.toml` with its existing `publish = "."`. Works, but the wiring lives in a dashboard instead of the repository.
+
+Either way the production branch changes from `master` to `main`. Confirm the custom domain and HTTPS certificate carry over before switching, and keep the old site unpublished rather than deleted until the new deploy is verified.
 
 ## Facts you may use
 
@@ -319,4 +343,4 @@ Two reasons to wait rather than build them now:
 - **What could break?** `/menu/` is modified in Task 3 (link block, schema). The explorer's JS is untouched, but the schema edit sits inside the same file — validate the JSON parses before committing. The three new pages are additive and cannot break an existing route.
 - **What is deliberately not done?** 66 per-set pages (thin, near-duplicate, and the anchors cover the need); occasion pages (decision gate above); any change to the explorer; any change to `netlify.toml`; prices.
 - **The known contradiction.** The README says "no build step" and this plan adds a generator. That is reconciled by running it locally and committing its output — Netlify still publishes the root verbatim, and nothing new happens at deploy time. If that reconciliation is ever abandoned in favour of a Netlify build command, this plan's central constraint is void and the deploy story needs rewriting.
-- **Deploy note.** As of this writing the Netlify site is still connected to `SurendharVr/vaav-kitchen-site`, not to `vaavkitchenandcaterers/console` where this work will land. **None of this reaches production until that is repointed.** See ADR-0003 in `docs/decisions.md`.
+- **Deploy note.** See "Deploy prerequisite" above — verified, and blocking. Production is eight weeks stale and `/corporate/` 404s today, independently of this plan. Fixing the deploy is worth more than fixing crawlability, and should be done first. See ADR-0003 in `docs/decisions.md`.
