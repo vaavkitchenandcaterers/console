@@ -22,7 +22,7 @@
 - Every page: exactly one `<h1>`; unique `<title>`, meta description, self-canonical, OG tags.
 - Every page (mobile): sticky Call·WhatsApp bar; (desktop): floating WhatsApp bubble.
 - WCAG AA: body ≥16px; primary CTAs ≥44px; text contrast ≥4.5:1 (gold text uses `--gold-text` on light bg); focus-visible rings; `aria-current="page"` on active nav link.
-- No fabricated data: `AggregateRating.reviewCount` omitted until a real count is supplied.
+- No fabricated data: `AggregateRating.reviewCount` is `10` (`ratingValue` 5.0), read from the live Google listing on 2026-09-06. It was omitted until then — which Search Console rejected, since Google requires a count.
 
 ## File Structure
 - **Create:** `services/index.html`, `menu/index.html`, `about/index.html`, `contact/index.html`, `sitemap.xml`, `robots.txt`
@@ -101,7 +101,7 @@ git commit -m "Multipage nav active-state + section-JS guards + per-page WA cont
 - [ ] **Step 1: Set Home `<head>`** — keep CSP/referrer meta; convert asset links to root-absolute (`<link rel="stylesheet" href="/style.css">`, favicon `/favicon-64.png`); set:
 ```html
 <title>VAAV Kitchen and Caterers — Pure Veg Caterers in Perungalathur, Chennai</title>
-<meta name="description" content="VAAV Kitchen and Caterers — authentic Tamil pure-veg caterers in Perungalathur, serving all of Chennai. Weddings, upanayanams & corporate events. 4.9★ on Google.">
+<meta name="description" content="VAAV Kitchen and Caterers — authentic Tamil pure-veg caterers in Perungalathur, serving all of Chennai. Weddings, upanayanams & corporate events. 5.0★ on Google.">
 <link rel="canonical" href="https://vaavkitchenandcaterers.com/">
 <meta property="og:url" content="https://vaavkitchenandcaterers.com/">
 <link rel="prefetch" href="/menu/"><link rel="prefetch" href="/contact/">
@@ -211,12 +211,12 @@ git commit -m "Add Menu & Packages page (66-menu explorer + packages, Menu schem
 - [ ] **Step 1: Create `about/index.html`** with shared blocks (nav active = About), root-absolute asset refs. Head:
 ```html
 <title>About VAAV Kitchen and Caterers — Our Pure Veg Home-Food Story</title>
-<meta name="description" content="The story behind VAAV Kitchen and Caterers — traditional Pure Vegetarian Home Food made with organic ingredients, cooked fresh for every celebration. 4.9★ on Google.">
+<meta name="description" content="The story behind VAAV Kitchen and Caterers — traditional Pure Vegetarian Home Food made with organic ingredients, cooked fresh for every celebration. 5.0★ on Google.">
 <link rel="canonical" href="https://vaavkitchenandcaterers.com/about/">
 <meta property="og:url" content="https://vaavkitchenandcaterers.com/about/">
 ```
 
-- [ ] **Step 2: Body** — `<h1>Pure vegetarian, cooked like home.</h1>`; About story block (current copy) + stats row + the reviews section (`#reviewGrid` + summary badge) verbatim so `script.js` renders the 3 reviews. Add `AggregateRating` (ratingValue 4.9, bestRating 5, **no reviewCount**) + 3 `Review` items + `BreadcrumbList` JSON-LD.
+- [ ] **Step 2: Body** — `<h1>Pure vegetarian, cooked like home.</h1>`; About story block (current copy) + stats row + the reviews section (`#reviewGrid` + summary badge) verbatim so `script.js` renders the 3 reviews. Add `AggregateRating` (ratingValue 5.0, bestRating 5, reviewCount 10) + 3 `Review` items + `BreadcrumbList` JSON-LD.
 
 - [ ] **Step 3: Verify.** `preview_eval`: `{h1Count:1, reviewsRendered:3, ratingBadge present, jsonLdValid:true, consoleErrors:0}`.
 
@@ -339,7 +339,7 @@ git checkout master && git merge --no-ff multipage
 
 **Spec coverage:** Every spec section maps to a task — architecture/shared files (T1–T2), mobile nav (T1, shared HEADER), all 5 pages incl. content + head + schema (T2–T6), conversion mechanics/sticky bar (shared blocks + `data-wa-context` in T1), SEO/sitemap/robots/prefetch/breadcrumbs (T2–T7), security carry-over (CSP block in every page), migration (T2–T6), verification (T8), packaging (T9). No spec requirement is unassigned.
 
-**Placeholder scan:** The only intentional placeholders are the FAQ answers (T6) and the omitted `reviewCount` — both are flagged Open Items in the spec, with explicit stub markup and a gate ("add `FAQPage` only when real answers replace stubs"). No "TBD/handle edge cases/similar to Task N" left.
+**Placeholder scan:** The only intentional placeholders are the FAQ answers (T6) and — until 2026-09-06 — the omitted `reviewCount` — both were flagged Open Items in the spec, with explicit stub markup and a gate ("add `FAQPage` only when real answers replace stubs"). No "TBD/handle edge cases/similar to Task N" left.
 
 **Consistency:** IDs/classes/functions referenced across tasks match the current codebase exactly — `waLink()`, `WHATSAPP_NUMBER`, `#catTabs`, `#menuPicker`, `#menuCard`, `#reviewGrid`, `#call-link`, `.js-call-link`, `.js-greviews`, `.svc-reveal`, `--gold-text`. All URLs use the clean folder form (`/services/`), asset refs are root-absolute, and each page's `<title>` matches the spec §4 intent split.
 
@@ -350,7 +350,7 @@ git checkout master && git merge --no-ff multipage
 ## Open items (from spec)
 - FAQ answers (Task 6) — stub until provided.
 - Nav label "Menu" (short) assumed.
-- Real Google `reviewCount` — omitted until supplied.
+- ~~Real Google `reviewCount` — omitted until supplied.~~ Resolved 2026-09-06: 5.0 from 10 reviews.
 
 ## Execution handoff
 The `superpowers:executing-plans` / `subagent-driven-development` sub-skills referenced by writing-plans are **not invocable in this environment**. Practical execution options:

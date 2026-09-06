@@ -61,7 +61,7 @@ _headers, .htaccess      → carried over (headers apply to all pages)
 (The Menu page's `<title>`/`<h1>` is the full "Menu & Packages"; the nav label is "Menu".)
 
 **Mobile (≤ 900px):**
-- Sticky top: utility bar (phone · 4.9 Google) + header with logo + hamburger.
+- Sticky top: utility bar (phone · 5.0 Google) + header with logo + hamburger.
 - Hamburger tap → full-width dropdown: 5 links + WhatsApp button.
 - Current page highlighted (`aria-current="page"`).
 - Sticky **Call · WhatsApp** bar fixed at the bottom on **every** page.
@@ -89,7 +89,7 @@ Each page: one `<h1>`, unique `<title>` + meta description, self-referencing can
 - **Sections (teasers that link to full pages):** hero → trust strip → *What we do* (service highlights → Services) → *Featured packages* (→ Menu & Packages) → *Why choose us* → *Reviews snippet* (→ About) → Google rating → primary CTA.
 - **Intent:** conversion hub + brand/hyperlocal; shorter than today's page. Each teaser links to its spoke.
 - **Title:** `VAAV Kitchen and Caterers — Pure Veg Caterers in Perungalathur, Chennai`
-- **Meta:** `VAAV Kitchen and Caterers — authentic Tamil pure-veg caterers in Perungalathur, serving all of Chennai. Weddings, upanayanams & corporate events. 4.9★ on Google.`
+- **Meta:** `VAAV Kitchen and Caterers — authentic Tamil pure-veg caterers in Perungalathur, serving all of Chennai. Weddings, upanayanams & corporate events. 5.0★ on Google.`
 - **Canonical:** `https://vaavkitchenandcaterers.com/`
 - **Schema:** `FoodEstablishment` (full), `WebSite`.
 
@@ -114,7 +114,7 @@ Each page: one `<h1>`, unique `<title>` + meta description, self-referencing can
 - **H1:** "Pure vegetarian, cooked like home."
 - **Sections:** story (retained copy), pure-veg positioning, stats, full reviews/testimonials (all Google reviews), Google rating badge, trust.
 - **Title:** `About VAAV Kitchen and Caterers — Our Pure Veg Home-Food Story`
-- **Meta:** `The story behind VAAV Kitchen and Caterers — traditional Pure Vegetarian Home Food made with organic ingredients, cooked fresh for every celebration. 4.9★ on Google.`
+- **Meta:** `The story behind VAAV Kitchen and Caterers — traditional Pure Vegetarian Home Food made with organic ingredients, cooked fresh for every celebration. 5.0★ on Google.`
 - **Canonical:** `https://vaavkitchenandcaterers.com/about/`
 - **Schema:** `FoodEstablishment`, `AggregateRating` + `Review` (the 3 real reviews), `BreadcrumbList`.
 
@@ -197,4 +197,4 @@ For **each** of the 5 pages:
 
 - **FAQ content** for Contact page (notice period, minimum order, service areas, payment). Will be stubbed with clearly-marked placeholders until provided; `FAQPage` schema added once real answers exist.
 - **Nav label "Menu"** assumed (short form) with page title "Menu & Packages". Change if preferred.
-- **Real total Google review count** still pending for `AggregateRating.reviewCount` (currently omitted, which is valid).
+- ~~**Real total Google review count** still pending for `AggregateRating.reviewCount`.~~ **Resolved 2026-09-06:** read from the live Google listing (cid `16612426966021584661`) — `ratingValue` 5.0, `reviewCount` 10. Omitting the count was *not* valid: Google requires `ratingCount` or `reviewCount`, and Search Console flagged every page carrying the rating as ineligible for rich results.
