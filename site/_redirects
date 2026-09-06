@@ -1,0 +1,19 @@
+# Netlify reads this file from the publish directory, so it applies under both
+# of the wirings netlify.toml describes (base = repo root, or base = site/).
+# Redirect rules in a netlify.toml would take precedence over it; neither of
+# ours defines any.
+#
+# The site answers on two hostnames: the custom domain and the Netlify
+# subdomain it was first deployed to. Both served 200, so the whole site
+# existed twice for a crawler. Every page carries a canonical pointing at the
+# custom domain, which is enough for Google to consolidate, but the duplicate
+# still gets crawled and can still be linked. This makes the subdomain a
+# permanent redirect instead.
+#
+# The rule matches that exact host, so Netlify's deploy previews and branch
+# deploys — deploy-preview-N--<site>.netlify.app — are untouched and stay
+# browsable. `301!` forces the redirect: without the bang, a request for a
+# path that exists as a static file (which is all of them) would be served
+# rather than redirected.
+
+https://vaavkitchenandcaterers.netlify.app/*  https://vaavkitchenandcaterers.com/:splat  301!
