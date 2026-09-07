@@ -73,14 +73,19 @@ const VAAV_REVIEWS = [
   function initials(name) {
     return name.trim().split(/\s+/).slice(0, 2).map(w => w[0] || '').join('').toUpperCase() || '★';
   }
+  // Escape every review field before it reaches innerHTML. VAAV_REVIEWS is a
+  // static constant today, but this keeps the render safe if it is ever wired
+  // to the Google Reviews API, a CMS, or window.VAAV_REVIEWS.
+  const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
   grid.innerHTML = VAAV_REVIEWS.map((r, i) => {
-    const stars = '★★★★★'.slice(0, Math.max(0, Math.min(5, r.rating || 5)));
+    const rating = Math.max(0, Math.min(5, Number(r.rating) || 5));
+    const stars = '★★★★★'.slice(0, rating);
     return `<figure class="review svc-reveal" role="listitem" style="--i:${i}">
-      <div class="r-stars" aria-label="${r.rating || 5} out of 5 stars">${stars}</div>
-      <blockquote class="r-text">${r.text}</blockquote>
+      <div class="r-stars" aria-label="${rating} out of 5 stars">${stars}</div>
+      <blockquote class="r-text">${esc(r.text)}</blockquote>
       <figcaption class="r-by">
-        <span class="r-avatar" aria-hidden="true">${initials(r.name)}</span>
-        <span class="r-who"><span class="r-name">${r.name}</span></span>
+        <span class="r-avatar" aria-hidden="true">${esc(initials(r.name))}</span>
+        <span class="r-who"><span class="r-name">${esc(r.name)}</span></span>
         ${gLogo}
       </figcaption>
     </figure>`;

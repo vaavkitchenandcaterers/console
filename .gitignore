@@ -51,3 +51,8 @@ desktop.ini
 *.log
 logs/
 tmp/
+
+# --- Generated-asset tooling ---
+# Font faces fetched by tools/build-og-card.py. Google's files, not ours; the
+# site already loads the same families from their CDN.
+.cache/
