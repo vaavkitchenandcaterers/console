@@ -21,7 +21,7 @@ describe('generated menu category pages', () => {
   it('every one of the 66 set menus appears on exactly one category page', () => {
     const pages = Object.fromEntries(CATS.map(c => [c, pageFor(c)]));
     for (const { cat, m } of everyMenu()) {
-      const on = CATS.filter(c => pages[c].includes(`<h2>${m.name}</h2>`));
+      const on = CATS.filter(c => pages[c].includes(`<h2 class="set-name">${m.name}</h2>`));
       expect(on, `${m.name} should be on ${cat} only, found on: ${on.join(', ') || 'nothing'}`).toEqual([cat]);
     }
   });

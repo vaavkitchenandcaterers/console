@@ -27,7 +27,7 @@ https://vaavkitchenandcaterers.netlify.app/*  https://vaavkitchenandcaterers.com
 #
 # Listed one per page rather than pattern-matched: a Netlify splat only binds
 # at the end of a path, so no single rule covers both /about/index.html and
-# /menu/tiffin/index.html. Nine pages is few enough to be explicit, and the
+# /menu/tiffin/index.html. Eleven pages is few enough to be explicit, and the
 # list is checked by the redirect test below.
 #
 # These need the forcing bang for the same reason as the rule above: each
@@ -44,3 +44,5 @@ https://vaavkitchenandcaterers.netlify.app/*  https://vaavkitchenandcaterers.com
 /menu/tiffin/index.html   /menu/tiffin/   301!
 /menu/lunch/index.html    /menu/lunch/    301!
 /menu/dinner/index.html   /menu/dinner/   301!
+/menu/housewarming/index.html  /menu/housewarming/  301!
+/menu/seemantham/index.html    /menu/seemantham/    301!
