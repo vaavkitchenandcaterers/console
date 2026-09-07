@@ -44,24 +44,19 @@ export function loadChrome() {
   return { head, top, bottom };
 }
 
-export function buildAll({ write = true } = {}) {
+export function buildAll() {
   const menus = loadMenus();
   const chrome = loadChrome();
-  const out = {};
   for (const cat of ORDER) {
     const data = menus[cat];
     if (!data) throw new Error(`menu-data.js has no "${cat}" category`);
     const html = renderCategoryPage(cat, data, chrome);
-    out[cat] = html;
-    if (write) {
-      const dir = new URL(`menu/${cat}/`, SITE);
-      mkdirSync(dir, { recursive: true });
-      writeFileSync(new URL('index.html', dir), html, 'utf8');
-      const dishes = data.menus.reduce((n, m) => n + m.groups.reduce((k, g) => k + g[1].length, 0), 0);
-      console.log(`  wrote site/menu/${cat}/index.html — ${data.menus.length} sets, ${dishes} dishes`);
-    }
+    const dir = new URL(`menu/${cat}/`, SITE);
+    mkdirSync(dir, { recursive: true });
+    writeFileSync(new URL('index.html', dir), html, 'utf8');
+    const dishes = data.menus.reduce((n, m) => n + m.groups.reduce((k, g) => k + g[1].length, 0), 0);
+    console.log(`  wrote site/menu/${cat}/index.html — ${data.menus.length} sets, ${dishes} dishes`);
   }
-  return out;
 }
 
 /** The sitemap block for the three new URLs, so lastmod is never hand-maintained. */

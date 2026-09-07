@@ -173,7 +173,14 @@ export function renderCategoryPage(catKey, data, chrome) {
     '</main>'
   ].join('\n');
 
-  return [
+  // Drop the dataset: only the /menu/ explorer reads window.VAAV_MENUS, and it
+  // bails on any page without #catTabs. This page has none, and every dish is
+  // already here as static HTML, so menu-data.js would be 21 KB fetched and
+  // parsed for nothing. /script.js stays — it still drives the nav toggle, the
+  // WhatsApp links, the year stamp and the shortlist pill here.
+  const bottom = chrome.bottom.replace(/<script src="\/menu-data\.js"[^>]*><\/script>\n?/, '');
+
+  const html = [
     GENERATED_BANNER,
     '<!DOCTYPE html>',
     '<html lang="en">',
@@ -183,6 +190,17 @@ export function renderCategoryPage(catKey, data, chrome) {
     '</head>',
     chrome.top,
     main,
-    chrome.bottom
+    bottom
   ].join('\n') + '\n';
+
+  // Guard the replace above. It matches the tag as menu/index.html writes it
+  // today; reformat that tag and the strip silently stops firing, putting 21 KB
+  // back on all three pages with nothing to notice. Break the build instead.
+  // Checked on the output, not the source chrome, because /menu/ itself is
+  // entitled to the tag — and this runs for the drift test too, not just the
+  // generator, since both call renderCategoryPage.
+  if (/<script[^>]+menu-data\.js/.test(html)) {
+    throw new Error(`the ${catKey} page still ships menu-data.js — the strip in renderCategoryPage no longer matches the tag in menu/index.html`);
+  }
+  return html;
 }
