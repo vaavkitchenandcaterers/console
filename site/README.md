@@ -28,6 +28,26 @@ npm run build:menu     # after any edit to menu-data.js
 **Never edit `menu/tiffin|lunch|dinner/index.html` by hand.** Fix the dish in `menu-data.js` and
 regenerate. `npm test` fails with "run `npm run build:menu`" if a committed page drifts from the data.
 
+## The shared topbar and nav
+
+The topbar and the primary nav are 3.7 KB of identical markup that used to be pasted into every
+page. They now have one copy, in `tools/chrome/nav.html`, and a tool writes it into the region each
+page marks with `<!-- sync:chrome start … -->` / `<!-- sync:chrome end -->`.
+
+```bash
+npm run sync:chrome    # after any edit to tools/chrome/nav.html
+```
+
+Pages stay whole, hand-editable files — only the marked region is machine-owned. `aria-current` is
+not in the source; the tool adds it to the link matching each page's own URL. `/corporate/` and
+`404.html` get none, because neither is in the primary nav.
+
+**Order matters: `sync:chrome` before `build:menu`.** The three generated category pages copy their
+chrome out of `menu/index.html`, so building them from an unsynced hub bakes in the old nav.
+`npm run build:menu` runs `sync:chrome` first for exactly this reason, so running the build alone is
+always safe; CI runs them in that order too. `npm test` fails with "run `npm run sync:chrome`" if a
+page's region drifts, and with "run `npm run build:menu`" if a generated page does.
+
 ## To view locally
 Just open `index.html` in a browser. (Or run `node server.cjs` and visit `http://localhost:8765`.)
 

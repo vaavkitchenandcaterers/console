@@ -291,3 +291,67 @@ container access ship arbitrary JavaScript to the site without a commit — a
 deployment path that bypasses the review, the tests and the manual Netlify
 publish gate that everything else here goes through. A single measurement ID
 buys the analytics without buying that.
+
+---
+
+## ADR-0009 — Sync the shared topbar and nav in place, rather than templating pages
+
+**Date:** 2026-09-07
+**Status:** accepted
+
+**Context.** The topbar and primary nav are 3,723 bytes of identical markup
+duplicated by hand across seven pages: `index.html`, `about/`, `contact/`,
+`corporate/`, `services/`, `menu/` and `404.html`. Changing a nav link meant
+seven identical edits, and a missed one drifted silently — the deploy succeeds
+and one page keeps the old nav. Diffing the seven blocks found them
+byte-identical apart from `aria-current="page"` on the link for the page you
+are on, which is the only per-page variation there has ever been.
+
+ADR-0007 named this class of duplication as the real problem and left it open.
+The repository already solves it once: `tools/build-menu-pages.mjs` generates
+the three menu category pages and is committed as source, because ADR-0004
+publishes `site/` exactly as it stands and nothing is built at deploy time.
+
+**Decision.** Extend that idea to hand-maintained pages by marker-based
+in-place region sync, not by templating. One copy of the block lives in
+`tools/chrome/nav.html`; each page marks the region it owns with
+`<!-- sync:chrome start … -->` and `<!-- sync:chrome end -->`; and
+`tools/sync-chrome.mjs` rewrites what is between them. `aria-current` is
+derived per page from the URL it is served at rather than stored, so the source
+holds one neutral copy. The source lives in `tools/`, not `site/`, because
+`site/` is the publish directory and everything in it is served (ADR-0005).
+
+**Consequence.** Pages stay whole, hand-editable HTML files under version
+control, diffable and openable in a browser straight off disk. There is no
+layout file, no content extraction, no page-source directory, and no deploy-time
+build — the output is still committed like any other source file.
+
+The cost is paid in the served HTML: a marker comment on every page, worded to
+tell whoever opens the file that the block is machine-owned and what to run
+instead. That is deliberate. The alternative — an invisible convention — is how
+the seven copies drifted in the first place.
+
+Ordering is now load-bearing. `loadChrome()` copies this region verbatim out of
+`site/menu/index.html` into the three generated pages, so `sync:chrome` has to
+run before `build:menu` or those three carry the previous nav. Rather than
+document that and hope, `npm run build:menu` chains `sync:chrome` ahead of
+itself, CI runs them in that order with a `git diff` drift gate after each, and
+`chrome-sync.test.js` asserts both that every marked region matches the source
+and that the generated pages match the hub byte for byte.
+
+The tool fails loudly rather than skipping: a page with no markers, an unpaired
+marker, a missing or empty source, a source with no nav, or an ambiguous
+`aria-current` target all throw. A silent no-op here would reproduce exactly the
+drift this exists to prevent.
+
+Not addressed: the CSP, still maintained in eleven hand-edited copies, and the
+footer, still duplicated the same way. Both are now straightforward to bring
+under the same markers.
+
+**Alternative rejected.** A static site generator — layouts, partials, a
+`src/` of page content, `site/` as build output. It would remove more
+duplication than this does, and it would also mean the deployed HTML is no
+longer the reviewed HTML, a build step where ADR-0004 chose none, and a
+toolchain to keep alive for a five-page brochure site. Marker sync gets the
+single source of truth for the block that actually duplicates, and gives up
+nothing that is currently relied on.

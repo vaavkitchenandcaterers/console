@@ -81,8 +81,9 @@ authorisation — CI cannot publish, and CI cannot stop a publish either. The
 gate is a person reading a result, so read it.
 
 1. **Check the commit is green.** GitHub Actions runs the test suite, the
-   internal link check, and the generated-page drift check on every push to
-   `main`. Open the commit on GitHub and confirm the tick before going further.
+   internal link check, and the drift checks for the synced nav and the
+   generated pages on every push to `main`. Open the commit on GitHub and
+   confirm the tick before going further.
 2. **Open the new deploy** in Netlify (Deploys tab, top of the list) and click
    through the pages you changed.
 3. **Smoke-test that deploy URL**, which checks the deployed copy rather than

@@ -75,6 +75,7 @@ https://vaavkitchenandcaterers.netlify.app/*  https://vaavkitchenandcaterers.com
 /server.cjs             /404.html   404!
 /.gitignore             /404.html   404!
 /.claude/launch.json    /404.html   404!
+/chrome-sync.test.js    /404.html   404!
 /menu-data.test.js      /404.html   404!
 /menu-pages.test.js     /404.html   404!
 /redirects.test.js      /404.html   404!
