@@ -59,8 +59,7 @@ export const CATEGORY_META = {
 const ORDER = ['tiffin', 'lunch', 'dinner'];
 
 /** Rebuild the head: keep the source chrome byte-for-byte, swap only the per-page meta. */
-function buildHead(sourceHead, catKey, meta) {
-  const url = `${SITE}/menu/${catKey}/`;
+function buildHead(sourceHead, url, meta) {
   let h = sourceHead
     // Drop the source page's JSON-LD; this page carries its own.
     .replace(/<script type="application\/ld\+json">[\s\S]*?<\/script>\s*/g, '')
@@ -117,19 +116,27 @@ function buildSchema(catKey, data) {
     .join('\n');
 }
 
-/** One <article> per set menu, with an id so /menu/dinner/#dinner-5 deep-links to it. */
-function renderSet(m) {
+/**
+ * One <article> per set menu, with an id so /menu/dinner/#dinner-5 deep-links to it.
+ *
+ * `level` is the heading level for the set name. Category pages put sets
+ * directly under the h1, so 2; occasion pages group them under a per-category
+ * h2, so 3. The group label always sits one level below the name, and the
+ * stylesheet keys off .set-name / .set-group rather than the element, because
+ * the element is no longer fixed.
+ */
+function renderSet(m, level = 2) {
   const occ = (m.occasions || []).map(o => esc(titleCase(o))).join(', ');
   const total = (m.groups || []).reduce((n, g) => n + (g[1] ? g[1].length : 0), 0);
   const parts = [];
   parts.push(`      <article class="set" id="${slug(m.name)}">`);
-  parts.push(`        <h2>${esc(m.name)}</h2>`);
+  parts.push(`        <h${level} class="set-name">${esc(m.name)}</h${level}>`);
   parts.push(`        <p class="set-occ">${total} dishes${occ ? ` · Suited to: ${occ}` : ''}</p>`);
   for (const [label, items] of m.groups || []) {
     // Tiffin and lunch sets carry a single group literally labelled "Items";
     // printing that as a heading on 40 of 66 sets would be noise.
     const single = (m.groups || []).length === 1 && label === 'Items';
-    if (!single) parts.push(`        <h3>${esc(label)}</h3>`);
+    if (!single) parts.push(`        <h${level + 1} class="set-group">${esc(label)}</h${level + 1}>`);
     parts.push('        <ul class="set-dishes">');
     for (const dish of items || []) parts.push(`          <li>${esc(dish)}</li>`);
     parts.push('        </ul>');
@@ -163,7 +170,9 @@ export function renderCategoryPage(catKey, data, chrome) {
     `    <p class="menu-intro">${data.note}</p>`,
     `    <p class="set-count"><b>${data.menus.length}</b> sets &middot; every dish listed below &middot; all customisable, including Jain and no onion-garlic.</p>`,
     '    <div class="set-list">',
-    data.menus.map(renderSet).join('\n'),
+    // Arrow, not a bare reference: Array#map passes the index as the second
+    // argument, which would land in renderSet's `level` and emit <h0>, <h1>…
+    data.menus.map(m => renderSet(m, 2)).join('\n'),
     '    </div>',
     '    <p class="set-more">Mix and match across any set — we tailor the spread to your event. <a href="/menu/">Browse the menus one at a time</a>, or see every ' +
       others.map(c => `<a href="/menu/${c}/">${esc(CATEGORY_META[c].h1.replace(' set menus', ''))} set</a>`).join(' and every ') +
@@ -178,7 +187,7 @@ export function renderCategoryPage(catKey, data, chrome) {
     '<!DOCTYPE html>',
     '<html lang="en">',
     '<head>',
-    buildHead(chrome.head, catKey, meta),
+    buildHead(chrome.head, `${SITE}/menu/${catKey}/`, meta),
     buildSchema(catKey, data),
     '</head>',
     chrome.top,

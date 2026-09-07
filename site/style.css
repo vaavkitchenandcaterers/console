@@ -613,9 +613,9 @@ body.vaav-sl-open .vaav-sl-pill,body.vaav-sl-open .wa-float,body.vaav-sl-open .m
 .set-count b{color:var(--green-deep);font-weight:800}
 .set-list{display:grid;grid-template-columns:1fr;gap:20px}
 .set{background:var(--white);border:1px solid var(--border);border-radius:16px;padding:22px 22px 8px;box-shadow:0 8px 26px -22px rgba(20,61,29,.5)}
-.set h2{font-family:'Cormorant',Georgia,serif;font-weight:700;font-size:1.6rem;color:var(--green-deep);margin:0}
+.set .set-name{font-family:'Cormorant',Georgia,serif;font-weight:700;font-size:1.6rem;color:var(--green-deep);margin:0}
 .set-occ{font-family:'Catamaran',sans-serif;font-size:.76rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--gold-text);margin:4px 0 14px}
-.set h3{font-family:'Catamaran',sans-serif;font-weight:800;text-transform:uppercase;letter-spacing:.14em;font-size:.72rem;color:var(--kumkum);margin:16px 0 2px}
+.set .set-group{font-family:'Catamaran',sans-serif;font-weight:800;text-transform:uppercase;letter-spacing:.14em;font-size:.72rem;color:var(--kumkum);margin:16px 0 2px}
 .set-dishes{list-style:none;margin:0 0 14px;padding:0}
 .set-dishes li{padding:9px 0;font-size:.96rem;color:var(--ink);border-bottom:1px solid var(--border)}
 .set-dishes li:last-child{border-bottom:0}
@@ -624,7 +624,7 @@ body.vaav-sl-open .vaav-sl-pill,body.vaav-sl-open .wa-float,body.vaav-sl-open .m
 @media(min-width:760px){
   .set-list{grid-template-columns:1fr 1fr;gap:24px}
   .set{padding:26px 26px 10px}
-  .set h2{font-size:1.75rem}
+  .set .set-name{font-size:1.75rem}
 }
 .menu-flat-links{font-size:.95rem;color:var(--muted);margin:-8px 0 22px;line-height:1.6}
 .menu-flat-links a{color:var(--green-deep);font-weight:600}
