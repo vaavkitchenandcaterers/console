@@ -26,8 +26,9 @@ website currently lives here. See [docs/decisions.md](docs/decisions.md).
 
 ## The website (`site/`)
 
-Static, mobile-first, no build step required to serve. Vite and Vitest are
-used for bundling and tests.
+Static, mobile-first, no build step required to serve. Vite provides the local
+dev server, Vitest the tests. Nothing is bundled — the site is served exactly
+as committed.
 
 ```bash
 cd site
