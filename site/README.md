@@ -10,13 +10,18 @@ Authentic Tamil catering site for Chennai. Static, fast, mobile-first, no build 
 | `menu-data.js` | The 66 set menus (Tiffin / Lunch / Dinner) — edit dishes here |
 | `script.js` | Interactivity (menu explorer, WhatsApp links, mobile nav) |
 | `server.cjs` | Optional local preview server — **not needed in production** |
-| `menu/tiffin\|lunch\|dinner/index.html` | **Generated.** Every dish, as static HTML, for search engines. Never edit by hand |
+| `menu/*/index.html` | **Generated.** Every dish, as static HTML, for search engines. Never edit by hand |
 
 ## Generated menu pages
 
 `/menu/` is an interactive explorer that shows one set at a time — good for people, invisible to
 search engines, and a single URL for all three categories. The three category pages beside it are a
 crawlable surface: every one of the 975 dish entries as static HTML, at its own URL.
+
+Two more pages slice the same sets by **occasion** instead of category, using the tags already in
+`menu-data.js`: `/menu/housewarming/` and `/menu/seemantham/`. They exist because nobody searches
+"dinner catering menu" — they search "housewarming catering menu". Only two of the eight occasions
+are built; the reasons the other six are not are recorded in ADR-0007.
 
 They are **generated from `menu-data.js`** and committed like any other source file, so nothing is
 built at deploy time and the "no build step" above stays true.
@@ -25,8 +30,13 @@ built at deploy time and the "no build step" above stays true.
 npm run build:menu     # after any edit to menu-data.js
 ```
 
-**Never edit `menu/tiffin|lunch|dinner/index.html` by hand.** Fix the dish in `menu-data.js` and
-regenerate. `npm test` fails with "run `npm run build:menu`" if a committed page drifts from the data.
+**Never edit anything under `menu/*/` by hand** — five pages are generated now, not three. Fix the
+dish, or the occasion tag, in `menu-data.js` and regenerate. `npm test` fails with "run
+`npm run build:menu`" if a committed page drifts from the data.
+
+Adding a page means three edits, not one: the key goes in `ORDER` or `OCCASIONS` in
+`tools/build-menu-pages.mjs`, a rule goes in `_redirects` (or `redirects.test.js` fails), and the
+sitemap block is repasted from what the generator prints.
 
 ## To view locally
 Just open `index.html` in a browser. (Or run `node server.cjs` and visit `http://localhost:8765`.)
