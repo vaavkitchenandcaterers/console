@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; base-uri 'self'; object-src 'none'; img-src 'self' data:; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; script-src 'self'; frame-src https://www.google.com https://maps.google.com; connect-src 'self'; form-action 'self'; upgrade-insecure-requests">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; base-uri 'self'; object-src 'none'; img-src 'self' data: https://www.googletagmanager.com https://*.google-analytics.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; script-src 'self' https://www.googletagmanager.com; frame-src https://www.google.com https://maps.google.com; connect-src 'self' https://*.google-analytics.com https://*.analytics.google.com https://*.googletagmanager.com; form-action 'self'; upgrade-insecure-requests">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <title>Menu &amp; Packages — 66 Pure Veg Set Menus | VAAV Kitchen, Chennai</title>
 <meta name="description" content="Browse 66 customisable pure-veg Tamil menus and three catering packages — tiffin, virundhu sappadu and a grand wedding feast. Get a quote on WhatsApp.">
@@ -33,6 +33,10 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant:ital,wght@0,700;1,500;1,700&family=Mukta:wght@400;600;700&family=Catamaran:wght@600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/style.css">
+<!-- Google Analytics (GA4). The loader is external; the config half lives in
+     /analytics.js so script-src needs no 'unsafe-inline'. See ADR-0008. -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-4T5PCVFK2G"></script>
+<script src="/analytics.js" defer></script>
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",

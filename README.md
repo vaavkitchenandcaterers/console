@@ -63,8 +63,11 @@ git log cdce541^2           # the real site history, all 122 commits
   already leaked. Today the site needs none: the Google Maps embed uses the
   keyless `/maps/embed?pb=…` iframe, and fonts and `wa.me`/`tel:` links need no
   key. If a feature ever needs one (a Maps JS key, an email/form backend, an
-  analytics token), put the call behind a serverless function or restrict the
-  key by HTTP referrer and API scope — do not inline it. See the public-repo
+  analytics *token*), put the call behind a serverless function or restrict the
+  key by HTTP referrer and API scope — do not inline it. The GA4 measurement ID
+  in `site/analytics.js` is not an exception to this: a measurement ID names a
+  property to Google's collection endpoint and grants nothing, so it is public
+  by design and belongs in the client. See ADR-0008, and the public-repo
   note in `parked/studio/README.md` for why "hidden in the JS" is not hidden.
 - Large binaries are expensive forever. Prefer web-sized derivatives over
   layered sources unless the source genuinely needs versioning.

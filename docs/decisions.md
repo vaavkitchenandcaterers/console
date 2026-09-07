@@ -221,3 +221,73 @@ unknown. Once it is known, a second config file is not an option kept open but
 a second source of truth that no deploy exercises and no test covers, free to
 disagree with the live one unnoticed. Git history keeps the option open at no
 standing cost.
+
+---
+
+## ADR-0008 — Google Analytics 4 on every page, with the config half in a file
+
+**Date:** 2026-09-07
+**Status:** accepted
+
+**Context.** The site had no analytics of any kind: nothing recorded which
+pages people reach, which menu category they open, or whether the WhatsApp
+buttons are the path enquiries actually take. The repository owner supplied a
+GA4 measurement ID, `G-4T5PCVFK2G`, to be installed.
+
+Google's own snippet is two scripts: an `async` loader from
+`www.googletagmanager.com`, and an inline block that creates `dataLayer` and
+issues the `js` and `config` commands. Both halves collide with the CSP this
+site ships in eleven places — ten `<meta>` tags plus `_headers` — which until
+now was `script-src 'self'; connect-src 'self'; img-src 'self' data:`, with no
+external origin allowed anywhere except fonts and the Maps iframe.
+
+**Decision.** Install GA4 on all ten pages, and split the snippet:
+
+- the loader stays in the HTML `<head>`, unchanged;
+- the inline half moves verbatim into `site/analytics.js`, loaded with `defer`
+  as a same-origin script.
+
+The CSP is widened by exactly three directives, and no more:
+
+```
+script-src   + https://www.googletagmanager.com
+connect-src  + https://*.google-analytics.com https://*.analytics.google.com
+             + https://*.googletagmanager.com
+img-src      + https://www.googletagmanager.com https://*.google-analytics.com
+```
+
+**Consequence.** `script-src` still has no `'unsafe-inline'`. That was the
+point of moving the config block out: the alternative that keeps it inline is a
+`'sha256-…'` hash, and this CSP lives in eleven copies, so every edit to four
+lines of snippet would mean recomputing a hash and re-pasting it eleven times —
+with a wrong paste failing silently, as a blocked script does. A same-origin
+file costs one cached request and cannot drift.
+
+`img-src` is widened because GA falls back to a pixel when `sendBeacon` and
+`fetch` are unavailable; without it that fallback fails silently on exactly the
+browsers least able to report why.
+
+The three generated category pages need no separate work. `loadChrome()` in
+`tools/build-menu-pages.mjs` extracts the head from `menu/index.html`, so the
+tags and the widened CSP propagated on `npm run build:menu`, and the existing
+byte-for-byte CSP drift test in `menu-pages.test.js` covers them from here.
+
+Verified locally against `server.cjs`: `gtag.js` loads, `google_tag_manager`
+initialises the property, a test event reaches
+`https://www.google-analytics.com/g/collect`, and the page raises zero
+`securitypolicyviolation` events.
+
+**Not addressed.** No consent banner. GA4 sets first-party cookies and this
+site now collects analytics without asking, which is the ordinary practice for
+a business site serving Chennai but is a policy question, not a technical one —
+if VAAV wants consent gating, `gtag('consent', 'default', …)` in
+`analytics.js` is where it goes. Also unaddressed: the CSP is still maintained
+in eleven hand-edited copies, which this change made more expensive rather than
+less. ADR-0007 noted that duplication; it is still the real problem here.
+
+**Alternative rejected.** Google Tag Manager instead of a direct gtag install.
+GTM needs `'unsafe-inline'` for its bootstrap and, by design, lets anyone with
+container access ship arbitrary JavaScript to the site without a commit — a
+deployment path that bypasses the review, the tests and the manual Netlify
+publish gate that everything else here goes through. A single measurement ID
+buys the analytics without buying that.
