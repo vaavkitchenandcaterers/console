@@ -1,4 +1,5 @@
 import { createShortlist, formatEventDate } from './shortlist.js';
+import { escapeHtml, countDishes } from './menu-format.js';
 
 /* ============================================================
    VAAV Kitchen and Caterers — site interactivity
@@ -73,19 +74,18 @@ const VAAV_REVIEWS = [
   function initials(name) {
     return name.trim().split(/\s+/).slice(0, 2).map(w => w[0] || '').join('').toUpperCase() || '★';
   }
-  // Escape every review field before it reaches innerHTML. VAAV_REVIEWS is a
-  // static constant today, but this keeps the render safe if it is ever wired
+  // Every review field is escaped before it reaches innerHTML. VAAV_REVIEWS is
+  // a static constant today, but this keeps the render safe if it is ever wired
   // to the Google Reviews API or a CMS.
-  const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
   grid.innerHTML = VAAV_REVIEWS.map((r, i) => {
     const rating = Math.max(0, Math.min(5, Number(r.rating) || 5));
     const stars = '★★★★★'.slice(0, rating);
     return `<figure class="review svc-reveal" role="listitem" style="--i:${i}">
       <div class="r-stars" aria-label="${rating} out of 5 stars">${stars}</div>
-      <blockquote class="r-text">${esc(r.text)}</blockquote>
+      <blockquote class="r-text">${escapeHtml(r.text)}</blockquote>
       <figcaption class="r-by">
-        <span class="r-avatar" aria-hidden="true">${esc(initials(r.name))}</span>
-        <span class="r-who"><span class="r-name">${esc(r.name)}</span></span>
+        <span class="r-avatar" aria-hidden="true">${escapeHtml(initials(r.name))}</span>
+        <span class="r-who"><span class="r-name">${escapeHtml(r.name)}</span></span>
         ${gLogo}
       </figcaption>
     </figure>`;
@@ -305,7 +305,7 @@ const VAAV_REVIEWS = [
       p.setAttribute('role', 'tab');
       p.setAttribute('aria-controls', 'menuCard');
       p.tabIndex = active ? 0 : -1;
-      const dishes = (m.groups || []).reduce((s, g) => s + (g[1] ? g[1].length : 0), 0);
+      const dishes = countDishes(m.groups);
       const sig = (m.groups && m.groups[0] && m.groups[0][1] && m.groups[0][1][0]) ? m.groups[0][1][0] : '';
       const nm = m.name;
       const meta = sig ? `${dishes} dishes · ${sig}` : `${dishes} dishes`;
@@ -320,7 +320,7 @@ const VAAV_REVIEWS = [
 
     // selected menu card
     const menu = shown[curIdx];
-    const total = menu.groups.reduce((s, g) => s + g[1].length, 0);
+    const total = countDishes(menu.groups);
     let html = '<div class="mc-rail">';
     html += `<div class="mc-kicker">${data.label} menu${occasionLine(menu)}</div>`;
     html += `<h3>${menu.name}</h3>`;
@@ -553,14 +553,11 @@ const VAAV_REVIEWS = [
   }
   if (!S || !body) return;
 
-  function esc(s) { return String(s).replace(/[&<>"]/g, function (c) {
-    return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
-
   function renderSent() {
     const st = S.getState();
-    const names = st.items.map(function (it) { return esc(it.name); }).join(', ');
-    const when = st.event && st.event.date ? ' · ' + esc(formatEventDate(st.event.date)) : '';
-    const guests = st.event && st.event.guests ? ' · ' + esc(st.event.guests) + ' guests' : '';
+    const names = st.items.map(function (it) { return escapeHtml(it.name); }).join(', ');
+    const when = st.event && st.event.date ? ' · ' + escapeHtml(formatEventDate(st.event.date)) : '';
+    const guests = st.event && st.event.guests ? ' · ' + escapeHtml(st.event.guests) + ' guests' : '';
     body.innerHTML =
       '<div class="vaav-sl-sent" role="status">' +
         '<span class="vaav-sl-sent-ic" aria-hidden="true">' +
@@ -620,10 +617,10 @@ const VAAV_REVIEWS = [
     }
     let h = '<div class="vaav-sl-list">';
     st.items.forEach(function (it) {
-      const total = (it.groups || []).reduce(function (s, g) { return s + (g[1] ? g[1].length : 0); }, 0);
-      h += '<div class="vaav-sl-item"><div><div class="vaav-sl-item-name">' + esc(it.name) + '</div>' +
-        '<div class="vaav-sl-item-meta">' + esc(it.cat) + ' · ' + total + ' dishes</div></div>' +
-        '<button type="button" class="vaav-sl-remove" data-id="' + esc(it.id) + '" aria-label="Remove ' + esc(it.name) + '">' +
+      const total = countDishes(it.groups);
+      h += '<div class="vaav-sl-item"><div><div class="vaav-sl-item-name">' + escapeHtml(it.name) + '</div>' +
+        '<div class="vaav-sl-item-meta">' + escapeHtml(it.cat) + ' · ' + total + ' dishes</div></div>' +
+        '<button type="button" class="vaav-sl-remove" data-id="' + escapeHtml(it.id) + '" aria-label="Remove ' + escapeHtml(it.name) + '">' +
         '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 6h18M8 6V4h8v2M19 6l-1 14H6L5 6"/></svg></button></div>';
     });
     h += '</div>';
@@ -633,13 +630,13 @@ const VAAV_REVIEWS = [
         : 'Your browser isn’t saving this — send it before you leave the page.') +
       '</p>';
     h += '<label class="vaav-sl-fieldlabel" for="vaav-sl-notes">Special requests</label>' +
-      '<textarea id="vaav-sl-notes" class="vaav-sl-notes" placeholder="No onion or garlic, extra sweet…">' + esc(st.notes) + '</textarea>';
+      '<textarea id="vaav-sl-notes" class="vaav-sl-notes" placeholder="No onion or garlic, extra sweet…">' + escapeHtml(st.notes) + '</textarea>';
     h += '<div class="vaav-sl-event"><div class="vaav-sl-fieldlabel">Event details (optional)</div>' +
-      '<input id="vaav-sl-ev-name" placeholder="Your name" aria-label="Your name" value="' + esc(st.event.name) + '">' +
-      '<input id="vaav-sl-ev-occasion" placeholder="Occasion (wedding, seemantham…)" aria-label="Occasion" value="' + esc(st.event.occasion) + '">' +
-      '<div class="vaav-sl-row2"><input id="vaav-sl-ev-guests" inputmode="numeric" placeholder="Guests" aria-label="Number of guests" value="' + esc(st.event.guests) + '">' +
+      '<input id="vaav-sl-ev-name" placeholder="Your name" aria-label="Your name" value="' + escapeHtml(st.event.name) + '">' +
+      '<input id="vaav-sl-ev-occasion" placeholder="Occasion (wedding, seemantham…)" aria-label="Occasion" value="' + escapeHtml(st.event.occasion) + '">' +
+      '<div class="vaav-sl-row2"><input id="vaav-sl-ev-guests" inputmode="numeric" placeholder="Guests" aria-label="Number of guests" value="' + escapeHtml(st.event.guests) + '">' +
       '<span class="vaav-sl-datewrap"><label class="vh" for="vaav-sl-ev-date">Event date</label>' +
-      '<input id="vaav-sl-ev-date" type="date" min="' + todayISO() + '" aria-label="Event date" value="' + esc(st.event.date) + '"></span></div></div>';
+      '<input id="vaav-sl-ev-date" type="date" min="' + todayISO() + '" aria-label="Event date" value="' + escapeHtml(st.event.date) + '"></span></div></div>';
     h += '<a class="vaav-sl-send" href="#" target="_blank" rel="noopener noreferrer">' +
       '<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M.057 24l1.687-6.163a11.867 11.867 0 01-1.587-5.946C.16 5.335 5.495 0 12.05 0a11.82 11.82 0 018.413 3.488 11.82 11.82 0 013.48 8.414c-.003 6.557-5.338 11.892-11.893 11.892a11.9 11.9 0 01-5.688-1.448L.057 24z"/></svg>Send enquiry on WhatsApp</a>';
     h += '<button type="button" class="vaav-sl-clear">Clear all</button>';

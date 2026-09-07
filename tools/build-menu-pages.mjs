@@ -11,14 +11,23 @@
 // so anything in it is served publicly. See ADR-0005.
 
 import { readFileSync, writeFileSync, mkdirSync } from 'node:fs';
+import { join } from 'node:path';
 import { renderCategoryPage } from './menu-page-template.mjs';
+import { countDishes } from '../site/menu-format.js';
 
 const SITE = new URL('../site/', import.meta.url);
 const ORDER = ['tiffin', 'lunch', 'dinner'];
 
-/** Load window.VAAV_MENUS in Node — the pattern proven by site/menu-data.test.js. */
-export function loadMenus() {
-  const src = readFileSync(new URL('menu-data.js', SITE), 'utf8');
+/**
+ * Load window.VAAV_MENUS in Node. The one place that knows how to read
+ * menu-data.js outside a browser — site/menu-data.test.js and
+ * tools/check-menu-coverage.mjs import this rather than repeating the trick.
+ * `dir` defaults to site/ and takes a URL or a plain path — check-menu-coverage
+ * resolves a directory off the command line.
+ */
+export function loadMenus(dir = SITE) {
+  const file = dir instanceof URL ? new URL('menu-data.js', dir) : join(dir, 'menu-data.js');
+  const src = readFileSync(file, 'utf8');
   const win = {};
   new Function('window', src)(win);
   if (!win.VAAV_MENUS) throw new Error('menu-data.js did not set window.VAAV_MENUS');
@@ -54,7 +63,7 @@ export function buildAll() {
     const dir = new URL(`menu/${cat}/`, SITE);
     mkdirSync(dir, { recursive: true });
     writeFileSync(new URL('index.html', dir), html, 'utf8');
-    const dishes = data.menus.reduce((n, m) => n + m.groups.reduce((k, g) => k + g[1].length, 0), 0);
+    const dishes = data.menus.reduce((n, m) => n + countDishes(m.groups), 0);
     console.log(`  wrote site/menu/${cat}/index.html — ${data.menus.length} sets, ${dishes} dishes`);
   }
 }

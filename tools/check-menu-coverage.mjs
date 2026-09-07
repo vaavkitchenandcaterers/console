@@ -12,18 +12,17 @@
 //
 //   node tools/check-menu-coverage.mjs           # checks site/
 //   node tools/check-menu-coverage.mjs <dir>     # checks <dir> (for tests)
-import { readFileSync, readdirSync, existsSync, statSync } from 'node:fs';
+import { readdirSync, existsSync, statSync } from 'node:fs';
 import { join, resolve, relative } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { loadMenus } from './build-menu-pages.mjs';
 
 const ROOT = resolve(fileURLToPath(new URL('..', import.meta.url)));
 const SITE = process.argv[2] ? resolve(process.argv[2]) : join(ROOT, 'site');
 
-const win = {};
-new Function('window', readFileSync(join(SITE, 'menu-data.js'), 'utf8'))(win);
-if (!win.VAAV_MENUS) throw new Error('menu-data.js did not set window.VAAV_MENUS');
-
-const categories = Object.keys(win.VAAV_MENUS);
+// Deliberately from the data, never from ORDER: the whole point of this check
+// is to notice a category the hardcoded lists have not been told about.
+const categories = Object.keys(loadMenus(SITE));
 const menuDir = join(SITE, 'menu');
 const published = readdirSync(menuDir)
   .filter((e) => statSync(join(menuDir, e)).isDirectory())
