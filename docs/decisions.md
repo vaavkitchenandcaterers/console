@@ -297,7 +297,9 @@ buys the analytics without buying that.
 ## ADR-0009 — Sync the shared topbar and nav in place, rather than templating pages
 
 **Date:** 2026-09-07
-**Status:** accepted
+**Status:** accepted; extended to the site footer the same day — no second ADR,
+because applying a decided mechanism to the next block is not a new decision.
+See the closing note.
 
 **Context.** The topbar and primary nav are 3,723 bytes of identical markup
 duplicated by hand across seven pages: `index.html`, `about/`, `contact/`,
@@ -344,9 +346,38 @@ marker, a missing or empty source, a source with no nav, or an ambiguous
 `aria-current` target all throw. A silent no-op here would reproduce exactly the
 drift this exists to prevent.
 
-Not addressed: the CSP, still maintained in eleven hand-edited copies, and the
-footer, still duplicated the same way. Both are now straightforward to bring
-under the same markers.
+**Extended to the footer, same day.** The `<footer>` element — 979 bytes, and
+byte-identical on all seven pages once `fb8e2dd` restored the Corporate link
+404.html had silently lost — is now a second region of the same machinery:
+`tools/chrome/footer.html`, wrapped by `<!-- sync:chrome footer start … -->`
+and `<!-- sync:chrome footer end -->`. No new ADR: nothing above is decided
+differently, and the alternative rejected below is rejected for the same
+reasons. It is worth recording only what the second region settled.
+
+The region is the `<footer>` element and nothing after it. What follows —
+the mobile action bar, the WhatsApp float, `/menu/`'s `menu-data.js` tag —
+genuinely varies per page and must keep varying. Because the seven footers are
+identical, the region needs no per-page parameter at all: no footer equivalent
+of `aria-current`, and a test asserts the block renders the same for every page.
+If one is ever wanted it belongs in the region's `forPage()`, beside the nav's,
+not in seven hand-edits.
+
+Two regions on one page need markers that cannot be mistaken for each other.
+The nav keeps the unqualified `sync:chrome` it already carries in every
+published page; later regions qualify it. The qualifier goes *before*
+`start`/`end`, so no region's markers are a substring of another's and the
+loose tail of the opening-marker pattern cannot run into a neighbour. That
+asymmetry is the price of not rewriting ten pages to say the same thing.
+
+One knock-on: `loadChrome()` used to slice the generated pages' bottom chrome
+at `<footer`, which now sits *below* the opening marker and would cut it off,
+handing those three a closing marker with no opening one. It slices at the
+marker instead — the same way the nav's markers already ride along inside the
+top chrome.
+
+Still not addressed: the CSP, maintained in eleven hand-edited copies. It is
+the obvious third region, and adding it is now one entry in the `REGIONS` table
+plus a source file.
 
 **Alternative rejected.** A static site generator — layouts, partials, a
 `src/` of page content, `site/` as build output. It would remove more

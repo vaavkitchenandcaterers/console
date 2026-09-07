@@ -28,25 +28,39 @@ npm run build:menu     # after any edit to menu-data.js
 **Never edit `menu/tiffin|lunch|dinner/index.html` by hand.** Fix the dish in `menu-data.js` and
 regenerate. `npm test` fails with "run `npm run build:menu`" if a committed page drifts from the data.
 
-## The shared topbar and nav
+## The shared topbar, nav and footer
 
-The topbar and the primary nav are 3.7 KB of identical markup that used to be pasted into every
-page. They now have one copy, in `tools/chrome/nav.html`, and a tool writes it into the region each
-page marks with `<!-- sync:chrome start … -->` / `<!-- sync:chrome end -->`.
+The topbar and primary nav (3.7 KB) and the site footer (1 KB) are identical markup that used to be
+pasted into every page. Each now has one copy under `tools/chrome/`, and one tool writes both into
+the regions each page marks:
+
+| Region | One copy in | Markers |
+|--------|-------------|---------|
+| Topbar + nav | `tools/chrome/nav.html` | `<!-- sync:chrome start … -->` / `<!-- sync:chrome end -->` |
+| Footer | `tools/chrome/footer.html` | `<!-- sync:chrome footer start … -->` / `<!-- sync:chrome footer end -->` |
 
 ```bash
-npm run sync:chrome    # after any edit to tools/chrome/nav.html
+npm run sync:chrome    # after any edit to either file
 ```
 
-Pages stay whole, hand-editable files — only the marked region is machine-owned. `aria-current` is
-not in the source; the tool adds it to the link matching each page's own URL. `/corporate/` and
-`404.html` get none, because neither is in the primary nav.
+Pages stay whole, hand-editable files — only the marked regions are machine-owned. Everything after
+`</footer>` is *not* in the region and still varies per page: the mobile action bar, the WhatsApp
+float, and `/menu/`'s own `menu-data.js` script tag.
+
+The nav's `aria-current` is not in the source; the tool adds it to the link matching each page's own
+URL. `/corporate/` and `404.html` get none, because neither is in the primary nav. The footer has no
+per-page variation at all — the seven copies are byte-identical, and a test holds them that way.
+
+Adding a third region (the CSP is the obvious candidate) means one entry in the `REGIONS` table in
+`tools/sync-chrome.mjs` plus its source file. The nav keeps the unqualified `sync:chrome` marker
+because it was there first; every later region qualifies it.
 
 **Order matters: `sync:chrome` before `build:menu`.** The three generated category pages copy their
-chrome out of `menu/index.html`, so building them from an unsynced hub bakes in the old nav.
-`npm run build:menu` runs `sync:chrome` first for exactly this reason, so running the build alone is
-always safe; CI runs them in that order too. `npm test` fails with "run `npm run sync:chrome`" if a
-page's region drifts, and with "run `npm run build:menu`" if a generated page does.
+chrome out of `menu/index.html`, so building them from an unsynced hub bakes in the old nav or
+footer. `npm run build:menu` runs `sync:chrome` first for exactly this reason, so running the build
+alone is always safe; CI runs them in that order too. `npm test` fails with "run
+`npm run sync:chrome`" if a page's region drifts, and with "run `npm run build:menu`" if a generated
+page does.
 
 ## To view locally
 Just open `index.html` in a browser. (Or run `node server.cjs` and visit `http://localhost:8765`.)

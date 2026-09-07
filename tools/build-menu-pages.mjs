@@ -13,6 +13,7 @@
 import { readFileSync, writeFileSync, mkdirSync } from 'node:fs';
 import { join } from 'node:path';
 import { renderCategoryPage } from './menu-page-template.mjs';
+import { regionNamed } from './sync-chrome.mjs';
 import { countDishes } from '../site/menu-format.js';
 
 const SITE = new URL('../site/', import.meta.url);
@@ -34,21 +35,37 @@ export function loadMenus(dir = SITE) {
   return win.VAAV_MENUS;
 }
 
+// The bottom chrome is sliced from the footer's sync:chrome marker, not from
+// `<footer` itself. The marker sits immediately above the element, so slicing
+// at the tag would cut it off and hand the generated pages a footer with a
+// closing marker and no opening one — which sync-chrome.mjs would then reject.
+// Cutting at the marker instead carries the whole machine-owned region through,
+// exactly as the nav's markers already ride along inside the top chrome.
+const FOOTER = regionNamed('footer');
+
 /**
- * Pull the head, the topbar+nav, and everything from <footer> down out of
+ * Pull the head, the topbar+nav, and everything from the footer down out of
  * menu/index.html. Extracting rather than duplicating means the CSP, the nav
  * and the footer cannot drift from the rest of the site.
  */
 export function loadChrome() {
   const src = readFileSync(new URL('menu/index.html', SITE), 'utf8');
+  const footerAt = src.indexOf(FOOTER.startPrefix);
+  if (footerAt < 0) {
+    throw new Error(
+      `menu/index.html has no "${FOOTER.startPrefix}" marker — run \`npm run sync:chrome\` first`
+    );
+  }
   const head = src.slice(src.indexOf('<head>') + '<head>'.length, src.indexOf('</head>')).trim();
   const top = src.slice(src.indexOf('<body>'), src.indexOf('<main')).trimEnd();
-  const bottom = src.slice(src.indexOf('<footer')).trimEnd();
+  const bottom = src.slice(footerAt).trimEnd();
   for (const [name, part] of Object.entries({ head, top, bottom })) {
     if (!part) throw new Error(`could not extract "${name}" from menu/index.html`);
   }
   if (!head.includes('Content-Security-Policy')) throw new Error('extracted head has no CSP');
   if (!top.includes('</nav>')) throw new Error('extracted top chrome has no nav');
+  if (!bottom.includes('<footer>')) throw new Error('extracted bottom chrome has no footer');
+  if (!bottom.includes(FOOTER.endMarker)) throw new Error('extracted bottom chrome has no closing footer marker');
   if (!bottom.includes('/script.js')) throw new Error('extracted bottom chrome has no script tag');
   return { head, top, bottom };
 }
