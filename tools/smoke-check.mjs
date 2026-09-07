@@ -20,6 +20,29 @@ const PAGES = [
   { path: '/corporate/',    must: ['</html>'] },
   { path: '/robots.txt',    must: ['Sitemap'] },
   { path: '/sitemap.xml',   must: ['<urlset'] },
+  // The assets every page loads. A mistyped rule in the BLOCKED list below
+  // would 404 one of these and take the site's JS or styling out entirely,
+  // while every page above still answered 200.
+  { path: '/style.css',      must: ['VAAV Kitchen'] },
+  { path: '/script.js',      must: ['VaavShortlist'] },
+  { path: '/shortlist.js',   must: ['createShortlist'] },
+  { path: '/menu-format.js', must: ['escapeHtml'] },
+  { path: '/menu-data.js',   must: ['VAAV_MENUS'] },
+  { path: '/analytics.js',   must: ['gtag'] },
+];
+
+// site/ is both the Netlify publish directory and the npm project root, so the
+// project's own files sit in the served tree. _redirects forces them to 404.
+// Those rules are the only thing between them and a 200, and nothing that runs
+// locally can prove Netlify honours a forced 404 — only a fetch against a real
+// deploy can. That is why this list lives here and not in the test suite.
+const BLOCKED = [
+  '/package.json',
+  '/package-lock.json',
+  '/vitest.config.js',
+  '/server.cjs',
+  '/README.md',
+  '/shortlist.test.js',
 ];
 
 const problems = [];
@@ -40,6 +63,20 @@ for (const { path, must } of PAGES) {
   }
 }
 
+for (const path of BLOCKED) {
+  try {
+    // No redirect following: a forced 404 rule serves the 404 body under a 404
+    // status without redirecting, so the status here is the answer. Following
+    // would also mask a rule that had been written as a 301 by mistake.
+    const res = await fetch(base + path, { redirect: 'manual' });
+    if (res.status !== 404) {
+      problems.push(`${path} -- HTTP ${res.status}, expected 404: the _redirects rule is missing, unforced, or not honoured`);
+    }
+  } catch (err) {
+    problems.push(`${path} -- request failed: ${err.message}`);
+  }
+}
+
 // A page that does not exist must 404, not serve the homepage. A catch-all
 // that answers everything with 200 is the failure this catches.
 try {
@@ -54,4 +91,4 @@ if (problems.length) {
   console.error(`${problems.length} problem(s) against ${base}`);
   exit(1);
 }
-console.log(`OK: ${PAGES.length} pages served, unknown paths 404 (${base})`);
+console.log(`OK: ${PAGES.length} paths served, ${BLOCKED.length} project files blocked, unknown paths 404 (${base})`);
