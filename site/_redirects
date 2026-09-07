@@ -1,7 +1,6 @@
-# Netlify reads this file from the publish directory, so it applies under both
-# of the wirings netlify.toml describes (base = repo root, or base = site/).
-# Redirect rules in a netlify.toml would take precedence over it; neither of
-# ours defines any.
+# Netlify reads this file from the publish directory, which is site/ (set by
+# the root netlify.toml; see ADR-0007). Redirect rules in a netlify.toml would
+# take precedence over it, but ours defines none.
 #
 # The site answers on two hostnames: the custom domain and the Netlify
 # subdomain it was first deployed to. Both served 200, so the whole site
