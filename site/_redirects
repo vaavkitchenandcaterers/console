@@ -1,5 +1,5 @@
 # Netlify reads this file from the publish directory, which is site/ (set by
-# the root netlify.toml; see ADR-0007). Redirect rules in a netlify.toml would
+# the root netlify.toml; see ADR-0008). Redirect rules in a netlify.toml would
 # take precedence over it, but ours defines none.
 #
 # The site answers on two hostnames: the custom domain and the Netlify
@@ -26,7 +26,7 @@ https://vaavkitchenandcaterers.netlify.app/*  https://vaavkitchenandcaterers.com
 #
 # Listed one per page rather than pattern-matched: a Netlify splat only binds
 # at the end of a path, so no single rule covers both /about/index.html and
-# /menu/tiffin/index.html. Nine pages is few enough to be explicit, and the
+# /menu/tiffin/index.html. Eleven pages is few enough to be explicit, and the
 # list is checked by the redirect test below.
 #
 # These need the forcing bang for the same reason as the rule above: each
@@ -43,6 +43,8 @@ https://vaavkitchenandcaterers.netlify.app/*  https://vaavkitchenandcaterers.com
 /menu/tiffin/index.html   /menu/tiffin/   301!
 /menu/lunch/index.html    /menu/lunch/    301!
 /menu/dinner/index.html   /menu/dinner/   301!
+/menu/housewarming/index.html  /menu/housewarming/  301!
+/menu/seemantham/index.html    /menu/seemantham/    301!
 
 # site/ is both the Netlify publish directory and the npm project root, so the
 # files that say how the site is built and tested are served alongside the site
@@ -51,7 +53,7 @@ https://vaavkitchenandcaterers.netlify.app/*  https://vaavkitchenandcaterers.com
 # but none of it is site content either: the dependency list is the part a
 # stranger can actually use, matched against published advisories, and the
 # surface grows every time a tool drops a config file beside the source.
-# ADR-0005 moved the documents out and left this half open; ADR-0007 left it
+# ADR-0005 moved the documents out and left this half open; ADR-0008 left it
 # open again, because `_headers` can add a header to a response but has no way
 # to refuse to send one.
 #
@@ -77,6 +79,7 @@ https://vaavkitchenandcaterers.netlify.app/*  https://vaavkitchenandcaterers.com
 /.claude/launch.json    /404.html   404!
 /chrome-sync.test.js    /404.html   404!
 /menu-data.test.js      /404.html   404!
+/menu-occasion-pages.test.js  /404.html   404!
 /menu-pages.test.js     /404.html   404!
 /redirects.test.js      /404.html   404!
 /responsive.test.js     /404.html   404!

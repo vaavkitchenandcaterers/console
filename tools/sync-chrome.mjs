@@ -54,6 +54,11 @@ export const GENERATED_PAGES = [
   'menu/tiffin/index.html',
   'menu/lunch/index.html',
   'menu/dinner/index.html',
+  // The occasion pages slice the same sets by occasion tag rather than by
+  // category (ADR-0007). They take their chrome from the same hub extraction,
+  // so they carry the markers for the same reason the category pages do.
+  'menu/housewarming/index.html',
+  'menu/seemantham/index.html',
 ];
 
 for (const page of GENERATED_PAGES) {
@@ -160,7 +165,7 @@ export const REGIONS = [
     what: 'shared CSP + referrer policy',
     wraps: 'CSP and referrer meta tags',
     // The highest-value region: it was the last copy-and-paste of the CSP
-    // string, ten hand-maintained tags of it, which ADR-0007 named as the
+    // string, ten hand-maintained tags of it, which ADR-0008 named as the
     // remaining real duplication. The explanatory comment above the meta tag
     // was on index.html only; it is in the source now, so every page carries
     // it -- it is what tells a reader why a meta CSP exists alongside
@@ -183,7 +188,7 @@ export const REGIONS = [
     wraps: 'preconnect, stylesheet and analytics tags',
     // The largest contiguous shared run in the head: both preconnects, the
     // Google Fonts stylesheet, /style.css, and the two halves of the GA4
-    // snippet with the comment that explains why they are split (ADR-0008).
+    // snippet with the comment that explains why they are split (ADR-0009).
     requires: [
       ['a fonts preconnect', '<link rel="preconnect" href="https://fonts.googleapis.com">'],
       ['the site stylesheet', '<link rel="stylesheet" href="/style.css">'],
