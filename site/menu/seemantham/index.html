@@ -4,8 +4,11 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; base-uri 'self'; object-src 'none'; img-src 'self' data:; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; script-src 'self'; frame-src https://www.google.com https://maps.google.com; connect-src 'self'; form-action 'self'; upgrade-insecure-requests">
+<!-- sync:chrome head-csp start | shared CSP + referrer policy, one copy in tools/chrome/head-csp.html. Do not edit this block here: edit that file, then run `npm run sync:chrome` in site/. -->
+<!-- Security: Content Security Policy (portable defense-in-depth; works on any static host) -->
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; base-uri 'self'; object-src 'none'; img-src 'self' data: https://www.googletagmanager.com https://*.google-analytics.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; script-src 'self' https://www.googletagmanager.com; frame-src https://www.google.com https://maps.google.com; connect-src 'self' https://*.google-analytics.com https://*.analytics.google.com https://*.googletagmanager.com; form-action 'self'; upgrade-insecure-requests">
 <meta name="referrer" content="strict-origin-when-cross-origin">
+<!-- sync:chrome head-csp end -->
 <title>Seemantham Catering Menu — 14 Pure Veg Sets | VAAV Kitchen</title>
 <meta name="description" content="All 14 VAAV set menus we cook for a seemantham, every dish listed — tiffin spreads with a sweet, medhu vadai, chutney and sambar, plus full sappadu options. Pure veg, catered across Chennai, from 30 guests.">
 <meta name="author" content="VAAV Kitchen and Caterers">
@@ -15,20 +18,35 @@
 <meta property="og:url" content="https://vaavkitchenandcaterers.com/menu/seemantham/">
 <meta property="og:title" content="Seemantham Catering Menu — 14 Pure Veg Sets | VAAV Kitchen">
 <meta property="og:description" content="The tiffin and lunch sets we cook for a seemantham in Chennai, every dish listed. Pure veg, fully customisable.">
-<meta property="og:image" content="https://vaavkitchenandcaterers.com/logo.png">
+<!-- sync:chrome head-social start | shared Open Graph card, locale and site name, one copy in tools/chrome/head-social.html. Do not edit this block here: edit that file, then run `npm run sync:chrome` in site/. -->
+<meta property="og:image" content="https://vaavkitchenandcaterers.com/og-card.jpg">
+<meta property="og:image:type" content="image/jpeg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="VAAV Kitchen and Caterers — pure veg catering across Chennai, rated 5.0 on Google, for 25 to 2,500 guests.">
 <meta property="og:locale" content="en_IN">
 <meta property="og:site_name" content="VAAV Kitchen and Caterers">
 <meta name="twitter:card" content="summary_large_image">
+<!-- sync:chrome head-social end -->
 <meta name="twitter:title" content="Seemantham Catering Menu — 14 Pure Veg Sets | VAAV Kitchen">
 <meta name="twitter:description" content="The tiffin and lunch sets we cook for a seemantham in Chennai, every dish listed. Pure veg, fully customisable.">
-<meta name="twitter:image" content="https://vaavkitchenandcaterers.com/logo.png">
+<!-- sync:chrome head-twitter-image start | shared Twitter card image, one copy in tools/chrome/head-twitter-image.html. Do not edit this block here: edit that file, then run `npm run sync:chrome` in site/. -->
+<meta name="twitter:image" content="https://vaavkitchenandcaterers.com/og-card.jpg">
+<meta name="twitter:image:alt" content="VAAV Kitchen and Caterers — pure veg catering across Chennai, rated 5.0 on Google, for 25 to 2,500 guests.">
+<!-- sync:chrome head-twitter-image end -->
 <link rel="icon" type="image/png" sizes="64x64" href="/favicon-64.png?v=2">
 <link rel="apple-touch-icon" href="/logo.png">
 <link rel="prefetch" href="/menu/"><link rel="prefetch" href="/contact/">
+<!-- sync:chrome head-assets start | shared font, stylesheet and analytics tags, one copy in tools/chrome/head-assets.html. Do not edit this block here: edit that file, then run `npm run sync:chrome` in site/. -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant:ital,wght@0,700;1,500;1,700&family=Mukta:wght@400;600;700&family=Catamaran:wght@600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/style.css">
+<!-- Google Analytics (GA4). The loader is external; the config half lives in
+     /analytics.js so script-src needs no 'unsafe-inline'. See ADR-0009. -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-4T5PCVFK2G"></script>
+<script src="/analytics.js" defer></script>
+<!-- sync:chrome head-assets end -->
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
@@ -160,6 +178,7 @@
 
 <a class="skip-link" href="#main">Skip to content</a>
 
+<!-- sync:chrome start | shared topbar + nav, one copy in tools/chrome/nav.html. Do not edit this block here: edit that file, then run `npm run sync:chrome` in site/. -->
 <div class="topbar">
   <div class="wrap topbar-in">
     <div class="tb-left">
@@ -197,6 +216,7 @@
     </button>
   </div>
 </nav>
+<!-- sync:chrome end -->
 <main id="main">
   <section class="wrap sec">
     <nav class="breadcrumb" aria-label="Breadcrumb"><a href="/">Home</a> <span aria-hidden="true">/</span> <a href="/menu/">Menu &amp; Packages</a> <span aria-hidden="true">/</span> <span aria-current="page">Seemantham</span></nav>
@@ -430,6 +450,7 @@
     <p class="set-cta"><a class="btn" data-wa-context="seemantham catering" href="https://wa.me/919655356333?text=Hello%20VAAV%20Kitchen%2C%20I'd%20like%20to%20enquire%20about%20seemantham%20catering." target="_blank" rel="noopener noreferrer">Ask for a seemantham quote on WhatsApp</a></p>
   </section>
 </main>
+<!-- sync:chrome footer start | shared site footer, one copy in tools/chrome/footer.html. Do not edit this block here: edit that file, then run `npm run sync:chrome` in site/. -->
 <footer>
   <div class="wrap">
     <div class="footer-mark">
@@ -454,6 +475,7 @@
     <p class="footer-copy">© <span id="year">2026</span> · Chennai</p>
   </div>
 </footer>
+<!-- sync:chrome footer end -->
 
 <div class="mobile-actionbar" role="group" aria-label="Quick contact">
   <a class="mab-btn mab-call" href="tel:+919655356333">
@@ -471,7 +493,6 @@
   <span class="lbl">WhatsApp</span>
 </a>
 
-<script src="/menu-data.js" defer></script>
 <script type="module" src="/script.js"></script>
 </body>
 </html>

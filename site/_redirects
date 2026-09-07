@@ -1,7 +1,6 @@
-# Netlify reads this file from the publish directory, so it applies under both
-# of the wirings netlify.toml describes (base = repo root, or base = site/).
-# Redirect rules in a netlify.toml would take precedence over it; neither of
-# ours defines any.
+# Netlify reads this file from the publish directory, which is site/ (set by
+# the root netlify.toml; see ADR-0008). Redirect rules in a netlify.toml would
+# take precedence over it, but ours defines none.
 #
 # The site answers on two hostnames: the custom domain and the Netlify
 # subdomain it was first deployed to. Both served 200, so the whole site
@@ -46,3 +45,42 @@ https://vaavkitchenandcaterers.netlify.app/*  https://vaavkitchenandcaterers.com
 /menu/dinner/index.html   /menu/dinner/   301!
 /menu/housewarming/index.html  /menu/housewarming/  301!
 /menu/seemantham/index.html    /menu/seemantham/    301!
+
+# site/ is both the Netlify publish directory and the npm project root, so the
+# files that say how the site is built and tested are served alongside the site
+# itself. /package.json, /server.cjs and the five test files all answer 200 in
+# production. None of it is secret and none of it is interesting on its own,
+# but none of it is site content either: the dependency list is the part a
+# stranger can actually use, matched against published advisories, and the
+# surface grows every time a tool drops a config file beside the source.
+# ADR-0005 moved the documents out and left this half open; ADR-0008 left it
+# open again, because `_headers` can add a header to a response but has no way
+# to refuse to send one.
+#
+# A redirect does. Each of these serves the 404 page under a 404 status, so the
+# path answers exactly as a path that was never there does.
+#
+# The bang matters more here than anywhere else in this file. Every one of
+# these paths is a real file sitting in the publish directory — precisely the
+# case where an unforced rule loses to the file and the file is served anyway.
+# Unforced, these rules would read correctly and do nothing at all.
+#
+# Listed one per file for the same reason the index.html rules are: a Netlify
+# splat binds only at the end of a path, so there is no /*.test.js. The test
+# below fails if a published file that is not site content has no rule here,
+# and fails just as loudly if a rule ever appears for a file the pages load.
+
+/README.md              /404.html   404!
+/package.json           /404.html   404!
+/package-lock.json      /404.html   404!
+/vitest.config.js       /404.html   404!
+/server.cjs             /404.html   404!
+/.gitignore             /404.html   404!
+/.claude/launch.json    /404.html   404!
+/chrome-sync.test.js    /404.html   404!
+/menu-data.test.js      /404.html   404!
+/menu-occasion-pages.test.js  /404.html   404!
+/menu-pages.test.js     /404.html   404!
+/redirects.test.js      /404.html   404!
+/responsive.test.js     /404.html   404!
+/shortlist.test.js      /404.html   404!

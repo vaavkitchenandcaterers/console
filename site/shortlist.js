@@ -35,7 +35,7 @@ export function createShortlist(storage) {
   let state = read();
 
   return {
-    KEY: KEY, CAP: CAP,
+    CAP: CAP,
     getState: function () { return state; },
     has: function (id) { return state.items.some(function (i) { return i.id === id; }); },
     add: function (item) {

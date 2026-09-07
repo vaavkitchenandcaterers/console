@@ -5,9 +5,9 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "vite build",
     "test": "vitest run",
-    "build:menu": "node ../tools/build-menu-pages.mjs"
+    "sync:chrome": "node ../tools/sync-chrome.mjs",
+    "build:menu": "npm run sync:chrome && node ../tools/build-menu-pages.mjs"
   },
   "devDependencies": {
     "vite": "^6.0.0",

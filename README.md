@@ -26,15 +26,15 @@ website currently lives here. See [docs/decisions.md](docs/decisions.md).
 
 ## The website (`site/`)
 
-Static, mobile-first, no build step required to serve. Vite and Vitest are
-used for bundling and tests.
+Static, mobile-first, no build step required to serve. Vite provides the local
+dev server, Vitest the tests. Nothing is bundled — the site is served exactly
+as committed.
 
 ```bash
 cd site
 npm install
 npm run dev      # local dev server
 npm test         # vitest
-npm run build    # production build to dist/
 ```
 
 ### History
@@ -63,8 +63,11 @@ git log cdce541^2           # the real site history, all 122 commits
   already leaked. Today the site needs none: the Google Maps embed uses the
   keyless `/maps/embed?pb=…` iframe, and fonts and `wa.me`/`tel:` links need no
   key. If a feature ever needs one (a Maps JS key, an email/form backend, an
-  analytics token), put the call behind a serverless function or restrict the
-  key by HTTP referrer and API scope — do not inline it. See the public-repo
+  analytics *token*), put the call behind a serverless function or restrict the
+  key by HTTP referrer and API scope — do not inline it. The GA4 measurement ID
+  in `site/analytics.js` is not an exception to this: a measurement ID names a
+  property to Google's collection endpoint and grants nothing, so it is public
+  by design and belongs in the client. See ADR-0009, and the public-repo
   note in `parked/studio/README.md` for why "hidden in the JS" is not hidden.
 - Large binaries are expensive forever. Prefer web-sized derivatives over
   layered sources unless the source genuinely needs versioning.
@@ -78,8 +81,9 @@ authorisation — CI cannot publish, and CI cannot stop a publish either. The
 gate is a person reading a result, so read it.
 
 1. **Check the commit is green.** GitHub Actions runs the test suite, the
-   internal link check, and the generated-page drift check on every push to
-   `main`. Open the commit on GitHub and confirm the tick before going further.
+   internal link check, and the drift checks for the synced nav and the
+   generated pages on every push to `main`. Open the commit on GitHub and
+   confirm the tick before going further.
 2. **Open the new deploy** in Netlify (Deploys tab, top of the list) and click
    through the pages you changed.
 3. **Smoke-test that deploy URL**, which checks the deployed copy rather than

@@ -38,6 +38,58 @@ Adding a page means three edits, not one: the key goes in `ORDER` or `OCCASIONS`
 `tools/build-menu-pages.mjs`, a rule goes in `_redirects` (or `redirects.test.js` fails), and the
 sitemap block is repasted from what the generator prints.
 
+## The shared chrome — topbar, nav, footer and the shared parts of `<head>`
+
+The topbar and primary nav (3.7 KB), the site footer (1 KB) and four shared runs of `<head>`
+(2.9 KB, the CSP among them) are identical markup that used to be pasted into every page. Each now
+has one copy under `tools/chrome/`, and one tool writes them all into the regions each page marks:
+
+| Region | One copy in | Markers | Pages |
+|--------|-------------|---------|-------|
+| Topbar + nav | `tools/chrome/nav.html` | `<!-- sync:chrome start … -->` / `<!-- sync:chrome end -->` | all 7 |
+| Footer | `tools/chrome/footer.html` | `<!-- sync:chrome footer start … -->` / `<!-- sync:chrome footer end -->` | all 7 |
+| CSP + referrer policy | `tools/chrome/head-csp.html` | `<!-- sync:chrome head-csp start … -->` / `… end -->` | all 7 |
+| Fonts, stylesheet, GA4 | `tools/chrome/head-assets.html` | `<!-- sync:chrome head-assets start … -->` / `… end -->` | all 7 |
+| Open Graph card, locale, site name | `tools/chrome/head-social.html` | `<!-- sync:chrome head-social start … -->` / `… end -->` | 6 — not `404.html` |
+| Twitter card image | `tools/chrome/head-twitter-image.html` | `<!-- sync:chrome head-twitter-image start … -->` / `… end -->` | 6 — not `404.html` |
+
+```bash
+npm run sync:chrome    # after any edit to a file under tools/chrome/
+```
+
+Pages stay whole, hand-editable files — only the marked regions are machine-owned. Everything after
+`</footer>` is *not* in the region and still varies per page: the mobile action bar, the WhatsApp
+float, and `/menu/`'s own `menu-data.js` script tag.
+
+The nav's `aria-current` is not in the source; the tool adds it to the link matching each page's own
+URL. `/corporate/` and `404.html` get none, because neither is in the primary nav. Every other
+region has no per-page variation at all — the copies are byte-identical, and a test holds them that
+way.
+
+**`<head>` is not one shared block.** Shared and per-page tags interleave there, so the four head
+regions are drawn only around runs that were *already* contiguous and *already* byte-identical.
+`<title>`, the description, the canonical, `og:url`, `og:title`, `og:description`,
+`twitter:title`, `twitter:description`, the `prefetch` links, the JSON-LD blocks, and
+`index.html`'s own `keywords` and fallback icon all sit outside them and still vary. Nothing was
+reordered to make a region bigger: in particular `head-csp` stays above the first tag that loads
+anything, because a CSP that arrives after a load does not apply to it. A test asserts both.
+
+`404.html` carries no Open Graph or Twitter tags — an error document needs no share card — so the
+two social regions are scoped to the other six pages via a `pages` field on the region. Scoping is
+not a loophole: a page *inside* a region's scope with no markers is still an error, and so is a page
+*outside* it that has them.
+
+Adding another region means one entry in the `REGIONS` table in `tools/sync-chrome.mjs` plus its
+source file. The nav keeps the unqualified `sync:chrome` marker because it was there first; every
+later region qualifies it.
+
+**Order matters: `sync:chrome` before `build:menu`.** The three generated category pages copy their
+chrome — head included — out of `menu/index.html`, so building them from an unsynced hub bakes in
+the old nav, footer or CSP. `npm run build:menu` runs `sync:chrome` first for this reason, so the build
+alone is always safe; CI runs them in that order too. `npm test` fails with "run
+`npm run sync:chrome`" if a page's region drifts, and with "run `npm run build:menu`" if a generated
+page does.
+
 ## To view locally
 Just open `index.html` in a browser. (Or run `node server.cjs` and visit `http://localhost:8765`.)
 

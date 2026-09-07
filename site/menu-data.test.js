@@ -1,14 +1,10 @@
 import { describe, it, expect } from 'vitest';
-import { readFileSync } from 'node:fs';
+// Node-side loader lives in tools/, like the page generator this file's sibling
+// drift test already imports. One reader of menu-data.js outside the browser,
+// not three subtly different ones.
+import { loadMenus } from '../tools/build-menu-pages.mjs';
 
 const OCCASIONS = ['wedding', 'reception', 'seemantham', 'housewarming', 'puja', 'birthday', 'corporate', 'temple'];
-
-function loadMenus() {
-  const src = readFileSync(new URL('./menu-data.js', import.meta.url), 'utf8');
-  const win = {};
-  new Function('window', src)(win);
-  return win.VAAV_MENUS;
-}
 
 function everyMenu(M) {
   return Object.keys(M).flatMap(cat => (M[cat].menus || []).map(m => ({ cat, m })));

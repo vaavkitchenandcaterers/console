@@ -54,8 +54,11 @@ jobs:
       - run: npm ci
         working-directory: site
 
-      # 92 tests across six files, including the byte-identical comparison of
-      # each generated menu page against renderCategoryPage().
+      # 139 tests across seven files, including the byte-identical comparison
+      # of each generated menu page against renderCategoryPage(), and of each
+      # hand-maintained page's six machine-owned regions -- nav, footer and the
+      # four shared runs of <head> -- against their one copy under
+      # tools/chrome/.
       - name: Tests
         run: npm test
         working-directory: site
@@ -66,8 +69,32 @@ jobs:
       - name: Internal links and sitemap resolve
         run: node tools/check-internal-links.mjs
 
+      # MUST run before build:menu. The topbar+nav, the footer and the four
+      # shared runs of <head> have one copy each, under tools/chrome/, synced
+      # into the marked regions of the seven hand-maintained pages.
+      # build-menu-pages.mjs then copies those regions verbatim out of
+      # site/menu/index.html into the three generated category pages -- head
+      # included -- so syncing after the build would leave those three a nav, a
+      # footer or a CSP behind. Runs the tool itself, so its write path is
+      # exercised, not just the functions the test suite calls directly.
+      - name: Sync the shared chrome into the hand-maintained pages
+        run: npm run sync:chrome
+        working-directory: site
+
+      - name: Fail if the synced chrome moved
+        run: |
+          # Deliberately git diff, not git status --porcelain -- see the note
+          # on the generated-pages check below for why.
+          if ! git diff --quiet -- site; then
+            echo "::error::a shared chrome region on one or more pages is stale. Run 'npm run sync:chrome' in site/ and commit the result."
+            git --no-pager diff -- site
+            exit 1
+          fi
+          echo "Committed pages carry the chrome in tools/chrome/ byte for byte."
+
       # Runs the generator itself, so its write path is exercised too, not
-      # just the template function the test suite calls directly.
+      # just the template function the test suite calls directly. build:menu
+      # chains sync:chrome ahead of itself, so the order above cannot be lost.
       - name: Regenerate the menu category pages
         run: npm run build:menu
         working-directory: site

@@ -15,9 +15,11 @@
 # so site/_headers is served as /_headers, site/robots.txt as /robots.txt,
 # and so on. They need no separate configuration.
 #
-# site/netlify.toml is kept for the alternative wiring, in which the Netlify
-# base directory is set to site/ and that file is read instead of this one.
-# Only one of the two is ever used, decided by the base directory setting.
+# The base directory is the repository root, so this is the file Netlify
+# reads. A site/netlify.toml for the alternative wiring — base directory set
+# to site/, publish = "." — used to sit alongside it, unread; it was deleted
+# once the base directory was confirmed. Recover it from git history if the
+# wiring ever changes.
 
 [build]
   publish = "site"

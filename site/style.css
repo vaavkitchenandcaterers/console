@@ -41,12 +41,6 @@ a{color:inherit}
 .skip-link:focus{top:0}
 :focus-visible{outline:3px solid var(--yellow-deep);outline-offset:3px;border-radius:6px}
 
-/* ---------- Brand monogram (inline SVG, scales cleanly) ---------- */
-.brand-mark{width:100%;height:100%}
-.brand-mark .leaf{fill:var(--green-deep)}
-.brand-mark .v{fill:var(--yellow)}
-.brand-mark .vk-ink{fill:var(--green-ink)}
-
 /* ---------- Top utility bar ---------- */
 .topbar{background:var(--green-ink);color:rgba(247,243,231,.82);font-family:'Catamaran',sans-serif;font-size:.82rem}
 .topbar-in{display:flex;align-items:center;justify-content:space-between;min-height:38px;gap:14px}
