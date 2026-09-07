@@ -34,7 +34,6 @@ cd site
 npm install
 npm run dev      # local dev server
 npm test         # vitest
-npm run build    # production build to dist/
 ```
 
 ### History
