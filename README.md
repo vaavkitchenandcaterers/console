@@ -60,3 +60,36 @@ git log cdce541^2           # the real site history, all 122 commits
   `.env.example` with placeholder values instead.
 - Large binaries are expensive forever. Prefer web-sized derivatives over
   layered sources unless the source genuinely needs versioning.
+
+## Releasing
+
+Netlify auto-publish is locked for this site. Every push to `main` still builds
+and gets its own deploy URL, but production stays pinned to the last published
+deploy until someone publishes it by hand. That click is the release
+authorisation — CI cannot publish, and CI cannot stop a publish either. The
+gate is a person reading a result, so read it.
+
+1. **Check the commit is green.** GitHub Actions runs the test suite, the
+   internal link check, and the generated-page drift check on every push to
+   `main`. Open the commit on GitHub and confirm the tick before going further.
+2. **Open the new deploy** in Netlify (Deploys tab, top of the list) and click
+   through the pages you changed.
+3. **Smoke-test that deploy URL**, which checks the deployed copy rather than
+   the repository — a build that published nothing, or from the wrong
+   directory, passes every check in step 1 and fails here:
+
+   ```bash
+   node tools/smoke-check.mjs https://<deploy-id>--<site>.netlify.app
+   ```
+
+   The same check can be run from the Actions tab: run the CI workflow manually
+   and paste the deploy URL into the `smoke_url` input.
+4. **Publish** the deploy in Netlify.
+5. **Smoke-test production** once it is live:
+
+   ```bash
+   node tools/smoke-check.mjs https://vaavkitchenandcaterers.com
+   ```
+
+To roll back, publish the previous deploy from the Netlify Deploys list. It is
+already built, so this takes effect immediately and needs no commit.
