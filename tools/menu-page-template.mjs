@@ -195,3 +195,191 @@ export function renderCategoryPage(catKey, data, chrome) {
     chrome.bottom
   ].join('\n') + '\n';
 }
+
+// ---------------------------------------------------------------------------
+// Occasion pages
+//
+// The same 66 sets, sliced by the occasion tags already in menu-data.js
+// instead of by category. Only two of the eight occasions are built: the
+// others either collide with a page that exists (/services/ targets wedding
+// and corporate, /corporate/ owns bulk meals) or overlap each other too
+// heavily to be separate pages — wedding and reception share 26 of their 40
+// sets. See the ADR in docs/decisions.md.
+// ---------------------------------------------------------------------------
+
+export const OCCASIONS = ['housewarming', 'seemantham'];
+
+/**
+ * Per-occasion page copy.
+ *
+ * `intro` is authored prose, inserted raw — it is the whole reason these pages
+ * are not a re-listing of the category pages, so it has to say something the
+ * category pages cannot. Every fact in it is already published on the site:
+ * the 30/50 guest minimums and the Jain / no onion-garlic line both come from
+ * the FAQ on /contact/.
+ *
+ * `title` and `description` take the set count rather than hardcoding it, so
+ * the copy cannot go stale when a set is retagged in menu-data.js.
+ */
+export const OCCASION_META = {
+  housewarming: {
+    label: 'Housewarming',
+    noun: 'housewarming',
+    plural: 'housewarmings',
+    h1: 'Housewarming catering menus',
+    eyebrow: 'By occasion &middot; Housewarming',
+    title: n => `Housewarming Catering Menu — ${n} Pure Veg Sets | VAAV Kitchen`,
+    description: n =>
+      `All ${n} VAAV set menus we cook for a housewarming, every dish listed — morning tiffin spreads of idli, dosai, ghee pongal and vadai, and full banana-leaf lunches. Pure veg, catered across Chennai, from 30 guests.`,
+    ogTitle: n => `Housewarming Catering Menu — ${n} Pure Veg Sets | VAAV Kitchen`,
+    ogDescription:
+      'The tiffin and lunch sets we cook for housewarmings in Chennai, every dish listed. Pure veg, fully customisable.',
+    intro:
+      'A housewarming is a morning function, and the spread usually follows it — idli, dosai, ghee pongal and vadai with fresh chutney and hot sambar, served to a house full of relatives before the day gets long. For families who sit their guests down to a meal, the full banana-leaf sappadu is here too. <strong>From 30 guests for a tiffin spread and 50 for a full meal</strong>, and every set below is customisable, including Jain and no onion-garlic.'
+  },
+  seemantham: {
+    label: 'Seemantham',
+    noun: 'seemantham',
+    plural: 'seemanthams',
+    h1: 'Seemantham catering menus',
+    eyebrow: 'By occasion &middot; Seemantham',
+    title: n => `Seemantham Catering Menu — ${n} Pure Veg Sets | VAAV Kitchen`,
+    description: n =>
+      `All ${n} VAAV set menus we cook for a seemantham, every dish listed — tiffin spreads with a sweet, medhu vadai, chutney and sambar, plus full sappadu options. Pure veg, catered across Chennai, from 30 guests.`,
+    ogTitle: n => `Seemantham Catering Menu — ${n} Pure Veg Sets | VAAV Kitchen`,
+    ogDescription:
+      'The tiffin and lunch sets we cook for a seemantham in Chennai, every dish listed. Pure veg, fully customisable.',
+    intro:
+      'A seemantham is a daytime function, so the spread is tiffin-led — a sweet to start, then idli, dosai, pongal and vadai with chutney and sambar, with the full banana-leaf sappadu for families who seat their guests for lunch. <strong>Every set in our seemantham list is a tiffin or a lunch spread; none is a dinner.</strong> From 30 guests for a tiffin spread and 50 for a full sappadu, and every set is customisable, including Jain and no onion-garlic.'
+  }
+};
+
+/**
+ * The sets tagged with one occasion, grouped by category, in menu order.
+ * A category with no matching set is dropped entirely — seemantham has no
+ * dinner set, and an empty heading over an empty list is worse than no
+ * section at all.
+ */
+export function setsByCategory(menus, occKey) {
+  return ORDER
+    .map(cat => ({
+      cat,
+      label: menus[cat].label,
+      total: menus[cat].menus.length,
+      sets: menus[cat].menus.filter(m => (m.occasions || []).includes(occKey))
+    }))
+    .filter(group => group.sets.length > 0);
+}
+
+/** BreadcrumbList + Menu JSON-LD for one occasion page. */
+function buildOccasionSchema(occKey, meta, groups) {
+  const url = `${SITE}/menu/${occKey}/`;
+  const breadcrumb = {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      { '@type': 'ListItem', position: 1, name: 'Home', item: `${SITE}/` },
+      { '@type': 'ListItem', position: 2, name: 'Menu & Packages', item: `${SITE}/menu/` },
+      { '@type': 'ListItem', position: 3, name: `${meta.label} set menus`, item: url }
+    ]
+  };
+  const menu = {
+    '@context': 'https://schema.org',
+    '@type': 'Menu',
+    name: `VAAV Kitchen and Caterers — ${meta.label} Set Menus`,
+    inLanguage: 'en',
+    url,
+    provider: {
+      '@type': 'FoodEstablishment',
+      '@id': `${SITE}/#business`,
+      name: 'VAAV Kitchen and Caterers'
+    },
+    // Each section points at the category page it was drawn from, not at this
+    // page: that is where the complete list of those sets lives.
+    hasMenuSection: groups.map(g => ({
+      '@type': 'MenuSection',
+      name: `${g.label} sets for a ${meta.noun}`,
+      url: `${SITE}/menu/${g.cat}/`,
+      hasMenuItem: g.sets.map(m => ({
+        '@type': 'MenuItem',
+        name: m.name,
+        url: `${url}#${slug(m.name)}`
+      }))
+    }))
+  };
+  return [breadcrumb, menu]
+    .map(o => `<script type="application/ld+json">\n${JSON.stringify(o, null, 2)}\n</script>`)
+    .join('\n');
+}
+
+/**
+ * Render one complete occasion page.
+ *
+ * Takes the whole VAAV_MENUS object rather than a pre-filtered slice, so the
+ * body and the schema are built from one pass over the data and cannot
+ * disagree. Self-canonical, deliberately: a canonical pointing at
+ * /menu/tiffin/ would deindex the page and defeat the point of having it.
+ */
+export function renderOccasionPage(occKey, menus, chrome) {
+  const meta = OCCASION_META[occKey];
+  if (!meta) throw new Error(`no OCCASION_META for "${occKey}"`);
+  const groups = setsByCategory(menus, occKey);
+  if (!groups.length) throw new Error(`no menu in menu-data.js is tagged "${occKey}"`);
+
+  const url = `${SITE}/menu/${occKey}/`;
+  const count = groups.reduce((n, g) => n + g.sets.length, 0);
+  const others = OCCASIONS.filter(o => o !== occKey);
+  const waHref =
+    "https://wa.me/919655356333?text=Hello%20VAAV%20Kitchen%2C%20I'd%20like%20to%20enquire%20about%20" +
+    encodeURIComponent(`${meta.noun} catering`) + '.';
+
+  const sections = groups.map(g => {
+    const lower = g.label.toLowerCase();
+    return [
+      `      <h2 class="set-section">${esc(g.label)} sets for a ${esc(meta.noun)}</h2>`,
+      `      <p class="set-section-more">The ${g.sets.length} ${lower} ${g.sets.length === 1 ? 'set' : 'sets'} we cook for ${esc(meta.plural)}. <a href="/menu/${g.cat}/">See all ${g.total} ${lower} sets</a>.</p>`,
+      '      <div class="set-list">',
+      g.sets.map(m => renderSet(m, 3)).join('\n'),
+      '      </div>'
+    ].join('\n');
+  });
+
+  const main = [
+    '<main id="main">',
+    '  <section class="wrap sec">',
+    `    <nav class="breadcrumb" aria-label="Breadcrumb"><a href="/">Home</a> <span aria-hidden="true">/</span> <a href="/menu/">Menu &amp; Packages</a> <span aria-hidden="true">/</span> <span aria-current="page">${esc(meta.label)}</span></nav>`,
+    '    <div class="sec-head">',
+    `      <p class="eyebrow">${meta.eyebrow}</p>`,
+    `      <h1>${esc(meta.h1)}</h1>`,
+    '    </div>',
+    // meta.intro is authored HTML containing <strong>; like data.note on the
+    // category pages, it is the one value inserted raw.
+    `    <p class="menu-intro">${meta.intro}</p>`,
+    `    <p class="set-count"><b>${count}</b> sets &middot; every dish listed below &middot; all customisable, including Jain and no onion-garlic.</p>`,
+    ...sections,
+    '    <p class="set-more">Not seeing the shape of your function? <a href="/menu/">Browse all 66 sets one at a time</a>' +
+      others.map(o => `, or see the sets we cook for a <a href="/menu/${o}/">${esc(OCCASION_META[o].noun)}</a>`).join('') +
+      '. We tailor any set to your day.</p>',
+    `    <p class="set-cta"><a class="btn" data-wa-context="${esc(meta.noun)} catering" href="${waHref}" target="_blank" rel="noopener noreferrer">Ask for a ${esc(meta.noun)} quote on WhatsApp</a></p>`,
+    '  </section>',
+    '</main>'
+  ].join('\n');
+
+  return [
+    GENERATED_BANNER,
+    '<!DOCTYPE html>',
+    '<html lang="en">',
+    '<head>',
+    buildHead(chrome.head, url, {
+      title: meta.title(count),
+      description: meta.description(count),
+      ogTitle: meta.ogTitle(count),
+      ogDescription: meta.ogDescription
+    }),
+    buildOccasionSchema(occKey, meta, groups),
+    '</head>',
+    chrome.top,
+    main,
+    chrome.bottom
+  ].join('\n') + '\n';
+}

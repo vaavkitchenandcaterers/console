@@ -11,7 +11,7 @@
 // so anything in it is served publicly. See ADR-0005.
 
 import { readFileSync, writeFileSync, mkdirSync } from 'node:fs';
-import { renderCategoryPage } from './menu-page-template.mjs';
+import { renderCategoryPage, renderOccasionPage, OCCASIONS } from './menu-page-template.mjs';
 
 const SITE = new URL('../site/', import.meta.url);
 const ORDER = ['tiffin', 'lunch', 'dinner'];
@@ -53,24 +53,42 @@ export function buildAll({ write = true } = {}) {
     if (!data) throw new Error(`menu-data.js has no "${cat}" category`);
     const html = renderCategoryPage(cat, data, chrome);
     out[cat] = html;
+    if (write) writePage(cat, html, data.menus);
+  }
+
+  // The occasion pages: the same sets, sliced by their occasion tags instead
+  // of by category. Built from the whole dataset, not per-category, because a
+  // single occasion draws sets from more than one category.
+  for (const occ of OCCASIONS) {
+    const html = renderOccasionPage(occ, menus, chrome);
+    out[occ] = html;
     if (write) {
-      const dir = new URL(`menu/${cat}/`, SITE);
-      mkdirSync(dir, { recursive: true });
-      writeFileSync(new URL('index.html', dir), html, 'utf8');
-      const dishes = data.menus.reduce((n, m) => n + m.groups.reduce((k, g) => k + g[1].length, 0), 0);
-      console.log(`  wrote site/menu/${cat}/index.html — ${data.menus.length} sets, ${dishes} dishes`);
+      const sets = [];
+      for (const cat of ORDER) sets.push(...menus[cat].menus.filter(m => (m.occasions || []).includes(occ)));
+      writePage(occ, html, sets);
     }
   }
   return out;
 }
 
-/** The sitemap block for the three new URLs, so lastmod is never hand-maintained. */
+/** Write one page and report what went into it. */
+function writePage(name, html, sets) {
+  const dir = new URL(`menu/${name}/`, SITE);
+  mkdirSync(dir, { recursive: true });
+  writeFileSync(new URL('index.html', dir), html, 'utf8');
+  const dishes = sets.reduce((n, m) => n + m.groups.reduce((k, g) => k + g[1].length, 0), 0);
+  console.log(`  wrote site/menu/${name}/index.html — ${sets.length} sets, ${dishes} dishes`);
+}
+
+/** The sitemap block for the generated URLs, so lastmod is never hand-maintained. */
 export function sitemapBlock(date = new Date().toISOString().slice(0, 10)) {
-  return ORDER.map(
-    c =>
-      `  <url>\n    <loc>https://vaavkitchenandcaterers.com/menu/${c}/</loc>\n` +
-      `    <lastmod>${date}</lastmod>\n    <changefreq>monthly</changefreq>\n    <priority>0.8</priority>\n  </url>`
-  ).join('\n');
+  const entry = (path, priority) =>
+    `  <url>\n    <loc>https://vaavkitchenandcaterers.com/menu/${path}/</loc>\n` +
+    `    <lastmod>${date}</lastmod>\n    <changefreq>monthly</changefreq>\n` +
+    `    <priority>${priority}</priority>\n  </url>`;
+  // Category pages rank above occasion pages: a category page is the complete
+  // list of its sets, where an occasion page is a slice across all three.
+  return [...ORDER.map(c => entry(c, '0.8')), ...OCCASIONS.map(o => entry(o, '0.7'))].join('\n');
 }
 
 // Only run when invoked directly, so the test can import the module safely.
@@ -79,6 +97,6 @@ export function sitemapBlock(date = new Date().toISOString().slice(0, 10)) {
 const entry = typeof process.argv[1] === 'string' ? process.argv[1].replace(/\\/g, '/') : '';
 if (entry.endsWith('build-menu-pages.mjs')) {
   buildAll();
-  console.log('\nSitemap block for the three URLs:\n');
+  console.log('\nSitemap block for the generated URLs:\n');
   console.log(sitemapBlock());
 }

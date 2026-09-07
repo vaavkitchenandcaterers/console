@@ -626,5 +626,14 @@ body.vaav-sl-open .vaav-sl-pill,body.vaav-sl-open .wa-float,body.vaav-sl-open .m
   .set{padding:26px 26px 10px}
   .set .set-name{font-size:1.75rem}
 }
+/* Occasion pages group the sets under a per-category heading, so the set name
+   drops to h3 and this sits above it. Mobile-first: the base rule is the small
+   screen, the min-width query is the enhancement. */
+.set-section{font-family:'Cormorant',Georgia,serif;font-weight:700;font-size:1.9rem;color:var(--green-deep);margin:34px 0 2px}
+.set-section-more{color:var(--muted);font-size:.95rem;line-height:1.6;margin:0 0 16px;max-width:60ch}
+.set-section-more a{color:var(--green-deep);font-weight:600}
+@media(min-width:760px){
+  .set-section{font-size:2.1rem;margin-top:42px}
+}
 .menu-flat-links{font-size:.95rem;color:var(--muted);margin:-8px 0 22px;line-height:1.6}
 .menu-flat-links a{color:var(--green-deep);font-weight:600}
