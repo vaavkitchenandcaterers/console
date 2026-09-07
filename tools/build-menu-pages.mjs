@@ -13,7 +13,7 @@
 import { readFileSync, writeFileSync, mkdirSync } from 'node:fs';
 import { join } from 'node:path';
 import { renderCategoryPage } from './menu-page-template.mjs';
-import { regionNamed } from './sync-chrome.mjs';
+import { regionNamed, regionsFor } from './sync-chrome.mjs';
 import { countDishes } from '../site/menu-format.js';
 
 const SITE = new URL('../site/', import.meta.url);
@@ -43,6 +43,14 @@ export function loadMenus(dir = SITE) {
 // exactly as the nav's markers already ride along inside the top chrome.
 const FOOTER = regionNamed('footer');
 
+// The head is still sliced at `<head>` / `</head>`, which the head regions'
+// markers sit strictly between, so they need no boundary of their own — but
+// they do need to survive the slice intact. Checked below: a region that
+// arrives here with one marker and not the other would be rejected by
+// sync-chrome.mjs on the generated pages, and it is clearer to fail at the
+// extraction than three files later.
+const HUB = 'menu/index.html';
+
 /**
  * Pull the head, the topbar+nav, and everything from the footer down out of
  * menu/index.html. Extracting rather than duplicating means the CSP, the nav
@@ -67,6 +75,23 @@ export function loadChrome() {
   if (!bottom.includes('<footer>')) throw new Error('extracted bottom chrome has no footer');
   if (!bottom.includes(FOOTER.endMarker)) throw new Error('extracted bottom chrome has no closing footer marker');
   if (!bottom.includes('/script.js')) throw new Error('extracted bottom chrome has no script tag');
+  // Every machine-owned region of the hub has to land whole in exactly one of
+  // the three parts, markers included. Anything else means a slice boundary
+  // has cut through a region.
+  for (const region of regionsFor(HUB)) {
+    const parts = Object.entries({ head, top, bottom }).filter(
+      ([, part]) => part.includes(region.startMarker) || part.includes(region.endMarker)
+    );
+    if (parts.length !== 1) {
+      throw new Error(
+        `the ${region.name} region is split across ${parts.map(([n]) => n).join(' and ') || 'none'} of the extracted chrome`
+      );
+    }
+    const [name, part] = parts[0];
+    if (!part.includes(region.startMarker) || !part.includes(region.endMarker)) {
+      throw new Error(`the extracted ${name} chrome has only one of the ${region.name} markers`);
+    }
+  }
   return { head, top, bottom };
 }
 

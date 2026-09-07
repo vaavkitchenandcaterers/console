@@ -3,8 +3,11 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<!-- sync:chrome head-csp start | shared CSP + referrer policy, one copy in tools/chrome/head-csp.html. Do not edit this block here: edit that file, then run `npm run sync:chrome` in site/. -->
+<!-- Security: Content Security Policy (portable defense-in-depth; works on any static host) -->
 <meta http-equiv="Content-Security-Policy" content="default-src 'self'; base-uri 'self'; object-src 'none'; img-src 'self' data: https://www.googletagmanager.com https://*.google-analytics.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; script-src 'self' https://www.googletagmanager.com; frame-src https://www.google.com https://maps.google.com; connect-src 'self' https://*.google-analytics.com https://*.analytics.google.com https://*.googletagmanager.com; form-action 'self'; upgrade-insecure-requests">
 <meta name="referrer" content="strict-origin-when-cross-origin">
+<!-- sync:chrome head-csp end -->
 <title>Page not found — VAAV Kitchen and Caterers</title>
 <meta name="description" content="The page you're looking for doesn't exist. Explore our pure veg menu or get in touch with VAAV Kitchen and Caterers, Chennai.">
 <meta name="robots" content="noindex,follow">
@@ -12,6 +15,7 @@
 <meta name="theme-color" content="#1f5d2e">
 <link rel="icon" type="image/png" sizes="64x64" href="/favicon-64.png?v=2">
 <link rel="apple-touch-icon" href="/logo.png">
+<!-- sync:chrome head-assets start | shared font, stylesheet and analytics tags, one copy in tools/chrome/head-assets.html. Do not edit this block here: edit that file, then run `npm run sync:chrome` in site/. -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant:ital,wght@0,700;1,500;1,700&family=Mukta:wght@400;600;700&family=Catamaran:wght@600;700;800&display=swap" rel="stylesheet">
@@ -20,6 +24,7 @@
      /analytics.js so script-src needs no 'unsafe-inline'. See ADR-0008. -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-4T5PCVFK2G"></script>
 <script src="/analytics.js" defer></script>
+<!-- sync:chrome head-assets end -->
 </head>
 <body>
 

@@ -5,6 +5,7 @@ import {
   GENERATED_PAGES,
   REGIONS,
   regionNamed,
+  regionsFor,
   loadSource,
   loadSources,
   navFor,
@@ -30,8 +31,8 @@ describe('the shared chrome regions', () => {
   // each region, and a per-region copy of these assertions is the same
   // duplication this tool exists to remove, moved into the test file.
   describe.each(REGIONS.map(r => [r.name, r]))('%s', (name, region) => {
-    it('every page carries the region the source would write', () => {
-      for (const page of PAGES) {
+    it('every page in scope carries the region the source would write', () => {
+      for (const page of region.pages) {
         const { text } = findRegion(region, read(page), page);
         expect(text, `${page} ${name} is stale — run \`npm run sync:chrome\``).toBe(
           regionFor(region, page, sources[name])
@@ -39,14 +40,25 @@ describe('the shared chrome regions', () => {
       }
     });
 
-    it('every page has exactly one opening marker and one closing marker, in order', () => {
-      for (const page of PAGES) {
+    it('every page in scope has exactly one opening marker and one closing marker, in order', () => {
+      for (const page of region.pages) {
         const html = read(page);
         expect((html.match(region.startRe) || []).length, `${page} ${name} start markers`).toBe(1);
         expect((html.match(region.endRe) || []).length, `${page} ${name} end markers`).toBe(1);
         expect(html.indexOf(region.startMarker), `${page} ${name} marker order`).toBeLessThan(
           html.indexOf(region.endMarker)
         );
+      }
+    });
+
+    it('every page out of scope carries no marker for it at all', () => {
+      // The other half of scoping. A marker on a page the tool never writes
+      // would look machine-owned and be frozen — the drift this exists to
+      // stop, wearing the sign that says it cannot happen.
+      for (const page of PAGES.filter(p => !region.pages.includes(p))) {
+        const html = read(page);
+        expect((html.match(region.startRe) || []).length, `${page} ${name} start markers`).toBe(0);
+        expect((html.match(region.endRe) || []).length, `${page} ${name} end markers`).toBe(0);
       }
     });
 
@@ -62,6 +74,13 @@ describe('the shared chrome regions', () => {
       // sync:chrome deliberately does not write these — build-menu-pages.mjs copies
       // their chrome out of menu/index.html. This is what makes the ordering matter:
       // sync first, then build:menu, or these three carry the previous chrome.
+      //
+      // Every region so far is in scope on menu/index.html, so every region
+      // reaches the generated three. A region that skipped the hub would reach
+      // none of them, and this assertion would be vacuous rather than wrong.
+      expect(region.pages, `${name} must cover the hub to reach the generated pages`).toContain(
+        'menu/index.html'
+      );
       const hub = findRegion(region, read('menu/index.html'), 'menu/index.html').text;
       for (const page of GENERATED_PAGES) {
         expect(PAGES, `${page} must not be synced directly`).not.toContain(page);
@@ -94,6 +113,115 @@ describe('the shared chrome regions', () => {
       const nav = findRegion(regionNamed('nav'), html, page);
       const footer = findRegion(regionNamed('footer'), html, page);
       expect(nav.to, `${page} nav should close before the footer opens`).toBeLessThan(footer.from);
+    }
+  });
+
+  it('no two regions overlap on any page', () => {
+    // Six regions now, four of them in one <head>. Pairwise rather than the
+    // nav/footer special case above: every region has to end before the next
+    // one begins, whatever order the table happens to be in.
+    for (const page of [...PAGES, ...GENERATED_PAGES]) {
+      const html = read(page);
+      // The generated three inherit menu/index.html's regions verbatim, so
+      // that is the scope to read them against.
+      const spans = regionsFor(PAGES.includes(page) ? page : 'menu/index.html')
+        .map(r => ({ name: r.name, ...findRegion(r, html, page) }))
+        .sort((a, b) => a.from - b.from);
+      for (let i = 1; i < spans.length; i++) {
+        expect(spans[i - 1].to, `${page}: ${spans[i - 1].name} runs into ${spans[i].name}`).toBeLessThan(
+          spans[i].from
+        );
+      }
+    }
+  });
+
+  it('the four head regions live inside <head>, and the CSP stays above the first resource load', () => {
+    // Not decoration. A CSP delivered after a resource has already started
+    // loading does not apply to it, so head-csp must stay above head-assets —
+    // the first run in the head that fetches anything — and above the icons
+    // and the prefetches that sit between them.
+    const HEAD_REGIONS = ['head-csp', 'head-assets', 'head-social', 'head-twitter-image'];
+    for (const page of [...PAGES, ...GENERATED_PAGES]) {
+      const html = read(page);
+      const scope = PAGES.includes(page) ? page : 'menu/index.html';
+      const headEnd = html.indexOf('</head>');
+      expect(headEnd, `${page} has no </head>`).toBeGreaterThan(0);
+      for (const name of HEAD_REGIONS) {
+        const region = regionNamed(name);
+        if (!region.pages.includes(scope)) continue;
+        const { to } = findRegion(region, html, page);
+        expect(to, `${page} ${name} escapes the head`).toBeLessThan(headEnd);
+      }
+      const csp = findRegion(regionNamed('head-csp'), html, page);
+      const firstLoad = Math.min(
+        ...[/<link rel="icon"/, /<link rel="prefetch"/, /<link rel="preconnect"/, /<link rel="stylesheet"/, /<script /]
+          .map(re => html.search(re))
+          .filter(i => i >= 0)
+      );
+      expect(csp.to, `${page} loads a resource before its CSP`).toBeLessThan(firstLoad);
+    }
+  });
+
+  it('404.html is outside the two social regions, and that is not an error', () => {
+    // An error document needs no share card, so it carries no Open Graph or
+    // Twitter tags and never has. Scoping records that rather than the tool
+    // special-casing the filename — and syncing 404.html still succeeds.
+    const html = read('404.html');
+    for (const name of ['head-social', 'head-twitter-image']) {
+      const region = regionNamed(name);
+      expect(region.pages, `${name} should skip 404.html`).not.toContain('404.html');
+      expect(html, `404.html should carry no ${name} marker`).not.toContain(region.marker);
+    }
+    expect(html, '404.html should carry no og: tags').not.toContain('og:');
+    expect(html, '404.html should carry no twitter: tags').not.toContain('twitter:');
+    expect(regionsFor('404.html').map(r => r.name)).toEqual(['nav', 'footer', 'head-csp', 'head-assets']);
+  });
+
+  it('every page keeps its own title and canonical, outside every region', () => {
+    // The regions were drawn around runs that were already identical. What
+    // varies per page must stay varying and must stay out of them: if a marker
+    // ever swallows a <title> or a canonical, ten pages start claiming to be
+    // one page, and the sync would then hold them that way.
+    const titles = new Map();
+    const canonicals = new Map();
+    for (const page of [...PAGES, ...GENERATED_PAGES]) {
+      const html = read(page);
+      const scope = PAGES.includes(page) ? page : 'menu/index.html';
+      const title = html.match(/<title>[\s\S]*?<\/title>/)?.[0];
+      const canonical = html.match(/<link rel="canonical" href="[^"]*">/)?.[0];
+      expect(title, `${page} has no title`).toBeTruthy();
+      // 404.html is noindex and deliberately has no canonical.
+      if (page !== '404.html') expect(canonical, `${page} has no canonical`).toBeTruthy();
+
+      for (const region of regionsFor(scope)) {
+        const { text } = findRegion(region, html, page);
+        expect(text, `${page} ${region.name} swallowed the title`).not.toContain('<title>');
+        expect(text, `${page} ${region.name} swallowed the canonical`).not.toContain('rel="canonical"');
+        expect(text, `${page} ${region.name} swallowed the description`).not.toContain('name="description"');
+        expect(text, `${page} ${region.name} swallowed a prefetch`).not.toContain('rel="prefetch"');
+        expect(text, `${page} ${region.name} swallowed JSON-LD`).not.toContain('application/ld+json');
+        for (const per of ['og:url', 'og:title', 'og:description', 'twitter:title', 'twitter:description']) {
+          expect(text, `${page} ${region.name} swallowed ${per}`).not.toContain(`"${per}"`);
+        }
+      }
+      expect(titles.has(title), `${page} shares a title with ${titles.get(title)}`).toBe(false);
+      titles.set(title, page);
+      if (canonical) {
+        expect(canonicals.has(canonical), `${page} shares a canonical with ${canonicals.get(canonical)}`).toBe(false);
+        canonicals.set(canonical, page);
+      }
+    }
+  });
+
+  it("index.html keeps the two head tags no other page has", () => {
+    // The keywords meta and the inline monogram fallback icon are index-only.
+    // They sit between head regions on that page, which is exactly the sort of
+    // thing a region drawn one line too wide would erase.
+    const html = read('index.html');
+    expect(html).toContain('<meta name="keywords" content=');
+    expect(html).toContain('<link rel="alternate icon" href="data:image/svg+xml,');
+    for (const page of PAGES.filter(p => p !== 'index.html')) {
+      expect(read(page), `${page} should not have gained keywords`).not.toContain('name="keywords"');
     }
   });
 

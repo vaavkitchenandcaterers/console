@@ -1,12 +1,12 @@
 #!/usr/bin/env node
-// Syncs the shared chrome -- topbar + nav, and the site footer -- into the
-// hand-maintained pages.
+// Syncs the shared chrome -- topbar + nav, the site footer, and the shared runs
+// of <head> -- into the hand-maintained pages.
 //
 //   npm run sync:chrome       (from site/)
 //
-// Between them the two blocks were 4.7 KB duplicated by hand across seven
-// pages, so a nav or footer change meant seven identical edits and any missed
-// one drifted silently -- 404.html really did sit a Corporate link behind for a
+// Between them the blocks were 7.6 KB duplicated by hand across seven pages, so
+// a nav, footer or CSP change meant seven identical edits and any missed one
+// drifted silently -- 404.html really did sit a Corporate link behind for a
 // while. Each block now has one home under tools/chrome/, and this tool
 // rewrites the marked region inside each page from it.
 //
@@ -82,8 +82,8 @@ const escapeRe = s => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 const NAV_LINKS_RE = /<div class="nav-links"[^>]*>[\s\S]*?<\/div>/;
 
 /**
- * The machine-owned regions. Adding a third -- the CSP is the obvious
- * candidate -- means one more entry here plus its source file, nothing else.
+ * The machine-owned regions. Adding one means an entry here plus its source
+ * file, nothing else.
  *
  * `marker` is what makes two regions on one page tellable apart, and it is the
  * only asymmetry in this table: the nav was here first and its markers are
@@ -95,10 +95,24 @@ const NAV_LINKS_RE = /<div class="nav-links"[^>]*>[\s\S]*?<\/div>/;
  * opening-marker pattern below cannot swallow a neighbour.
  *
  * `forPage` is where per-page variation lives. The nav derives aria-current
- * from the URL the page is served at; the footer has no per-page variation at
- * all -- the seven copies were byte-identical -- so it returns the source
- * unchanged. If a region ever needs a second parameter, that is a hint the
- * region boundary is drawn too wide.
+ * from the URL the page is served at; every other region so far has no per-page
+ * variation at all -- the copies were byte-identical -- so it returns the
+ * source unchanged. If a region ever needs a second parameter, that is a hint
+ * the region boundary is drawn too wide.
+ *
+ * `pages` narrows a region to a subset of PAGES; omitted means all of them. It
+ * exists because 404.html carries no Open Graph or Twitter tags -- an error
+ * document needs no share card -- so those two regions genuinely do not exist
+ * there. Scoping is not a weakening: a page inside a region's scope with no
+ * markers is still an error, and so is a page outside it that has them.
+ *
+ * The three <head> regions are drawn only around runs that were already
+ * contiguous and already byte-identical on every page in scope. Everything that
+ * varies per page -- <title>, description, canonical, og:url, og:title,
+ * og:description, twitter:title, twitter:description, prefetch, index.html's
+ * keywords and fallback icon, and every JSON-LD block -- sits outside them, and
+ * nothing was reordered to make a region bigger. In particular the CSP stays
+ * exactly where it was, above every tag that loads a resource.
  */
 export const REGIONS = [
   {
@@ -139,9 +153,100 @@ export const REGIONS = [
     // and marking the current page twice would be noise for a screen reader.
     forPage: (page, src) => src,
   },
+  {
+    name: 'head-csp',
+    marker: 'sync:chrome head-csp',
+    sourceFile: 'head-csp.html',
+    what: 'shared CSP + referrer policy',
+    wraps: 'CSP and referrer meta tags',
+    // The highest-value region: it was the last copy-and-paste of the CSP
+    // string, ten hand-maintained tags of it, which ADR-0007 named as the
+    // remaining real duplication. The explanatory comment above the meta tag
+    // was on index.html only; it is in the source now, so every page carries
+    // it -- it is what tells a reader why a meta CSP exists alongside
+    // site/_headers.
+    //
+    // The region must stay where it is: above the first tag that loads a
+    // resource, since a CSP delivered after one has already started is not
+    // applied to it. head-assets is the first such run and sits well below.
+    requires: [
+      ['a Content-Security-Policy meta tag', '<meta http-equiv="Content-Security-Policy"'],
+      ['a referrer policy meta tag', '<meta name="referrer"'],
+    ],
+    forPage: (page, src) => src,
+  },
+  {
+    name: 'head-assets',
+    marker: 'sync:chrome head-assets',
+    sourceFile: 'head-assets.html',
+    what: 'shared font, stylesheet and analytics tags',
+    wraps: 'preconnect, stylesheet and analytics tags',
+    // The largest contiguous shared run in the head: both preconnects, the
+    // Google Fonts stylesheet, /style.css, and the two halves of the GA4
+    // snippet with the comment that explains why they are split (ADR-0008).
+    requires: [
+      ['a fonts preconnect', '<link rel="preconnect" href="https://fonts.googleapis.com">'],
+      ['the site stylesheet', '<link rel="stylesheet" href="/style.css">'],
+      ['the analytics config script', '<script src="/analytics.js" defer></script>'],
+    ],
+    forPage: (page, src) => src,
+  },
+  {
+    name: 'head-social',
+    marker: 'sync:chrome head-social',
+    sourceFile: 'head-social.html',
+    what: 'shared Open Graph card, locale and site name',
+    wraps: 'og:image through twitter:card meta tags',
+    // Six pages, not seven. 404.html carries no Open Graph or Twitter tags at
+    // all and should not: an error document needs no share card. Its absence
+    // there is deliberate, which is what `pages` records -- so the tool neither
+    // adds them nor complains they are missing.
+    //
+    // The per-page half of the card -- og:url, og:title, og:description,
+    // twitter:title, twitter:description -- sits outside this region on both
+    // sides. What is here is only the parts that name the one shared card
+    // image and the site itself.
+    pages: PAGES.filter(p => p !== '404.html'),
+    requires: [
+      ['an Open Graph image', '<meta property="og:image"'],
+      ['an Open Graph site name', '<meta property="og:site_name"'],
+      ['a Twitter card type', '<meta name="twitter:card"'],
+    ],
+    forPage: (page, src) => src,
+  },
+  {
+    name: 'head-twitter-image',
+    marker: 'sync:chrome head-twitter-image',
+    sourceFile: 'head-twitter-image.html',
+    what: 'shared Twitter card image',
+    wraps: 'twitter:image meta tags',
+    // Two lines, and they cost more in markers than they hold in markup. They
+    // are here anyway because they name the same og-card.jpg and repeat
+    // og:image:alt word for word: replace the card and all four lines have to
+    // move together. Guarding the og half and not this one would leave the
+    // card half-covered, which reads as covered.
+    //
+    // Separate from head-social rather than folded into it because
+    // twitter:title and twitter:description sit between the two runs and vary
+    // per page. Merging them would mean reordering the head, which this tool
+    // does not do.
+    pages: PAGES.filter(p => p !== '404.html'),
+    requires: [
+      ['a Twitter card image', '<meta name="twitter:image"'],
+      ['a Twitter card image description', '<meta name="twitter:image:alt"'],
+    ],
+    forPage: (page, src) => src,
+  },
 ];
 
 for (const r of REGIONS) {
+  r.pages ??= PAGES;
+  for (const page of r.pages) {
+    if (!PAGES.includes(page)) {
+      throw new Error(`region ${r.name} is scoped to ${page}, which is not in PAGES`);
+    }
+  }
+  if (!r.pages.length) throw new Error(`region ${r.name} is scoped to no pages at all`);
   r.startMarker = startMarkerFor(r);
   r.endMarker = endMarkerFor(r);
   // The stable head of the opening marker: everything up to the region name.
@@ -249,6 +354,18 @@ export function findRegion(region, html, page) {
 }
 
 /**
+ * The regions that apply to `page`, in table order.
+ *
+ * The inverse of a region's `pages`. A region out of scope on a page is not
+ * written there -- and, checked in syncPage, must not be marked there either:
+ * markers this tool will never rewrite are exactly the stale block the sync
+ * exists to prevent.
+ */
+export function regionsFor(page) {
+  return REGIONS.filter(r => r.pages.includes(page));
+}
+
+/**
  * Rewrite one page's regions. Returns the names of the regions that moved.
  *
  * Each region is located against the text as it stands after the previous
@@ -260,6 +377,18 @@ export function syncPage(page, sources = loadSources()) {
   let html = readFileSync(file, 'utf8');
   const moved = [];
   for (const region of REGIONS) {
+    if (!region.pages.includes(page)) {
+      // Out of scope. Silence here would be fine, but a marker that is never
+      // rewritten would not be: it would look owned and be frozen. Refuse it.
+      // .match, not .test: startRe and endRe are global, so .test would carry
+      // lastIndex from one page to the next and start missing matches.
+      if (html.match(region.startRe) || html.match(region.endRe)) {
+        throw new Error(
+          `${page} carries ${region.marker} markers but is outside that region's scope. Remove them, or add ${page} to the region's pages in tools/sync-chrome.mjs.`
+        );
+      }
+      continue;
+    }
     const { from, to, text } = findRegion(region, html, page);
     const wanted = regionFor(region, page, sources[region.name]);
     if (text === wanted) continue;
@@ -291,7 +420,7 @@ if (entry.endsWith('sync-chrome.mjs')) {
     console.log(`  ${moved ? `updated (${moved.join(', ')})` : 'unchanged'}  site/${page}`);
   }
   const n = Object.keys(changed).length;
-  const from = REGIONS.map(r => `tools/chrome/${r.sourceFile}`).join(' and ');
+  const from = `the ${REGIONS.length} sources in tools/chrome/`;
   console.log(
     n
       ? `\n${n} of ${PAGES.length} pages rewritten from ${from}.`

@@ -297,9 +297,9 @@ buys the analytics without buying that.
 ## ADR-0009 — Sync the shared topbar and nav in place, rather than templating pages
 
 **Date:** 2026-09-07
-**Status:** accepted; extended to the site footer the same day — no second ADR,
-because applying a decided mechanism to the next block is not a new decision.
-See the closing note.
+**Status:** accepted; extended to the site footer and then to the shared parts
+of `<head>` the same day — no second or third ADR, because applying a decided
+mechanism to the next block is not a new decision. See the closing notes.
 
 **Context.** The topbar and primary nav are 3,723 bytes of identical markup
 duplicated by hand across seven pages: `index.html`, `about/`, `contact/`,
@@ -375,9 +375,76 @@ handing those three a closing marker with no opening one. It slices at the
 marker instead — the same way the nav's markers already ride along inside the
 top chrome.
 
-Still not addressed: the CSP, maintained in eleven hand-edited copies. It is
-the obvious third region, and adding it is now one entry in the `REGIONS` table
-plus a source file.
+**Extended to `<head>`, same day. This closes the CSP duplication ADR-0007
+left open.** Four more regions, 2,881 bytes: `head-csp` (the
+Content-Security-Policy and referrer meta tags), `head-assets` (both font
+preconnects, the Google Fonts stylesheet, `/style.css` and both halves of the
+GA4 snippet), `head-social` (`og:image` through `twitter:card`) and
+`head-twitter-image` (`twitter:image` and its alt text). ADR-0007 counted the
+CSP in eleven places and called the ten per-page copies "the real duplication";
+they are now one file plus `site/_headers`. ADR-0008 paid for that duplication
+directly — it argued against a `'sha256-…'` script hash on the ground that
+every snippet edit would mean re-pasting a recomputed hash eleven times. That
+argument is now weaker by ten.
+
+One page-visible change came with it, and it is the only markup any page gained
+that is not a marker. `index.html` alone carried an explanatory comment above
+its CSP meta — the one that says why a `<meta>` CSP exists alongside
+`site/_headers`. Putting it in `tools/chrome/head-csp.html` gave that comment to
+the other six hand-maintained pages and the three generated ones. That is
+uniform, behaviour-neutral, and the comment earns its place: it answers the
+first question anyone has on seeing the tag.
+
+`<head>` is where this mechanism could have gone wrong, and the shape of the
+regions is the whole of the care taken. Unlike the nav and the footer it is
+**not one shared block**: shared and per-page tags interleave. So the regions
+were drawn only around runs that were *already* contiguous and *already*
+byte-identical on every page in scope — verified by hashing each candidate run
+across all seven pages before a marker was written. `<title>`, the description,
+the canonical, `og:url`, `og:title`, `og:description`, `twitter:title`,
+`twitter:description`, the `prefetch` links, every JSON-LD block, and
+`index.html`'s own `keywords` and inline fallback icon all sit outside the
+regions and still vary per page. A test asserts that no region's text contains
+any of them, and that every page still has its own title and canonical.
+
+**Nothing was reordered to make a region bigger.** Two runs that would merge
+into one if `twitter:title` and `twitter:description` moved were left as two
+regions instead. Reordering `<head>` is not free: it can move the CSP below a
+tag that has already started a load, at which point the policy does not apply
+to it, and it changes the order a crawler reads the page in. `head-csp`
+therefore stays exactly where it was, above the icons, the prefetches and
+`head-assets`, and a test holds it there.
+
+The head regions ride into the three generated pages the same way the nav and
+footer do: `loadChrome()` extracts the head from `menu/index.html`, so the
+markers propagate. `buildHead()` then rewrites the per-page meta with a series
+of regex replaces — title, description, canonical, `og:url`, `og:title`,
+`og:description`, `twitter:title`, `twitter:description`, `prefetch` — and
+strips the source page's JSON-LD. Every one of those targets sits outside all
+four regions, and the JSON-LD strip anchors on the `<script type="application/
+ld+json">` tag that follows the `head-assets` closing marker, so it consumes no
+marker. Had any replace reached inside a region, the generated pages would have
+diverged from the source while the idempotence test still passed — the test
+would have been lying — so this was checked before the markers were written,
+not after.
+
+**Regions now have page scope.** `404.html` carries no Open Graph or Twitter
+tags at all, deliberately: an error document needs no share card, and it is
+`noindex` besides. That is not drift to be fixed by syncing tags onto it, so
+`head-social` and `head-twitter-image` carry a `pages` field naming the other
+six. Scope lives in the region descriptor rather than as a filename check
+inside the sync logic, so a reader of the table can see which pages a region
+claims. It weakens no guarantee: a page *inside* a region's scope with no
+markers still throws, and a page *outside* it that has markers now throws too —
+a marker the tool will never rewrite would look machine-owned while being
+frozen, which is the exact failure this whole mechanism exists to prevent.
+
+`head-twitter-image` is two lines, and its markers cost more bytes than the
+markup they guard. It is here anyway because those two lines name the same
+`og-card.jpg` as `head-social` and repeat `og:image:alt` word for word: replace
+the card and all four lines have to move together. Guarding the Open Graph half
+and leaving the Twitter half loose would read as covered while being half
+covered, which is worse than leaving both alone.
 
 **Alternative rejected.** A static site generator — layouts, partials, a
 `src/` of page content, `site/` as build output. It would remove more
