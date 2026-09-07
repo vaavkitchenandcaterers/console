@@ -69,7 +69,9 @@ and kept the assets unversioned.
 ## ADR-0004 — Publish the site from `site/` via a root `netlify.toml`
 
 **Date:** 2026-09-06
-**Status:** accepted (repository side); the Netlify dashboard change is outstanding
+**Status:** accepted; settled — the dashboard change was made, and the base
+directory is the repository root, so the root `netlify.toml` is the file read
+(see ADR-0007)
 
 **Context.** ADR-0003 folded the website into this repository under `site/`.
 That broke an assumption nobody had written down: Netlify reads `netlify.toml`
@@ -173,3 +175,49 @@ vitest config again.
 **Not addressed.** The passcode weakness travels with the code. If the studio is
 ever redeployed as-is it needs real access control in front of it — the
 permanent fix is screen S1 of the console brief.
+
+---
+
+## ADR-0007 — Delete `site/netlify.toml` and `site/.htaccess`
+
+**Date:** 2026-09-07
+**Status:** accepted
+
+**Context.** ADR-0004 deliberately kept `site/netlify.toml` alongside the root
+one so that either base-directory wiring would work, because nobody could
+confirm which one Netlify actually used. That is now confirmed by the
+repository owner, 7 Sep 2026: the site deploys from this repository with the
+base directory set to the repository root. So Netlify reads the root
+`netlify.toml` and never reads `site/netlify.toml`. Separately, `site/.htaccess`
+was written for the Apache/cPanel hosting that a move to Indian shared hosting
+would have needed. That move never happened; Netlify is the only target.
+Both files were config that nothing reads — and unread config drifts from the
+config that is read, which is worse than no file at all.
+
+**Decision.** Delete both. Netlify is the only deployment target, the root
+`netlify.toml` is the only deploy config, and `site/_headers` is the only
+source of response headers.
+
+**Consequence.** Nothing the site currently does is lost. Every header
+`.htaccess` set is already in `_headers` at an identical value, and its
+`ErrorDocument 404 /404.html` is redundant twice over — Netlify auto-detects
+`/404.html`, and `server.cjs` mirrors it for local preview. Its `<FilesMatch>`
+deny rule for `.md`, `server.js` and `launch.json` was already dead: it names
+`server.js` and the file is `server.cjs`. Whether the deployed tree should deny
+those paths at all is a real question, still open, and `_headers` cannot express
+a deny — so it will need something other than a resurrected `.htaccess`.
+
+What this costs: re-pointing Netlify at a `site/` base directory, or moving to
+Apache, now means writing the file again rather than uncommenting one that is
+already there. Both are recoverable from git history, and neither is planned.
+The benefit is one fewer copy of the CSP to keep in sync — it was in twelve
+places, ten `<meta>` tags plus `_headers` plus `.htaccess`, and is now in
+eleven. Ten of those are still generated or hand-maintained per page, which
+remains the real duplication and is not addressed here.
+
+**Alternative rejected.** Keeping both files as dormant options against a
+hosting change. That is what ADR-0004 chose, correctly, while the wiring was
+unknown. Once it is known, a second config file is not an option kept open but
+a second source of truth that no deploy exercises and no test covers, free to
+disagree with the live one unnoticed. Git history keeps the option open at no
+standing cost.
