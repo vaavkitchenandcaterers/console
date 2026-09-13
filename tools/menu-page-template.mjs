@@ -31,28 +31,28 @@ const titleCase = s => String(s).charAt(0).toUpperCase() + String(s).slice(1);
 export const CATEGORY_META = {
   tiffin: {
     h1: 'Tiffin set menus',
-    title: 'Tiffin Catering Menu — 20 Pure Veg Sets | VAAV Kitchen',
+    title: 'Tiffin Catering Menu: 20 Pure Veg Sets | VAAV Kitchen',
     description:
-      'All 20 VAAV tiffin set menus, every dish listed — idli, dosai, ghee pongal, vadai and chutney spreads for seemanthams and housewarmings in Chennai.',
-    ogTitle: 'Tiffin Catering Menu — 20 Pure Veg Sets | VAAV Kitchen, Chennai',
+      'All 20 VAAV tiffin set menus, every dish listed: idli, dosai, ghee pongal, vadai and chutney spreads for seemanthams and housewarmings in Chennai.',
+    ogTitle: 'Tiffin Catering Menu: 20 Pure Veg Sets | VAAV Kitchen, Chennai',
     ogDescription:
       '20 tiffin set menus, every dish listed. Idli, dosai, pongal, vadai and chutney spreads for morning functions across Chennai.'
   },
   lunch: {
     h1: 'Lunch set menus',
-    title: 'Lunch Catering Menu — 20 Veg Sappadu Sets | VAAV Kitchen',
+    title: 'Lunch Catering Menu: 20 Veg Sappadu Sets | VAAV Kitchen',
     description:
-      'All 20 VAAV lunch set menus, every dish listed — banana-leaf sappadu with sambar, rasam, kulambu, poriyal, appalam and payasam for weddings in Chennai.',
-    ogTitle: 'Lunch Catering Menu — 20 Pure Veg Sappadu Sets | VAAV Kitchen',
+      'All 20 VAAV lunch set menus, every dish listed: banana-leaf sappadu with sambar, rasam, kulambu, poriyal, appalam and payasam for weddings in Chennai.',
+    ogTitle: 'Lunch Catering Menu: 20 Pure Veg Sappadu Sets | VAAV Kitchen',
     ogDescription:
       '20 lunch set menus, every dish listed. The classic banana-leaf sappadu, from a simple plate to a full feast.'
   },
   dinner: {
     h1: 'Dinner set menus',
-    title: 'Dinner Catering Menu — 26 Pure Veg Sets | VAAV Kitchen',
+    title: 'Dinner Catering Menu: 26 Pure Veg Sets | VAAV Kitchen',
     description:
-      'All 26 VAAV dinner set menus, every dish listed — sweets, starters, biryani, bisi bele bath and a full main course for wedding receptions in Chennai.',
-    ogTitle: 'Dinner Catering Menu — 26 Pure Veg Sets | VAAV Kitchen, Chennai',
+      'All 26 VAAV dinner set menus, every dish listed: sweets, starters, biryani, bisi bele bath and a full main course for wedding receptions in Chennai.',
+    ogTitle: 'Dinner Catering Menu: 26 Pure Veg Sets | VAAV Kitchen, Chennai',
     ogDescription:
       '26 dinner set menus, every dish listed. Grand evening spreads with sweets, starters, biryani and a full main course.'
   }
@@ -263,10 +263,10 @@ export const OCCASION_META = {
     plural: 'housewarmings',
     h1: 'Housewarming catering menus',
     eyebrow: 'By occasion &middot; Housewarming',
-    title: n => `Housewarming Catering Menu — ${n} Pure Veg Sets | VAAV Kitchen`,
+    title: n => `Housewarming Catering Menu: ${n} Pure Veg Sets | VAAV Kitchen`,
     description: n =>
-      `All ${n} VAAV housewarming set menus, every dish listed — idli, dosai, pongal and vadai tiffins plus banana-leaf lunches, across Chennai, from 30 guests.`,
-    ogTitle: n => `Housewarming Catering Menu — ${n} Pure Veg Sets | VAAV Kitchen`,
+      `All ${n} VAAV housewarming set menus, every dish listed: idli, dosai, pongal and vadai tiffins plus banana-leaf lunches, across Chennai, from 30 guests.`,
+    ogTitle: n => `Housewarming Catering Menu: ${n} Pure Veg Sets | VAAV Kitchen`,
     ogDescription:
       'The tiffin and lunch sets we cook for housewarmings in Chennai, every dish listed. Pure veg, fully customisable.',
     intro:
@@ -278,10 +278,10 @@ export const OCCASION_META = {
     plural: 'seemanthams',
     h1: 'Seemantham catering menus',
     eyebrow: 'By occasion &middot; Seemantham',
-    title: n => `Seemantham Catering Menu — ${n} Pure Veg Sets | VAAV Kitchen`,
+    title: n => `Seemantham Catering Menu: ${n} Pure Veg Sets | VAAV Kitchen`,
     description: n =>
-      `All ${n} VAAV seemantham set menus, every dish listed — tiffin spreads of vadai, chutney and sambar plus sappadu, across Chennai, from 30 guests.`,
-    ogTitle: n => `Seemantham Catering Menu — ${n} Pure Veg Sets | VAAV Kitchen`,
+      `All ${n} VAAV seemantham set menus, every dish listed: tiffin spreads of vadai, chutney and sambar plus sappadu, across Chennai, from 30 guests.`,
+    ogTitle: n => `Seemantham Catering Menu: ${n} Pure Veg Sets | VAAV Kitchen`,
     ogDescription:
       'The tiffin and lunch sets we cook for a seemantham in Chennai, every dish listed. Pure veg, fully customisable.',
     intro:

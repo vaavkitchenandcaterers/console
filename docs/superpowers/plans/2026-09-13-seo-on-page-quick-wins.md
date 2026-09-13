@@ -2,7 +2,7 @@
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
-**Goal:** Ship the code-fixable findings from the 12 Sep 2026 SuperSEO audit — search-result copy inside length budgets on all 11 indexable pages, a homepage H1 that names the category and city, a WhatsApp quote button in the hero, richer business schema, and a homepage FAQ.
+**Goal:** Ship the code-fixable findings from the 12 Sep 2026 SuperSEO audit: search-result copy inside length budgets on all 11 indexable pages, a homepage H1 that names the category and city, a WhatsApp quote button in the hero, richer business schema, and a homepage FAQ.
 
 **Architecture:** The site is static HTML under `site/`, served by Netlify. Seven pages are hand-maintained; five menu pages are generated from `tools/menu-page-template.mjs`. Shared `<head>`, nav and footer runs live once under `tools/chrome/` and are copied into marked regions by `tools/sync-chrome.mjs`. Every change here lands in per-page content outside those regions, and every change is guarded by a Vitest test that reads the committed HTML.
 
@@ -12,12 +12,12 @@
 
 ## Global Constraints
 
-- Commit messages carry **no** `Co-Authored-By` trailer — a standing instruction from the repo owner that overrides any tool default.
+- Commit messages carry **no** `Co-Authored-By` trailer. It is a standing instruction from the repo owner that overrides any tool default.
 - Work on branch `seo/on-page-quick-wins`, created from `security/safe-fixes`.
 - Run all `npm` commands from `site/`. Run `node tools/...` commands from the repository root.
 - Never hand-edit `site/menu/tiffin/`, `site/menu/lunch/`, `site/menu/dinner/`, `site/menu/housewarming/` or `site/menu/seemantham/` HTML. Edit `tools/menu-page-template.mjs`, then run `npm run build:menu`. `menu-pages.test.js` and `menu-occasion-pages.test.js` compare those files byte for byte against the template.
 - Never edit text between `<!-- sync:chrome ... start -->` and `<!-- sync:chrome ... end -->` markers in a page. Those regions belong to `tools/chrome/*.html`. This plan touches none of them.
-- Title budget: **≤ 60 characters**. Description budget: **≤ 155 characters**. Count Unicode characters after decoding `&amp;`, not bytes — an em dash is one character.
+- Title budget: **≤ 60 characters**. Description budget: **≤ 155 characters**. Count Unicode characters after decoding `&amp;`, not bytes. An em dash counts as one character.
 - Every title stays unique across pages. `chrome-sync.test.js` already fails on a duplicate.
 - Never publish a price, service area or profile URL the owner has not confirmed. Price bands, Instagram/Justdial/Sulekha URLs, photography and area pages are **out of scope** here (see the end of this plan).
 - `npm test` must report 0 failed tests at the end of every task.
@@ -74,7 +74,7 @@ Expected: `Switched to a new branch 'seo/on-page-quick-wins'`
 - [ ] **Step 2: Confirm a green baseline**
 
 Run (from `site/`): `npm test`
-Expected: every test file passes, `0 failed`. If anything fails here, stop and report — the baseline is broken before this plan touched it.
+Expected: every test file passes, `0 failed`. If anything fails here, stop and report: the baseline is broken before this plan touched it.
 
 ---
 
@@ -345,7 +345,7 @@ describe('search result copy on the generated menu pages', () => {
 - [ ] **Step 2: Run it to confirm it fails**
 
 Run (from `site/`): `npx vitest run seo-meta.test.js`
-Expected: FAIL, 8 failing tests — titles of `menu/tiffin`, `menu/lunch`, `menu/dinner`; descriptions of all five generated pages. Task 1's tests still pass.
+Expected: FAIL, 8 failing tests: titles of `menu/tiffin`, `menu/lunch`, `menu/dinner`; descriptions of all five generated pages. Task 1's tests still pass.
 
 - [ ] **Step 3: Edit the template copy**
 
@@ -389,7 +389,7 @@ For `seemantham`, replace only the `description` function:
       `All ${n} VAAV seemantham set menus, every dish listed — tiffin spreads of vadai, chutney and sambar plus sappadu, across Chennai, from 30 guests.`,
 ```
 
-Leave every `ogTitle`, `ogDescription`, `h1`, `intro` and both occasion `title` functions unchanged — they are already within budget or not shown in search results.
+Leave every `ogTitle`, `ogDescription`, `h1`, `intro` and both occasion `title` functions unchanged. They are already within budget or not shown in search results. (Task 6b later changed their separator punctuation, nothing else.)
 
 - [ ] **Step 4: Regenerate the pages**
 
@@ -399,7 +399,7 @@ Expected: the command exits 0. `git status` shows modifications to exactly the f
 - [ ] **Step 5: Run the full suite**
 
 Run (from `site/`): `npm test`
-Expected: 0 failed. `menu-pages.test.js` and `menu-occasion-pages.test.js` pass only if the committed pages match the template byte for byte — a failure there with "is stale" means Step 4 was skipped.
+Expected: 0 failed. `menu-pages.test.js` and `menu-occasion-pages.test.js` pass only if the committed pages match the template byte for byte. A failure there with "is stale" means Step 4 was skipped.
 
 - [ ] **Step 6: Commit**
 
@@ -465,7 +465,7 @@ describe('homepage H1', () => {
 - [ ] **Step 2: Run it to confirm it fails**
 
 Run (from `site/`): `npx vitest run homepage-seo.test.js`
-Expected: FAIL on `names the service category and the city` (the label is "The feast your guests won't stop talking about."). `announces exactly the words it animates` PASSES — it guards the edit, it does not drive it.
+Expected: FAIL on `names the service category and the city` (the label is "The feast your guests won't stop talking about."). `announces exactly the words it animates` PASSES. It guards the edit; it does not drive it.
 
 - [ ] **Step 3: Rewrite the H1**
 
@@ -520,7 +520,7 @@ Expected: PASS, 0 failed. `responsive.test.js` checks the `.hero h1` type scale,
 The owner's laptop renders at a 1280×590 CSS viewport, so a longer H1 is a real risk to the hero button.
 
 Run (from `site/`): `npm run dev`, open the printed local URL, and view the homepage at **1280×590** and at **375×812**.
-Expected at both sizes: the H1 wraps cleanly with no word clipped, and the top edge of the hero button is visible without scrolling at 1280×590. If the button is pushed below the fold at 1280×590, stop and report it with a screenshot rather than changing the type scale — that is a design decision for the owner.
+Expected at both sizes: the H1 wraps cleanly with no word clipped, and the top edge of the hero button is visible without scrolling at 1280×590. If the button is pushed below the fold at 1280×590, stop and report it with a screenshot rather than changing the type scale. That is a design decision for the owner.
 
 - [ ] **Step 6: Commit**
 
@@ -663,7 +663,7 @@ describe('homepage hero actions', () => {
 - [ ] **Step 2: Run it to confirm it fails**
 
 Run (from `site/`): `npx vitest run homepage-seo.test.js`
-Expected: FAIL on both new tests — the hero has one link, to `/menu/`. Task 3's tests still pass.
+Expected: FAIL on both new tests: the hero has one link, to `/menu/`. Task 3's tests still pass.
 
 - [ ] **Step 3: Add the button**
 
@@ -760,7 +760,7 @@ describe('business schema', () => {
 - [ ] **Step 2: Run it to confirm it fails**
 
 Run (from `site/`): `npx vitest run homepage-seo.test.js`
-Expected: FAIL. 10 per-page tests fail (`areaServed should be a list` and a missing `sameAs` on each of the 5 pages). `every page states the same service area` passes today because all five carry the same single city — it guards Step 3.
+Expected: FAIL. 10 per-page tests fail (`areaServed should be a list` and a missing `sameAs` on each of the 5 pages). `every page states the same service area` passes today because all five carry the same single city, so it guards Step 3.
 
 - [ ] **Step 3: Replace the line on all five pages**
 
@@ -786,7 +786,7 @@ with:
   "sameAs": ["https://www.google.com/maps?cid=16612426966021584661"],
 ```
 
-Every locality listed is inside Chennai, which the site already says it serves in full ("we cater across all of Chennai" — `/contact/` FAQ). The list names the southern corridor around the Perungalathur kitchen, where the audit found Sulekha ranking per-locality pages. `sameAs` holds only the Maps profile because it is the only profile URL already published on the site; Instagram, Justdial and Sulekha URLs are added when the owner supplies them.
+Every locality listed is inside Chennai, which the site already says it serves in full ("we cater across all of Chennai", from the `/contact/` FAQ). The list names the southern corridor around the Perungalathur kitchen, where the audit found Sulekha ranking per-locality pages. `sameAs` holds only the Maps profile because it is the only profile URL already published on the site; Instagram, Justdial and Sulekha URLs are added when the owner supplies them.
 
 - [ ] **Step 4: Run the full suite**
 
@@ -864,7 +864,7 @@ describe('homepage FAQ', () => {
 - [ ] **Step 2: Run it to confirm it fails**
 
 Run (from `site/`): `npx vitest run homepage-seo.test.js`
-Expected: FAIL on `answers at least six booking questions on the page` (0 found) and `marks up exactly the questions and answers a visitor can read` (no FAQPage block). `gives the same answers as the contact page` passes vacuously with no homepage answers — it guards Step 3.
+Expected: FAIL on `answers at least six booking questions on the page` (0 found) and `marks up exactly the questions and answers a visitor can read` (no FAQPage block). `gives the same answers as the contact page` passes vacuously with no homepage answers, so it guards Step 3.
 
 - [ ] **Step 3a: Add the visible FAQ section**
 
@@ -914,7 +914,7 @@ In `site/index.html`, directly after the closing `</script>` of the `WebSite` JS
 </script>
 ```
 
-Question names match the visible `<summary>` text exactly — including "What's" and "(Jain / no onion-garlic)", which differ from the wording in `/contact/`'s own schema. The test compares against the visible homepage text, so this is required.
+Question names match the visible `<summary>` text exactly, including "What's" and "(Jain / no onion-garlic)", which differ from the wording in `/contact/`'s own schema. The test compares against the visible homepage text, so this is required.
 
 Expectation to set with the owner: since August 2023 Google shows FAQ rich results only for government and health sites, so this will not add expandable questions under the search listing. Its value is the on-page answers and giving search and AI systems a clean, quotable statement of the terms.
 
@@ -941,6 +941,45 @@ The cost question stays off until the owner publishes price bands."
 
 ---
 
+### Task 6b: Remove the em-dashes this branch added
+
+Added at the owner's request before opening the PR: em-dashes read as machine-written copy. Code blocks earlier in this plan show copy as it was first planned; the shipped copy uses the punctuation below.
+
+**Scope:** every em-dash on a line this branch adds, plus copy coupled to those lines. The homepage FAQ must match `/contact/` word for word (Task 6's test), so the whole `/contact/` FAQ block changes with it, visible text and schema. The occasion-page titles and every `ogTitle` in the template share the category titles' pattern, so they change too. About 220 em-dashes that predate this branch (body copy, social tags, `script.js`, build-tool comments) are left alone.
+
+**Replacements** (each is shorter than the dash it replaces, so every title and description stays inside its budget):
+
+| Was | Now |
+|---|---|
+| `Catering Menu — ` (titles and `ogTitle`s in `tools/menu-page-template.mjs`) | `Catering Menu: ` |
+| `every dish listed — ` (five descriptions) | `every dish listed: ` |
+| `About VAAV Kitchen — Our Pure Veg Home-Food Story` | `About VAAV Kitchen: Our Pure Veg Home-Food Story` |
+| `Contact &amp; Book VAAV Kitchen — Catering in Chennai` | `Contact &amp; Book VAAV Kitchen | Catering in Chennai` |
+| `100% pure vegetarian — every menu, every event.` | `100% pure vegetarian for every menu and every event.` |
+| `outstation events — message us` | `outstation events. Message us` |
+| `virundhu sappadu — up to 2,000+ plates` | `virundhu sappadu, and up to 2,000+ plates` |
+| `Yes — our packages include` | `Yes, our packages include` |
+| `Yes, the traditional way — with buffet` | `Yes, the traditional way, with buffet` |
+| `Yes — we're happy to arrange a tasting` | `Yes, we're happy to arrange a tasting` |
+| `No — we are proudly 100% pure vegetarian.` | `No, we are proudly 100% pure vegetarian.` |
+| `Yes — daily office lunches` | `Yes: daily office lunches` |
+
+The en dash in "25–2,500 guests" stays. It is not an em-dash, and "25 to 2,500" would push the homepage description past 155 characters.
+
+- [ ] **Step 1: Apply, regenerate, test**
+
+Apply the table as exact-string replacements in `site/index.html`, `site/contact/index.html`, `site/about/index.html`, `tools/menu-page-template.mjs` and the one comment in `site/seo-meta.test.js`. Then from `site/`: `npm run build:menu` and `npm test`.
+Expected: 0 failed, and `git diff origin/main -- site tools | grep '^+[^+]' | grep -c '—'` prints `0`.
+
+- [ ] **Step 2: Commit**
+
+```bash
+git add site/index.html site/contact/index.html site/about/index.html site/seo-meta.test.js tools/menu-page-template.mjs site/menu/tiffin/index.html site/menu/lunch/index.html site/menu/dinner/index.html site/menu/housewarming/index.html site/menu/seemantham/index.html docs/superpowers/plans/2026-09-13-seo-on-page-quick-wins.md
+git commit -m "style(copy): replace the em-dashes this branch added"
+```
+
+---
+
 ### Task 7: Whole-site verification
 
 **Files:** none changed, unless a check below fails.
@@ -958,7 +997,7 @@ Expected: exits 0. The new `/contact/` link from the homepage FAQ must resolve.
 - [ ] **Step 3: Chrome sync is untouched**
 
 Run (from `site/`): `npm run sync:chrome`, then from the repository root: `git diff --quiet -- site && echo "chrome unchanged"`
-Expected: `chrome unchanged`. If a diff appears, a task edited inside a synced region — revert that part of the task.
+Expected: `chrome unchanged`. If a diff appears, a task edited inside a synced region: revert that part of the task.
 
 - [ ] **Step 4: Generated pages are current**
 
@@ -992,7 +1031,7 @@ Expected: a PR URL is printed. CI runs the same checks as Steps 1–4. Productio
 
 ---
 
-## Out of scope — needs the owner first
+## Out of scope: needs the owner first
 
 These audit findings are not code tasks yet. Each is blocked on information or material only the owner has, and none should be filled in with a guess.
 

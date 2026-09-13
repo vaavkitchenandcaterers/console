@@ -41,7 +41,7 @@ describe('search result copy on the hand-maintained pages', () => {
 
 describe('search result copy on the generated menu pages', () => {
   // These are rebuilt from tools/menu-page-template.mjs. A failure here is
-  // fixed in the template, then `npm run build:menu` — never in the HTML.
+  // fixed in the template, then `npm run build:menu`, never in the HTML.
   for (const page of GENERATED_PAGES) {
     it(`${page} title fits in ${TITLE_MAX} characters`, () => {
       const title = titleOf(read(page));
