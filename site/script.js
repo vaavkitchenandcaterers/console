@@ -1,6 +1,7 @@
 import { createShortlist, formatEventDate } from './shortlist.js';
 import { escapeHtml, countDishes } from './menu-format.js';
-import { leadEventFor } from './lead-events.js';
+import { leadEventFor, quoteLeadEvent } from './lead-events.js';
+import { buildQuoteMessage } from './quote-form.js';
 
 /* ============================================================
    VAAV Kitchen and Caterers: site interactivity
@@ -67,6 +68,53 @@ document.querySelectorAll('.js-greviews').forEach(a => {
    drawer are injected here so no HTML file has to change.
    ============================================================ */
 window.VaavShortlist = createShortlist(localStorage);
+
+/* ============================================================
+   QUOTE FORM (occasion service pages): compose a WhatsApp
+   message. Nothing is stored on or sent to this site.
+   ============================================================ */
+(function () {
+  const form = document.querySelector('form.quote-form');
+  if (!form) return;
+  const byId = id => document.getElementById(id);
+  const f = { date: byId('qf-date'), guests: byId('qf-guests'), area: byId('qf-area'), menu: byId('qf-menu'), name: byId('qf-name') };
+  f.date.min = todayISO();
+
+  // Shared with the shortlist drawer: details typed in one appear in the other.
+  const S = window.VaavShortlist;
+  const ev = S.getState().event;
+  ['name', 'guests', 'date'].forEach(function (k) {
+    if (!f[k].value && ev[k]) f[k].value = ev[k];
+    f[k].addEventListener('input', function () { S.setEventField(k, f[k].value); });
+  });
+
+  document.querySelectorAll('[data-quote-set]').forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      f.menu.value = btn.dataset.quoteSet;
+      form.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      f.date.focus({ preventScroll: true });
+    });
+  });
+
+  form.addEventListener('submit', function (e) {
+    e.preventDefault();
+    if (!form.reportValidity()) return;
+    const occasion = form.dataset.quoteOccasion || '';
+    const meals = [...form.querySelectorAll('.qf-meals input:checked')].map(function (i) { return i.value; });
+    const url = waLink(buildQuoteMessage({
+      occasion: occasion, date: f.date.value, guests: f.guests.value, meals: meals,
+      area: f.area.value, menu: f.menu.value, name: f.name.value
+    }, form.dataset.quoteRef || ''));
+    S.setEventField('occasion', occasion);
+    const lead = quoteLeadEvent(occasion);
+    if (typeof window.gtag === 'function') window.gtag('event', lead.name, lead.params);
+    // Not window.open(url, '_blank', 'noopener'): with noopener it always returns
+    // null, which would make the fallback below open WhatsApp a second time.
+    const win = window.open(url, '_blank');
+    if (win) win.opener = null;
+    else window.location.href = url;
+  });
+})();
 
 /* ============================================================
    TESTIMONIALS: paste your real Google reviews here.
