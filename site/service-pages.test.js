@@ -5,6 +5,7 @@ import { GENERATED_PAGES, chromeSourceFor } from '../tools/sync-chrome.mjs';
 import { renderServicePage, SERVICES, SERVICE_META } from '../tools/service-page-template.mjs';
 import { slug } from '../tools/menu-page-template.mjs';
 import { escapeHtml, countDishes } from './menu-format.js';
+import { VAAV_REVIEWS } from './reviews.js';
 
 // The occasion service pages are generated and committed, so a retagged set or
 // an edited template that is not rebuilt leaves the page quietly wrong. These
@@ -145,6 +146,65 @@ describe('generated occasion service pages', () => {
       expect(pageFor(key).match(re)?.[0]).toBe(base);
       expect(sitemap).toContain(`<loc>${SITE}/services/${key}/</loc>`);
       expect(redirects).toMatch(new RegExp(`^/services/${key}/index\\.html\\s+/services/${key}/\\s+301!$`, 'm'));
+    }
+  });
+
+  it('keeps meta descriptions short enough not to be cut off on a phone', () => {
+    for (const key of SERVICES) {
+      const d = pageFor(key).match(/<meta name="description" content="([^"]*)">/)[1].replace(/&amp;/g, '&');
+      expect([...d].length, `${key}: "${d}"`).toBeLessThanOrEqual(140);
+    }
+  });
+
+  it('shows proof just above the quote form: two Google reviews, the kitchen, the FSSAI and GST numbers', () => {
+    for (const key of SERVICES) {
+      const html = pageFor(key);
+      const proof = html.match(/<section class="svc-proof">[\s\S]*?<\/section>/)?.[0];
+      expect(proof, `${key} has no proof block`).toBeTruthy();
+      expect(html.indexOf('<section class="svc-proof">'), `${key} proof should sit above the form`).toBeLessThan(
+        html.indexOf('<section id="quote"')
+      );
+      const shown = VAAV_REVIEWS.filter(r => proof.includes(r.name));
+      expect((proof.match(/<figure class="review"/g) || []).length).toBe(2);
+      expect(shown.length, `${key} proof should quote two reviews from site/reviews.js`).toBe(2);
+      for (const r of shown) expect(proof).toContain(escapeHtml(r.text));
+      expect(proof).toContain('12426008001205');
+      expect(proof).toContain('33BJKPK7360P2ZL');
+      expect(proof).toContain('src="/kitchen-800.jpg"');
+    }
+  });
+
+  it('turns the phone sticky bar into Call and Get a quote, keeping WhatsApp in the floating button', () => {
+    for (const key of SERVICES) {
+      const html = pageFor(key);
+      const bar = html.match(/<div class="mobile-actionbar"[\s\S]*?<\/div>/)[0];
+      expect(bar).toContain('class="mab-btn mab-call"');
+      expect(bar).toContain('<a class="mab-btn mab-quote" href="#quote">Get a quote</a>');
+      expect(bar, `${key} still carries the WhatsApp bar button`).not.toContain('id="wa-bar"');
+      expect(html).toContain('id="wa-float"');
+    }
+  });
+
+  it('the puja page names prasadam and pooja, and every sweet it names is in a set it shows', () => {
+    const main = pageFor('puja-homam-catering').match(/<main id="main">[\s\S]*<\/main>/)[0];
+    expect(main).toMatch(/prasadam/i);
+    expect(main).toMatch(/pooja/i);
+    for (const dish of ['Ashoka Halwa', 'Kaju Katli', 'Sweet Payasam']) {
+      expect(main).toContain(dish);
+      expect(
+        tagged('puja-homam-catering').some(m => m.groups.some(g => g[1].includes(dish))),
+        `${dish} is named on the page but is in no puja or temple set`
+      ).toBe(true);
+    }
+  });
+
+  it('is linked from the homepage, /contact/, the /menu/ hub and every menu category page', () => {
+    expect(read('./index.html')).toContain('<a class="card" href="/services/wedding-reception-catering/"');
+    expect(read('./contact/index.html')).toContain('href="/services/wedding-reception-catering/"');
+    for (const page of ['./menu/index.html', './menu/tiffin/index.html', './menu/lunch/index.html', './menu/dinner/index.html']) {
+      for (const key of SERVICES) {
+        expect(read(page), `${page} does not link /services/${key}/`).toContain(`href="/services/${key}/"`);
+      }
     }
   });
 });

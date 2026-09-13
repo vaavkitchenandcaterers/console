@@ -670,3 +670,11 @@ body.vaav-sl-open .vaav-sl-pill,body.vaav-sl-open .wa-float,body.vaav-sl-open .m
   .qf-row{grid-template-columns:1fr 1fr}
   .quote-form{padding:30px}
 }
+/* The phone sticky bar's "Get a quote" button, and the proof block above the
+   form. The review grid overrides are scoped: the homepage grid keeps its own
+   columns and reserved height. */
+.mab-quote{background:var(--yellow);color:var(--green-ink)}
+.mab-quote:hover,.mab-quote:active,.mab-quote:focus-visible{background:var(--yellow-deep)}
+.svc-proof .review-grid{grid-template-columns:1fr;min-height:0;margin-bottom:28px}
+.svc-proof .kitchen-shot{margin:0 0 20px}
+@media(min-width:760px){.svc-proof .review-grid{grid-template-columns:1fr 1fr}}

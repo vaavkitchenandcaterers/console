@@ -15,6 +15,7 @@
 // nav marks no link as current: chromeSourceFor() in tools/sync-chrome.mjs.
 
 import { escapeHtml, countDishes } from '../site/menu-format.js';
+import { VAAV_REVIEWS } from '../site/reviews.js';
 import {
   GENERATED_BANNER,
   buildHead,
@@ -42,7 +43,7 @@ export const SERVICE_META = {
     h1: 'Wedding and reception catering in Chennai',
     title: 'Wedding & Reception Catering in Chennai, Pure Veg | VAAV',
     description:
-      'Pure veg wedding and reception catering in Chennai: banana-leaf virundhu sappadu and evening reception spreads, cooks and servers all day. Get a quote.',
+      'Pure veg wedding and reception catering in Chennai: banana-leaf virundhu sappadu, fully staffed from muhurtham to reception. Get a quote.',
     ogTitle: 'Wedding & Reception Catering in Chennai | VAAV Kitchen',
     ogDescription:
       'Banana-leaf virundhu sappadu for the muhurtham and a full dinner for the evening reception, cooked fresh and served by our own team.',
@@ -81,7 +82,7 @@ export const SERVICE_META = {
     h1: 'Puja, homam and temple catering in Chennai',
     title: 'Puja, Homam & Prasadam Catering in Chennai | VAAV',
     description:
-      'Sattvic, onion- and garlic-free catering in Chennai for pujas, homams, grihapravesam, shradham and temple annadhanam. Pure veg. Get a quote on WhatsApp.',
+      'Sattvic, no onion or garlic pooja, homam and prasadam catering in Chennai, plus temple annadhanam. Pure veg. Get a quote.',
     ogTitle: 'Puja, Homam & Temple Catering in Chennai | VAAV Kitchen',
     ogDescription:
       'Sattvic, onion- and garlic-free meals for pujas, homams and shradham, and annadhanam for temple functions across Chennai.',
@@ -91,6 +92,7 @@ export const SERVICE_META = {
     dayHeading: 'Cooked for the ritual',
     day: [
       `A puja or homam meal is cooked sattvic, with no onion and no garlic, and prepared with the care the occasion deserves.`,
+      `For the prasadam, the sets below carry sweets such as Ashoka Halwa, Kaju Katli and Sweet Payasam, and any of them can be tailored to what your pooja or homam calls for.`,
       `Grihapravesam, ayush homam and shradham each keep their own customs, so tell us the ritual and we agree the menu with you rather than hand you a fixed one.`,
       `Temple functions and annadhanam are a question of scale and timing: thousands of plates served hot and on time, with the planning and discipline a big function needs.`
     ],
@@ -158,6 +160,66 @@ function renderQuoteForm(key, meta) {
     '  </div>',
     '</section>'
   ].join('\n');
+}
+
+/** The two reviews shown above the form, by reviewer, so a reorder in reviews.js cannot swap them. */
+const PROOF_REVIEWERS = ['Dhakshinamoorthi Arumugam', 'Varsha Balaraman'];
+
+/**
+ * Proof just above the quote form: two Google reviews, the kitchen, and its
+ * licence and GST numbers. Nothing new is claimed; the reviews are the
+ * homepage's and the rest is already on /corporate/.
+ */
+function renderProof() {
+  const figures = PROOF_REVIEWERS.map(name => {
+    const r = VAAV_REVIEWS.find(x => x.name === name);
+    if (!r) throw new Error(`site/reviews.js has no review by ${name}`);
+    return [
+      '      <figure class="review" role="listitem">',
+      `        <div class="r-stars" aria-label="${r.rating} out of 5 stars">${'★★★★★'.slice(0, r.rating)}</div>`,
+      `        <blockquote class="r-text">${escapeHtml(r.text)}</blockquote>`,
+      `        <figcaption class="r-by"><span class="r-who"><span class="r-name">${escapeHtml(r.name)}</span> · Google review</span></figcaption>`,
+      '      </figure>'
+    ].join('\n');
+  });
+  return [
+    '<section class="svc-proof">',
+    '  <div class="wrap">',
+    '    <div class="sec-head">',
+    '      <span class="eyebrow">Why families book us</span>',
+    '      <h2>Rated 5.0 on Google</h2>',
+    '    </div>',
+    '    <div class="review-grid" role="list">',
+    ...figures,
+    '    </div>',
+    '    <figure class="kitchen-shot">',
+    '      <picture>',
+    '        <source type="image/webp" srcset="/kitchen-400.webp 400w, /kitchen-800.webp 800w, /kitchen-1600.webp 1600w" sizes="(max-width: 760px) 100vw, 1140px">',
+    `        <img src="/kitchen-800.jpg" srcset="/kitchen-400.jpg 400w, /kitchen-800.jpg 800w, /kitchen-1600.jpg 1600w" sizes="(max-width: 760px) 100vw, 1140px" width="1600" height="900" loading="lazy" decoding="async" alt="VAAV's kitchen in Perungalathur: steel prep tables, shelves of stocked spice jars, a gas range and a tiled splashback, with a cook preparing an order.">`,
+    '      </picture>',
+    '      <figcaption>Our kitchen in Perungalathur, where every order is cooked.</figcaption>',
+    '    </figure>',
+    '    <ul class="compliance" role="list">',
+    '      <li><span class="cmp-k">FSSAI licence</span><span class="cmp-v">12426008001205</span></li>',
+    '      <li><span class="cmp-k">GST</span><span class="cmp-v">33BJKPK7360P2ZL</span></li>',
+    '    </ul>',
+    '  </div>',
+    '</section>'
+  ].join('\n');
+}
+
+/**
+ * On a service page the phone's sticky bar offers the page's main action. The
+ * WhatsApp button copied from /corporate/ becomes "Get a quote", which scrolls
+ * to the form; WhatsApp stays one tap away in the floating button and the hero.
+ * Throws if the markup it replaces has moved, rather than silently keeping it.
+ */
+const WA_BAR_RE = /<a class="mab-btn mab-wa" id="wa-bar"[^>]*>[\s\S]*?<\/a>/;
+function withQuoteBar(bottom) {
+  if (!WA_BAR_RE.test(bottom)) {
+    throw new Error('the mobile action bar copied from /corporate/ has no #wa-bar button to replace');
+  }
+  return bottom.replace(WA_BAR_RE, '<a class="mab-btn mab-quote" href="#quote">Get a quote</a>');
 }
 
 /** BreadcrumbList + Service + FAQPage JSON-LD. */
@@ -267,6 +329,7 @@ export function renderServicePage(key, menus, chrome) {
     '    </ol>',
     '  </div>',
     '</section>',
+    renderProof(),
     renderQuoteForm(key, meta),
     '<section class="svc-faq">',
     '  <div class="wrap">',
@@ -298,7 +361,7 @@ export function renderServicePage(key, menus, chrome) {
     '</head>',
     chrome.top,
     main,
-    withoutDataset(chrome.bottom)
+    withQuoteBar(withoutDataset(chrome.bottom))
   ].join('\n') + '\n';
 
   return assertNoDataset(html, key);

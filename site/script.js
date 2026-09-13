@@ -2,6 +2,7 @@ import { createShortlist, formatEventDate } from './shortlist.js';
 import { escapeHtml, countDishes } from './menu-format.js';
 import { leadEventFor, quoteLeadEvent } from './lead-events.js';
 import { buildQuoteMessage } from './quote-form.js';
+import { VAAV_REVIEWS } from './reviews.js';
 
 /* ============================================================
    VAAV Kitchen and Caterers: site interactivity
@@ -117,14 +118,9 @@ window.VaavShortlist = createShortlist(localStorage);
 })();
 
 /* ============================================================
-   TESTIMONIALS: paste your real Google reviews here.
-   Each: { name, text, rating (1-5), when }.  Keep 3–6 for a tidy grid.
+   TESTIMONIALS: the reviews live in site/reviews.js, shared with
+   the occasion service pages. Paste real Google reviews there.
    ============================================================ */
-const VAAV_REVIEWS = [
-  { name: "Varsha Balaraman", rating: 5, when: "9 weeks ago", text: "I have given order for Tiffin that too in a short span with 100% doubt becoz I could not be able to judge the vendor by Google reviews. But the food they provided is really awesome. The quality and quantity of the food is really worth the money. Please do trust this guys for your events." },
-  { name: "Dhakshinamoorthi Arumugam", rating: 5, when: "12 weeks ago", text: "I have ordered breakfast and lunch for our family function. The food was so delicious and very tasty. The attitude of the Caterer is also very conducive and encouraging." },
-  { name: "Suganya Venkatraman", rating: 5, when: "14 weeks ago", text: "Good taste and good service." }
-];
 
 (function () {
   const grid = document.getElementById('reviewGrid');

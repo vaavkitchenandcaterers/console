@@ -178,7 +178,7 @@ export function renderCategoryPage(catKey, data, chrome) {
     '    </div>',
     '    <p class="set-more">Mix and match across any set, and we tailor the spread to your event. <a href="/menu/">Browse the menus one at a time</a>, or see every ' +
       others.map(c => `<a href="/menu/${c}/">${escapeHtml(CATEGORY_META[c].h1.replace(' set menus', ''))} set</a>`).join(' and every ') +
-      '.</p>',
+      '. Planning a wedding or a puja? See how we cater a <a href="/services/wedding-reception-catering/">wedding and reception</a> or a <a href="/services/puja-homam-catering/">puja or homam</a>.</p>',
     `    <p class="set-cta"><a class="btn" data-wa-context="${escapeHtml(data.label.toLowerCase())} catering" href="${waHref}" target="_blank" rel="noopener noreferrer">Ask for a ${escapeHtml(data.label.toLowerCase())} quote on WhatsApp</a></p>`,
     '  </section>',
     '</main>'
