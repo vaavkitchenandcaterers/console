@@ -158,4 +158,10 @@ describe('generated menu occasion pages', () => {
       }
     }
   });
+
+  it('setsByCategory accepts several occasion keys and lists each set once', () => {
+    const union = setsByCategory(menus, ['puja', 'temple']).flatMap(g => g.sets.map(m => m.name));
+    expect(union).toEqual(['Tiffin 14', 'Tiffin 20', 'Lunch 2', 'Lunch 4', 'Lunch 13', 'Lunch 15', 'Dinner 26']);
+    expect(setsByCategory(menus, ['seemantham'])).toEqual(setsByCategory(menus, 'seemantham'));
+  });
 });

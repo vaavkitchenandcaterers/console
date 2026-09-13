@@ -56,19 +56,19 @@ const HUB = 'menu/index.html';
  * menu/index.html. Extracting rather than duplicating means the CSP, the nav
  * and the footer cannot drift from the rest of the site.
  */
-export function loadChrome() {
-  const src = readFileSync(new URL('menu/index.html', SITE), 'utf8');
+export function loadChrome(hub = HUB) {
+  const src = readFileSync(new URL(hub, SITE), 'utf8');
   const footerAt = src.indexOf(FOOTER.startPrefix);
   if (footerAt < 0) {
     throw new Error(
-      `menu/index.html has no "${FOOTER.startPrefix}" marker — run \`npm run sync:chrome\` first`
+      `${hub} has no "${FOOTER.startPrefix}" marker — run \`npm run sync:chrome\` first`
     );
   }
   const head = src.slice(src.indexOf('<head>') + '<head>'.length, src.indexOf('</head>')).trim();
   const top = src.slice(src.indexOf('<body>'), src.indexOf('<main')).trimEnd();
   const bottom = src.slice(footerAt).trimEnd();
   for (const [name, part] of Object.entries({ head, top, bottom })) {
-    if (!part) throw new Error(`could not extract "${name}" from menu/index.html`);
+    if (!part) throw new Error(`could not extract "${name}" from ${hub}`);
   }
   if (!head.includes('Content-Security-Policy')) throw new Error('extracted head has no CSP');
   if (!top.includes('</nav>')) throw new Error('extracted top chrome has no nav');
@@ -78,7 +78,7 @@ export function loadChrome() {
   // Every machine-owned region of the hub has to land whole in exactly one of
   // the three parts, markers included. Anything else means a slice boundary
   // has cut through a region.
-  for (const region of regionsFor(HUB)) {
+  for (const region of regionsFor(hub)) {
     const parts = Object.entries({ head, top, bottom }).filter(
       ([, part]) => part.includes(region.startMarker) || part.includes(region.endMarker)
     );

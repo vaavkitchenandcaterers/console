@@ -67,6 +67,21 @@ for (const page of GENERATED_PAGES) {
   }
 }
 
+/**
+ * The hand-maintained page a generated page copies its chrome from.
+ *
+ * The menu pages copy site/menu/index.html, whose nav marks Menu as current,
+ * which is right for them. The service pages under /services/<occasion>/ copy
+ * site/corporate/index.html instead: its nav marks no link, because a page that
+ * sits under Services is not the Services page, and /corporate/ already set
+ * that precedent. Every region in scope on both pages is byte-identical apart
+ * from that one attribute.
+ */
+export function chromeSourceFor(page) {
+  if (!GENERATED_PAGES.includes(page)) throw new Error(`${page} is not a generated page`);
+  return page.startsWith('services/') ? 'corporate/index.html' : 'menu/index.html';
+}
+
 // The opening marker is written by this tool, not just matched by it, so its
 // wording lives in one place and propagates on the next sync. It carries the
 // instruction on purpose: someone opening the page to edit the nav or the
