@@ -88,6 +88,19 @@ describe('generated occasion service pages', () => {
     }
   });
 
+  it('marks the required fields, states the minimum, and has a status line for after sending', () => {
+    for (const key of SERVICES) {
+      const form = pageFor(key).match(/<form class="quote-form"[\s\S]*?<\/form>/)[0];
+      expect((form.match(/<span class="qf-req">\(required\)<\/span>/g) || []).length, `${key} required markers`).toBe(2);
+      expect(form).toMatch(/id="qf-guests"[^>]*aria-describedby="qf-guests-help"/);
+      expect(form).toContain('<small class="qf-help" id="qf-guests-help">Minimum 30 guests</small>');
+      expect(form).toContain('<p class="qf-status" role="status" aria-live="polite"></p>');
+    }
+    const script = read('./script.js');
+    expect(script).toContain('WhatsApp opened with your details.');
+    expect(script).toContain('Our minimum order is 30 guests.');
+  });
+
   it('offers the three actions in order of weight: quote, then call, then WhatsApp', () => {
     for (const key of SERVICES) {
       const hero = pageFor(key).match(/<section class="svc-hero">[\s\S]*?<\/section>/)[0];

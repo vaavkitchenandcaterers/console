@@ -89,6 +89,15 @@ window.VaavShortlist = createShortlist(localStorage);
     f[k].addEventListener('input', function () { S.setEventField(k, f[k].value); });
   });
 
+  // The minimum order, said in words rather than the browser's generic range message.
+  function guestsRule() {
+    const n = Number(f.guests.value);
+    f.guests.setCustomValidity(f.guests.value && n < 30 ? 'Our minimum order is 30 guests.' : '');
+  }
+  f.guests.addEventListener('input', guestsRule);
+  guestsRule();
+  const status = form.querySelector('.qf-status');
+
   document.querySelectorAll('[data-quote-set]').forEach(function (btn) {
     btn.addEventListener('click', function () {
       f.menu.value = btn.dataset.quoteSet;
@@ -111,6 +120,10 @@ window.VaavShortlist = createShortlist(localStorage);
     if (typeof window.gtag === 'function') window.gtag('event', lead.name, lead.params);
     // Not window.open(url, '_blank', 'noopener'): with noopener it always returns
     // null, which would make the fallback below open WhatsApp a second time.
+    // Tell the visitor what just happened, with a way out if WhatsApp did not open.
+    if (status) {
+      status.innerHTML = 'WhatsApp opened with your details. Didn’t open? <a href="tel:+919655356333" data-cta-position="quote_status">Call +91 96553 56333</a>.';
+    }
     const win = window.open(url, '_blank');
     if (win) win.opener = null;
     else window.location.href = url;

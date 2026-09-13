@@ -171,8 +171,8 @@ function renderQuoteForm(key, meta) {
     // the URL. With it, script.js composes a WhatsApp message instead.
     `    <form class="quote-form" action="/contact/" method="get" data-quote-occasion="${escapeHtml(meta.formOccasion)}" data-quote-ref="${key} page, quote form">`,
     '      <div class="qf-row">',
-    '        <label class="qf-field"><span>Date</span><input type="date" id="qf-date" required></label>',
-    '        <label class="qf-field"><span>Guests</span><input type="number" id="qf-guests" inputmode="numeric" min="30" step="1" required placeholder="e.g. 150"></label>',
+    '        <label class="qf-field"><span>Date <span class="qf-req">(required)</span></span><input type="date" id="qf-date" required></label>',
+    '        <label class="qf-field"><span>Guests <span class="qf-req">(required)</span></span><input type="number" id="qf-guests" inputmode="numeric" min="30" step="1" required aria-describedby="qf-guests-help" placeholder="e.g. 150"><small class="qf-help" id="qf-guests-help">Minimum 30 guests</small></label>',
     '      </div>',
     '      <fieldset class="qf-field qf-meals">',
     '        <legend>Meals</legend>',
@@ -182,6 +182,8 @@ function renderQuoteForm(key, meta) {
     '      <label class="qf-field"><span>Menu you liked (optional)</span><input type="text" id="qf-menu"></label>',
     '      <label class="qf-field"><span>Your name</span><input type="text" id="qf-name" autocomplete="name"></label>',
     '      <button type="submit" class="wa-big">Send on WhatsApp</button>',
+    // Filled by script.js after submit, so the visitor knows what happened.
+    '      <p class="qf-status" role="status" aria-live="polite"></p>',
     `      <p class="qf-alt">Rather talk? <a href="${TEL}" data-cta-position="quote_form">Call ${PHONE}</a>, 7 AM to 9 PM.</p>`,
     '      <p class="qf-note">This opens WhatsApp with your details filled in. Nothing is stored on this website.</p>',
     '    </form>',

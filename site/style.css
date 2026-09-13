@@ -710,3 +710,15 @@ body.vaav-sl-open .vaav-sl-pill,body.vaav-sl-open .wa-float,body.vaav-sl-open .m
   .svc-main .set-list > .set:last-child:nth-child(odd){grid-column:1/-1}
   .svc-main .set-list > .set:last-child:nth-child(odd) .set-dishes{columns:3}
 }
+/* Quote form: required markers, the minimum-guests note, the after-send status
+   line, brand-coloured 20px checkboxes, and text links tall enough to tap. The
+   empty status line stays rendered (a live region that is display:none can go
+   unannounced), so it cancels the form's grid gap instead. */
+.qf-req{font-weight:600;font-size:.8rem;color:var(--muted)}
+.qf-help{font-size:.85rem;color:var(--muted)}
+.qf-status{margin:0;font-size:.95rem;font-weight:600;color:var(--green-deep)}
+.qf-status:empty{margin-top:-16px}
+.qf-status a{color:var(--green-deep)}
+.qf-meals input{width:20px;height:20px;margin:0;accent-color:var(--green)}
+.svc-quick a,.qf-alt a{display:inline-block;padding:10px 0}
+.svc-hero .svc-quick{margin-top:4px}
