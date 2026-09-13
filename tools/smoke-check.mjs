@@ -29,6 +29,7 @@ const PAGES = [
   { path: '/menu-format.js', must: ['escapeHtml'] },
   { path: '/menu-data.js',   must: ['VAAV_MENUS'] },
   { path: '/analytics.js',   must: ['gtag'] },
+  { path: '/lead-events.js', must: ['leadEventFor'] },
 ];
 
 // site/ is both the Netlify publish directory and the npm project root, so the

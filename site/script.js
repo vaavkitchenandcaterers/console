@@ -1,5 +1,6 @@
 import { createShortlist, formatEventDate } from './shortlist.js';
 import { escapeHtml, countDishes } from './menu-format.js';
+import { leadEventFor } from './lead-events.js';
 
 /* ============================================================
    VAAV Kitchen and Caterers: site interactivity
@@ -43,6 +44,16 @@ document.querySelectorAll('[data-wa-context]').forEach(a => {
   if (!ctx) return;
   a.href = waLink(`Hello VAAV Kitchen, I'd like to enquire about ${ctx}.`);
   a.target = "_blank"; a.rel = "noopener noreferrer";
+});
+
+// --- GA4 lead events: one listener for every call and WhatsApp link, ---
+// including the shortlist drawer's links, which are injected after load.
+// Bubble phase, so the shortlist's own click handler has run and its href is
+// already the final wa.me link. Guarded: analytics.js may be blocked.
+document.addEventListener('click', function (e) {
+  const link = e.target && e.target.closest ? e.target.closest('a[href]') : null;
+  const lead = leadEventFor(link);
+  if (lead && typeof window.gtag === 'function') window.gtag('event', lead.name, lead.params);
 });
 
 // --- Google reviews links ---
