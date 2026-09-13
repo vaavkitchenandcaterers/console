@@ -98,13 +98,6 @@ window.VaavShortlist = createShortlist(localStorage);
   guestsRule();
   const status = form.querySelector('.qf-status');
 
-  document.querySelectorAll('[data-quote-set]').forEach(function (btn) {
-    btn.addEventListener('click', function () {
-      f.menu.value = btn.dataset.quoteSet;
-      form.scrollIntoView({ behavior: 'smooth', block: 'start' });
-      f.date.focus({ preventScroll: true });
-    });
-  });
 
   form.addEventListener('submit', function (e) {
     e.preventDefault();
@@ -113,7 +106,8 @@ window.VaavShortlist = createShortlist(localStorage);
     const meals = [...form.querySelectorAll('.qf-meals input:checked')].map(function (i) { return i.value; });
     const url = waLink(buildQuoteMessage({
       occasion: occasion, date: f.date.value, guests: f.guests.value, meals: meals,
-      area: f.area.value, menu: f.menu.value, name: f.name.value
+      // A page may offer no menu field (the puja page, until its sattvic menu exists).
+      area: f.area.value, menu: f.menu ? f.menu.value : '', name: f.name.value
     }, form.dataset.quoteRef || ''));
     S.setEventField('occasion', occasion);
     const lead = quoteLeadEvent(occasion);

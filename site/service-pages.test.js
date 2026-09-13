@@ -2,9 +2,8 @@ import { describe, it, expect } from 'vitest';
 import { readFileSync } from 'node:fs';
 import { loadMenus, loadChrome } from '../tools/build-menu-pages.mjs';
 import { GENERATED_PAGES, chromeSourceFor } from '../tools/sync-chrome.mjs';
-import { renderServicePage, SERVICES, SERVICE_META, NOT_SATTVIC } from '../tools/service-page-template.mjs';
-import { slug } from '../tools/menu-page-template.mjs';
-import { escapeHtml, countDishes } from './menu-format.js';
+import { renderServicePage, SERVICES, SERVICE_META } from '../tools/service-page-template.mjs';
+import { escapeHtml } from './menu-format.js';
 import { VAAV_REVIEWS } from './reviews.js';
 
 // The occasion service pages are generated and committed, so a retagged set or
@@ -21,9 +20,6 @@ const pageFile = key => `services/${key}/index.html`;
 const pageFor = key => read(`./${pageFile(key)}`);
 const ldBlocks = html =>
   [...html.matchAll(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/g)].map(m => JSON.parse(m[1]));
-const articles = html => [...html.matchAll(/<article class="set" id="([^"]+)">[\s\S]*?<\/article>/g)];
-const tagged = key =>
-  CATS.flatMap(c => menus[c].menus.filter(m => (m.occasions || []).some(o => SERVICE_META[key].occasions.includes(o))));
 
 describe('generated occasion service pages', () => {
   it('each committed page is byte-identical to what the generator produces', () => {
@@ -40,20 +36,14 @@ describe('generated occasion service pages', () => {
     }
   });
 
-  it('the puja page lists every sattvic puja and temple set, and no set carrying onion or garlic', () => {
-    // The page promises no onion and no garlic, so a set with a NOT_SATTVIC dish
-    // must never appear, and every tagged set without one must.
-    const shown = articles(pageFor('puja-homam-catering')).map(m => m[1]);
-    const hasOnionOrGarlic = m => m.groups.some(([, dishes]) => dishes.some(d => NOT_SATTVIC.includes(d)));
-    const sattvic = tagged('puja-homam-catering').filter(m => !hasOnionOrGarlic(m));
-    expect([...shown].sort()).toEqual(sattvic.map(m => slug(m.name)).sort());
-    expect(shown, 'sattvic puja and temple baseline').toEqual(['lunch-2']);
-    for (const dish of NOT_SATTVIC) {
-      expect(
-        tagged('puja-homam-catering').some(m => m.groups.some(([, d]) => d.includes(dish))),
-        `${dish} is listed as not sattvic, but no puja or temple set carries it: remove it from NOT_SATTVIC`
-      ).toBe(true);
-    }
+  it('the puja page shows no menus and asks for none, until the owner supplies a sattvic menu', () => {
+    // Owner, 13 Sep 2026: no menu on the puja page. A menu here would promise
+    // dishes the kitchen has not yet set as sattvic.
+    const html = pageFor('puja-homam-catering');
+    expect(html).not.toContain('<section id="menus">');
+    expect(html).not.toContain('<article class="set"');
+    expect(html, 'puja form still has a menu field').not.toContain('id="qf-menu"');
+    expect(html).not.toContain('data-quote-set');
   });
 
   it('the wedding page offers every set menu: a tile per meal and a dropdown in the form, and no menu cards', () => {
@@ -74,15 +64,6 @@ describe('generated occasion service pages', () => {
     const options = [...select.matchAll(/<option(?: value="")?>([^<]*)<\/option>/g)].map(m => m[1]);
     expect(options[0]).toBe('Not sure yet');
     expect(options.slice(1), 'dropdown lists every set menu, in menu order').toEqual(CATS.flatMap(c => menus[c].menus.map(m => m.name)));
-  });
-
-  it('every set carries a Quote this menu button naming it', () => {
-    for (const key of SERVICES) {
-      for (const [block] of articles(pageFor(key))) {
-        const name = block.match(/<h3 class="set-name">([^<]+)<\/h3>/)[1];
-        expect(block, `${key} ${name}`).toContain(`data-quote-set="${name}">Quote this menu</button>`);
-      }
-    }
   });
 
   it('has one quote form, and no field has a name, so nothing a visitor types can reach a URL', () => {
@@ -194,11 +175,9 @@ describe('generated occasion service pages', () => {
     }
   });
 
-  it('lays dish lists out in two columns on service pages, and spans a lone last card', () => {
-    const css = read('./style.css');
-    expect(css).toContain('.svc-main .set-dishes{columns:2');
-    expect(css).toContain('.svc-main .set-list > .set:last-child:nth-child(odd){grid-column:1/-1}');
+  it('scopes its layout to .svc-main, so its spacing never reaches other pages', () => {
     for (const key of SERVICES) expect(pageFor(key)).toContain('<main id="main" class="svc-main">');
+    expect(read('./script.js'), 'the Quote this menu handler has no button left to serve').not.toContain('data-quote-set');
   });
 
   it('keeps meta descriptions short enough not to be cut off on a phone', () => {
@@ -252,18 +231,13 @@ describe('generated occasion service pages', () => {
     }
   });
 
-  it('the puja page names prasadam and pooja, and every sweet it names is in a set it shows', () => {
-    const html = pageFor('puja-homam-catering');
-    const main = html.match(/<main id="main"[^>]*>[\s\S]*<\/main>/)[0];
-    expect(main).toMatch(/prasadam/i);
-    expect(main).toMatch(/pooja/i);
-    for (const dish of ['Sweet Payasam']) {
-      expect(main.match(/<section class="svc-day">[\s\S]*?<\/section>/)[0]).toContain(dish);
-      expect(
-        articles(html).some(([block]) => block.includes(`<li>${dish}</li>`)),
-        `${dish} is named on the page but is in no set the page shows`
-      ).toBe(true);
-    }
+  it('the puja page names prasadam and pooja, and no dish, since it shows no menu', () => {
+    const day = pageFor('puja-homam-catering').match(/<section class="svc-day">[\s\S]*?<\/section>/)[0];
+    expect(day).toMatch(/prasadam/i);
+    expect(day).toMatch(/pooja/i);
+    const dishes = CATS.flatMap(c => menus[c].menus.flatMap(m => m.groups.flatMap(([, d]) => d)));
+    const named = [...new Set(dishes)].filter(d => day.includes(d));
+    expect(named, 'the puja page names a dish from a menu it does not show').toEqual([]);
   });
 
   it('is linked from the homepage, /contact/, the /menu/ hub and every menu category page', () => {
