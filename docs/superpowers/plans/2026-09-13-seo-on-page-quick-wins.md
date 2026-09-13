@@ -21,6 +21,7 @@
 - Every title stays unique across pages. `chrome-sync.test.js` already fails on a duplicate.
 - Never publish a price, service area or profile URL the owner has not confirmed. Price bands, Instagram/Justdial/Sulekha URLs, photography and area pages are **out of scope** here (see the end of this plan).
 - `npm test` must report 0 failed tests at the end of every task.
+- `site/` is both the publish directory and the npm root, so any new `site/*.test.js` file is served publicly unless `site/_redirects` sends it to the 404 page with a **forced** rule (`/<file>   /404.html   404!`). `redirects.test.js` fails without one. Add the rule in the same task that creates the test file.
 
 ## File Map
 
@@ -82,6 +83,7 @@ Expected: every test file passes, `0 failed`. If anything fails here, stop and r
 **Files:**
 - Create: `site/seo-meta.test.js`
 - Modify: `site/index.html:11-13`, `site/about/index.html:11-12`, `site/contact/index.html:11`, `site/corporate/index.html:12`, `site/menu/index.html:11`, `site/services/index.html:11`
+- Modify: `site/chrome-sync.test.js` (the test "index.html keeps the two head tags no other page has", ~line 216), `site/_redirects` (the forced-404 list, ~lines 73–86)
 
 **Interfaces:**
 - Consumes: `PAGES` and `GENERATED_PAGES` exported by `tools/sync-chrome.mjs` (arrays of page paths relative to `site/`).
@@ -228,6 +230,52 @@ with:
 
 Why these words: the homepage takes the singular, local "catering service" phrase from the brief; `/services/` takes the occasion names instead, so the two pages do not compete for the same query. `/corporate/` already owns "corporate", so `/services/` drops it.
 
+- [ ] **Step 3b: Retarget the chrome-sync guard that required the keywords tag**
+
+`chrome-sync.test.js` asserts that `index.html` keeps its keywords meta. That assertion is not an SEO decision: the keywords tag and the fallback icon are the two homepage-only tags sitting between synced head regions, so the test catches a region drawn one line too wide. Removing the tag breaks it. Keep the guard on the icon.
+
+In `site/chrome-sync.test.js`, replace:
+
+```js
+  it("index.html keeps the two head tags no other page has", () => {
+    // The keywords meta and the inline monogram fallback icon are index-only.
+    // They sit between head regions on that page, which is exactly the sort of
+    // thing a region drawn one line too wide would erase.
+    const html = read('index.html');
+    expect(html).toContain('<meta name="keywords" content=');
+    expect(html).toContain('<link rel="alternate icon" href="data:image/svg+xml,');
+    for (const page of PAGES.filter(p => p !== 'index.html')) {
+      expect(read(page), `${page} should not have gained keywords`).not.toContain('name="keywords"');
+    }
+  });
+```
+
+with:
+
+```js
+  it("index.html keeps the head tag no other page has", () => {
+    // The inline monogram fallback icon is index-only. It sits between head
+    // regions on that page, which is exactly the sort of thing a region drawn
+    // one line too wide would erase. The keywords meta used to be a second
+    // such tag; it was removed as dead SEO weight, and no page may regain it.
+    const html = read('index.html');
+    expect(html).toContain('<link rel="alternate icon" href="data:image/svg+xml,');
+    for (const page of PAGES) {
+      expect(read(page), `${page} should not carry a keywords meta`).not.toContain('name="keywords"');
+    }
+  });
+```
+
+- [ ] **Step 3c: Keep the new test file off the public site**
+
+In `site/_redirects`, insert this line between `/responsive.test.js` and `/shortlist.test.js` (the list is alphabetical):
+
+```
+/seo-meta.test.js       /404.html   404!
+```
+
+Without it, `redirects.test.js` fails twice: the file has no rule, and so it has no forced `404!`.
+
 - [ ] **Step 4: Run the new test**
 
 Run (from `site/`): `npx vitest run seo-meta.test.js`
@@ -241,13 +289,16 @@ Expected: 0 failed. `chrome-sync.test.js` confirms the new titles are still uniq
 - [ ] **Step 6: Commit**
 
 ```bash
-git add site/seo-meta.test.js site/index.html site/about/index.html site/contact/index.html site/corporate/index.html site/menu/index.html site/services/index.html
+git add site/seo-meta.test.js site/index.html site/about/index.html site/contact/index.html site/corporate/index.html site/menu/index.html site/services/index.html site/chrome-sync.test.js site/_redirects
 git commit -m "fix(seo): fit titles and descriptions on the hand-maintained pages in search results
 
 Eight of eleven indexable pages had copy Google would truncate. Adds a
 test that holds every hand-maintained page to 60-character titles and
 155-character descriptions, counted in characters rather than bytes, and
-drops the homepage's meta keywords tag."
+drops the homepage's meta keywords tag. The chrome-sync guard that
+required that tag now guards the fallback icon alone and keeps keywords
+off every page. The new test file gets a forced 404 rule so it is not
+served publicly."
 ```
 
 ---
@@ -368,6 +419,7 @@ regenerated, so the byte-for-byte generator tests still hold."
 **Files:**
 - Create: `site/homepage-seo.test.js`
 - Modify: `site/index.html` (the `<h1>` inside `.hero-copy`, currently lines 168–175)
+- Modify: `site/_redirects` (one forced-404 line for the new test file)
 
 **Interfaces:**
 - Consumes: nothing.
@@ -448,6 +500,16 @@ with:
 
 The delays stay under the lead paragraph's `--d:.74s`, so the sentence still finishes rising before the paragraph appears.
 
+- [ ] **Step 3b: Keep the new test file off the public site**
+
+In `site/_redirects`, insert this line between `/chrome-sync.test.js` and `/menu-data.test.js` (the list is alphabetical):
+
+```
+/homepage-seo.test.js   /404.html   404!
+```
+
+Without it, `redirects.test.js` fails: `site/` is the publish directory, so the test file would be downloadable.
+
 - [ ] **Step 4: Run the tests**
 
 Run (from `site/`): `npx vitest run homepage-seo.test.js responsive.test.js`
@@ -463,7 +525,7 @@ Expected at both sizes: the H1 wraps cleanly with no word clipped, and the top e
 - [ ] **Step 6: Commit**
 
 ```bash
-git add site/homepage-seo.test.js site/index.html
+git add site/homepage-seo.test.js site/index.html site/_redirects
 git commit -m "fix(seo): name the category and city in the homepage H1
 
 Keeps the existing line's close ('your guests won't stop talking about')
