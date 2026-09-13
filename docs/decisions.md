@@ -552,7 +552,11 @@ reception are one page and that `/corporate/` owns corporate catering.
 
 **Consequence.** Two more generated pages, held to the generator byte for byte
 by `site/service-pages.test.js`. The hub routes its cards to them.
-`setsByCategory` accepts several occasion keys.
+`setsByCategory` accepts several occasion keys. The puja page shows only sattvic
+sets: `NOT_SATTVIC` in the template lists the dishes ordinarily cooked with onion
+or garlic, and a puja or temple set carrying one is left off the page (owner,
+13 Sep 2026). That leaves Lunch 2 today; tagging more sattvic sets `puja` in
+`menu-data.js` is how the page grows.
 
 **Tamil names, confirmed by the owner on 13 Sep 2026.** Wedding: நிச்சயதார்த்தம் ·
 திருமணம் · வரவேற்பு (engagements are catered). Puja: பூஜை · ஹோமம் · அன்னதானம்.

@@ -37,7 +37,11 @@ export const SERVICES = ['wedding-reception-catering', 'puja-homam-catering'];
  * carrying any of these is left off it. Sets are judged by their dish names as
  * menu-data.js writes them; add a dish here when a newly tagged set brings one.
  */
-export const NOT_SATTVIC = ['Masal Dosai', 'Masal Vadai', 'White Kuruma', 'Kadala Curry', 'Mushroom Gravy', 'Veg Biryani', 'Baby Corn 65'];
+export const NOT_SATTVIC = [
+  'Masal Dosai', 'Masal Vadai', 'White Kuruma', 'Kadala Curry', 'Mushroom Gravy', 'Veg Biryani', 'Baby Corn 65',
+  // Confirmed by the owner on 13 Sep 2026: cooked with onion.
+  'Mint Rice', 'White Pulao'
+];
 
 export const SERVICE_META = {
   'wedding-reception-catering': {
@@ -101,13 +105,13 @@ export const SERVICE_META = {
     dayHeading: 'Cooked for the ritual',
     day: [
       `A puja or homam meal is cooked sattvic, with no onion and no garlic, and prepared with the care the occasion deserves.`,
-      `For the prasadam, the sets below carry sweets such as Laddu, Jangiri and Sweet Payasam, and any of them can be tailored to what your pooja or homam calls for.`,
+      `For the prasadam, the menu below carries Sweet Payasam, and it can be tailored to what your pooja or homam calls for.`,
       `Grihapravesam, ayush homam and shradham each keep their own customs, so tell us the ritual and we agree the menu with you rather than hand you a fixed one.`,
       `Temple functions and annadhanam are a question of scale and timing: thousands of plates served hot and on time, with the planning and discipline a big function needs.`
     ],
-    menusHeading: 'Menus we cook for pujas and temple functions',
+    menusHeading: 'What we cook for pujas and temple functions',
     menusIntro: total =>
-      `The <b>${total}</b> sattvic sets we cook for pujas, homams and temple functions, all without onion or garlic. Any of them can be cooked to suit your ritual, including Jain.`,
+      `The <b>${total}</b> sattvic ${total === 1 ? 'set' : 'sets'} we cook for pujas, homams and temple functions, without onion or garlic. ${total === 1 ? 'It' : 'Any of them'} can be cooked to suit your ritual, including Jain.`,
     formHeading: 'Tell us about your puja or function',
     formOccasion: 'Puja, homam or temple function',
     waContext: 'puja and prasadam catering',

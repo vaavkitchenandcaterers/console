@@ -47,7 +47,7 @@ describe('generated occasion service pages', () => {
     const hasOnionOrGarlic = m => m.groups.some(([, dishes]) => dishes.some(d => NOT_SATTVIC.includes(d)));
     const sattvic = tagged('puja-homam-catering').filter(m => !hasOnionOrGarlic(m));
     expect([...shown].sort()).toEqual(sattvic.map(m => slug(m.name)).sort());
-    expect(shown, 'sattvic puja and temple baseline').toEqual(['lunch-2', 'lunch-13', 'lunch-15']);
+    expect(shown, 'sattvic puja and temple baseline').toEqual(['lunch-2']);
     for (const dish of NOT_SATTVIC) {
       expect(
         tagged('puja-homam-catering').some(m => m.groups.some(([, d]) => d.includes(dish))),
@@ -200,7 +200,7 @@ describe('generated occasion service pages', () => {
     const main = html.match(/<main id="main">[\s\S]*<\/main>/)[0];
     expect(main).toMatch(/prasadam/i);
     expect(main).toMatch(/pooja/i);
-    for (const dish of ['Laddu', 'Jangiri', 'Sweet Payasam']) {
+    for (const dish of ['Sweet Payasam']) {
       expect(main.match(/<section class="svc-day">[\s\S]*?<\/section>/)[0]).toContain(dish);
       expect(
         articles(html).some(([block]) => block.includes(`<li>${dish}</li>`)),
