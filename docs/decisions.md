@@ -554,8 +554,13 @@ reception are one page and that `/corporate/` owns corporate catering.
 by `site/service-pages.test.js`. The hub routes its cards to them.
 `setsByCategory` accepts several occasion keys.
 
-**Not addressed.** Tamil occasion names are proposals until the owner confirms
-them. Housewarming and seemantham service pages wait until `/menu/housewarming/`
+**Tamil names, confirmed by the owner on 13 Sep 2026.** Wedding: நிச்சயதார்த்தம் ·
+திருமணம் · வரவேற்பு (engagements are catered). Puja: பூஜை · ஹோமம் · அன்னதானம்.
+Housewarming and seemantham: கிரகப்பிரவேசம், பால் காய்ச்சுதல், வளைகாப்பு and
+சீமந்தம் only; புதுமனை புகுவிழா is not used. Temple: அன்னதானம் · கோயில் விழா.
+Birthday: பிறந்தநாள். The Phase 2 housewarming and seemantham pages take these.
+
+**Not addressed.** Housewarming and seemantham service pages wait until `/menu/housewarming/`
 and `/menu/seemantham/` show impressions in Search Console (ADR-0007's gate).
 Birthday, Upanayanam and prices wait on the owner. The homepage service cards
 still link to `/services/`.

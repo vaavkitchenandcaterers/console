@@ -37,8 +37,8 @@ export const SERVICE_META = {
     maxPerCategory: 1,
     label: 'Wedding & reception catering',
     crumb: 'Wedding & reception',
-    tamil: 'திருமணம் · வரவேற்பு',
-    tamilLatin: ['Thirumanam', 'Varaverpu'],
+    tamil: 'நிச்சயதார்த்தம் · திருமணம் · வரவேற்பு',
+    tamilLatin: ['Nichayathartham', 'Thirumanam', 'Varaverpu'],
     h1: 'Wedding and reception catering in Chennai',
     title: 'Wedding & Reception Catering in Chennai, Pure Veg | VAAV',
     description:
@@ -46,7 +46,7 @@ export const SERVICE_META = {
     ogTitle: 'Wedding & Reception Catering in Chennai | VAAV Kitchen',
     ogDescription:
       'Banana-leaf virundhu sappadu for the muhurtham and a full dinner for the evening reception, cooked fresh and served by our own team.',
-    intro: `From the morning muhurtham saapadu to the evening reception, one pure-vegetarian kitchen cooks the whole day and our own cooks and servers run it, so your family can be guests at your own wedding.`,
+    intro: `From the nichayathartham and the morning muhurtham saapadu to the evening reception, one pure-vegetarian kitchen cooks the whole day and our own cooks and servers run it, so your family can be guests at your own wedding.`,
     proof: ['5.0 on Google', 'From 50 guests for a full sappadu', 'Cooks and servers included', 'Cooked fresh the same day'],
     dayEyebrow: 'The day',
     dayHeading: 'Two meals, one team',
