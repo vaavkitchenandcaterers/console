@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import { readFileSync } from 'node:fs';
-import { PAGES } from '../tools/sync-chrome.mjs';
+import { PAGES, GENERATED_PAGES } from '../tools/sync-chrome.mjs';
 
 // Google truncates titles near 60 characters and descriptions near 155 on
 // desktop. Past those, the words that sell the click are the ones cut off.
@@ -35,6 +35,22 @@ describe('search result copy on the hand-maintained pages', () => {
     it(`${page} carries no meta keywords tag`, () => {
       // Ignored by every major engine for over a decade; it only reads as dated SEO.
       expect(read(page)).not.toContain('name="keywords"');
+    });
+  }
+});
+
+describe('search result copy on the generated menu pages', () => {
+  // These are rebuilt from tools/menu-page-template.mjs. A failure here is
+  // fixed in the template, then `npm run build:menu` — never in the HTML.
+  for (const page of GENERATED_PAGES) {
+    it(`${page} title fits in ${TITLE_MAX} characters`, () => {
+      const title = titleOf(read(page));
+      expect(chars(title), `"${title}"`).toBeLessThanOrEqual(TITLE_MAX);
+    });
+
+    it(`${page} description fits in ${DESCRIPTION_MAX} characters`, () => {
+      const description = descriptionOf(read(page));
+      expect(chars(description), `"${description}"`).toBeLessThanOrEqual(DESCRIPTION_MAX);
     });
   }
 });
