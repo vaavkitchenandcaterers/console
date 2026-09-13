@@ -60,7 +60,8 @@ export const SERVICE_META = {
     ogDescription:
       'Banana-leaf virundhu sappadu for the muhurtham and a full dinner for the evening reception, cooked fresh and served by our own team.',
     intro: `From the nichayathartham and the morning muhurtham saapadu to the evening reception, one pure-vegetarian kitchen cooks the whole day and our own cooks and servers run it, so your family can be guests at your own wedding.`,
-    proof: ['5.0 on Google', 'From 50 guests for a full sappadu', 'Cooks and servers included', 'Cooked fresh the same day'],
+    // [full wording, phone wording]: the owner approved shorter chips on phones only.
+    proof: ['5.0 on Google', ['From 50 guests for a full sappadu', 'From 50 guests'], ['Cooks and servers included', 'Cooks & servers'], ['Cooked fresh the same day', 'Cooked fresh']],
     dayEyebrow: 'The day',
     dayHeading: 'Two meals, fully staffed',
     day: [
@@ -100,7 +101,7 @@ export const SERVICE_META = {
     ogDescription:
       'Sattvic, onion- and garlic-free meals for pujas, homams and shradham, and annadhanam for temple functions across Chennai.',
     intro: `Sattvic, onion- and garlic-free meals cooked the traditional way for grihapravesam, ayush homam, shradham and temple functions, and annadhanam when a temple feeds a crowd.`,
-    proof: ['5.0 on Google', 'Sattvic, no onion or garlic', 'From 30 guests', 'Cooks and servers included'],
+    proof: ['5.0 on Google', ['Sattvic, no onion or garlic', 'No onion or garlic'], 'From 30 guests', ['Cooks and servers included', 'Cooks & servers']],
     dayEyebrow: 'The occasion',
     dayHeading: 'Cooked for the ritual',
     day: [
@@ -135,6 +136,20 @@ export function featuredSets(groups, maxPerCategory) {
       ? [...g.sets].sort((a, b) => countDishes(b.groups) - countDishes(a.groups)).slice(0, maxPerCategory)
       : g.sets
   );
+}
+
+/** Tamil names that wrap only between names, each keeping its separator. */
+function tamilLine(tamil) {
+  const names = tamil.split(' · ');
+  return names.map((n, i) => `<span>${n}${i < names.length - 1 ? ' ·' : ''}</span>`).join(' ');
+}
+
+/** A proof chip. A [full, short] pair renders both; the stylesheet shows the short one on phones. */
+function proofChip(p) {
+  const [full, short] = [].concat(p);
+  return short
+    ? `      <li><span class="chip-long">${escapeHtml(full)}</span><span class="chip-short">${escapeHtml(short)}</span></li>`
+    : `      <li>${escapeHtml(full)}</li>`;
 }
 
 /** A set card plus its "Quote this menu" button, which fills the form's menu field. */
@@ -289,24 +304,26 @@ export function renderServicePage(key, menus, chrome) {
   ];
 
   const main = [
-    '<main id="main">',
+    '<main id="main" class="svc-main">',
     '<section class="svc-hero">',
     '  <div class="wrap">',
     `    <nav class="breadcrumb" aria-label="Breadcrumb"><a href="/">Home</a> <span aria-hidden="true">/</span> <a href="/services/">Services</a> <span aria-hidden="true">/</span> <span aria-current="page">${escapeHtml(meta.crumb)}</span></nav>`,
     '    <div class="sec-head">',
     `      <span class="eyebrow">${escapeHtml(meta.crumb)}</span>`,
     `      <h1>${escapeHtml(meta.h1)}</h1>`,
-    `      <p class="svc-tamil" lang="ta">${meta.tamil}</p>`,
+    `      <p class="svc-tamil" lang="ta">${tamilLine(meta.tamil)}</p>`,
     '    </div>',
     `    <p class="menu-intro">${escapeHtml(meta.intro)}</p>`,
-    '    <ul class="proof" role="list">',
-    ...meta.proof.map(p => `      <li>${escapeHtml(p)}</li>`),
-    '    </ul>',
+    // Actions before proof: on a short laptop screen the chips cost the buttons
+    // their place on the first screen.
     '    <div class="svc-cta">',
     '      <a class="btn y" href="#quote">Get a quote</a>',
     `      <a class="btn svc-call" href="${TEL}" data-cta-position="hero">Call ${PHONE}</a>`,
     '    </div>',
     `    <p class="svc-quick"><a data-wa-context="${escapeHtml(meta.waContext)}" data-cta-position="hero" href="${waHref}" target="_blank" rel="noopener noreferrer">Or ask a quick question on WhatsApp</a></p>`,
+    '    <ul class="proof" role="list">',
+    ...meta.proof.map(proofChip),
+    '    </ul>',
     '  </div>',
     '</section>',
     '<section class="svc-day">',

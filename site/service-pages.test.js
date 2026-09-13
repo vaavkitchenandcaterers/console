@@ -100,9 +100,21 @@ describe('generated occasion service pages', () => {
     }
   });
 
-  it('names the occasion in Tamil, marked as Tamil', () => {
+  it('names the occasion in Tamil, marked as Tamil, wrapping only between names', () => {
     for (const key of SERVICES) {
-      expect(pageFor(key)).toContain(`<p class="svc-tamil" lang="ta">${SERVICE_META[key].tamil}</p>`);
+      const line = pageFor(key).match(/<p class="svc-tamil" lang="ta">([\s\S]*?)<\/p>/)[1];
+      expect(line.replace(/<[^>]+>/g, ''), `${key} Tamil text`).toBe(SERVICE_META[key].tamil);
+      expect((line.match(/<span>/g) || []).length, `${key} one no-break span per name`).toBe(SERVICE_META[key].tamil.split(' · ').length);
+    }
+  });
+
+  it('puts the actions before the proof chips, and gives long chips a short form for phones', () => {
+    for (const key of SERVICES) {
+      const hero = pageFor(key).match(/<section class="svc-hero">[\s\S]*?<\/section>/)[0];
+      expect(hero.indexOf('class="svc-cta"'), `${key} actions before chips`).toBeLessThan(hero.indexOf('class="proof"'));
+      for (const [full, short] of SERVICE_META[key].proof.filter(Array.isArray)) {
+        expect(hero).toContain(`<span class="chip-long">${escapeHtml(full)}</span><span class="chip-short">${escapeHtml(short)}</span>`);
+      }
     }
   });
 
@@ -143,7 +155,7 @@ describe('generated occasion service pages', () => {
       const skips = levels.map((l, i) => (i && l > levels[i - 1] + 1 ? `h${levels[i - 1]} → h${l}` : null)).filter(Boolean);
       expect(skips, `${key} skips a heading level`).toEqual([]);
       expect(html).not.toContain('href="#"');
-      expect(html.match(/<main id="main">[\s\S]*<\/main>/)[0], `${key} copy has an em dash`).not.toContain('—');
+      expect(html.match(/<main id="main"[^>]*>[\s\S]*<\/main>/)[0], `${key} copy has an em dash`).not.toContain('—');
     }
   });
 
@@ -197,7 +209,7 @@ describe('generated occasion service pages', () => {
 
   it('the puja page names prasadam and pooja, and every sweet it names is in a set it shows', () => {
     const html = pageFor('puja-homam-catering');
-    const main = html.match(/<main id="main">[\s\S]*<\/main>/)[0];
+    const main = html.match(/<main id="main"[^>]*>[\s\S]*<\/main>/)[0];
     expect(main).toMatch(/prasadam/i);
     expect(main).toMatch(/pooja/i);
     for (const dish of ['Sweet Payasam']) {

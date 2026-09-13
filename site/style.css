@@ -678,3 +678,22 @@ body.vaav-sl-open .vaav-sl-pill,body.vaav-sl-open .wa-float,body.vaav-sl-open .m
 .svc-proof .review-grid{grid-template-columns:1fr;min-height:0;margin-bottom:28px}
 .svc-proof .kitchen-shot{margin:0 0 20px}
 @media(min-width:760px){.svc-proof .review-grid{grid-template-columns:1fr 1fr}}
+/* Service pages: one section rhythm (56px on phones, 80px above 760px) instead
+   of the site-wide 90px, and a tighter hero so its actions fit a 1280x590
+   laptop's first screen. Scoped to .svc-main; other pages keep their spacing. */
+.svc-main > section{padding:56px 0}
+.svc-main > .svc-hero{padding-top:28px}
+.svc-hero .sec-head{margin-bottom:20px}
+.svc-hero .menu-intro{margin:0 0 22px;max-width:62ch}
+.svc-hero .proof{margin:22px 0 0}
+.svc-tamil span{white-space:nowrap}
+.chip-short{display:none}
+@media(min-width:761px){
+  .svc-main > section{padding:80px 0}
+  .svc-main > .svc-hero{padding-top:36px}
+}
+@media(max-width:760px){
+  .proof li{padding:5px 12px;font-size:.82rem}
+  .proof .chip-long{display:none}
+  .proof .chip-short{display:inline}
+}
