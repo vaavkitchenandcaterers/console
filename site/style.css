@@ -39,7 +39,11 @@ a{color:inherit}
 .skip-link{position:absolute;left:12px;top:-60px;z-index:200;background:var(--green-deep);color:var(--white);
   padding:12px 20px;border-radius:0 0 12px 12px;font-weight:600;text-decoration:none;transition:top .2s}
 .skip-link:focus{top:0}
-:focus-visible{outline:3px solid var(--yellow-deep);outline-offset:3px;border-radius:6px}
+/* Two-tone focus ring: the dark green outline carries it on light grounds (6.2-12.3:1
+   on cream, white, yellow and WhatsApp green), the cream inner ring on green buttons
+   and the dark footer (6.8-11.4:1). The old yellow-deep ring measured 1.2-1.6:1 on
+   every light ground. The outline offset leaves exactly the 2px the cream ring fills. */
+:focus-visible{outline:3px solid var(--green-ink);outline-offset:2px;box-shadow:0 0 0 2px var(--cream);border-radius:6px}
 
 /* ---------- Top utility bar ---------- */
 .topbar{background:var(--green-ink);color:rgba(247,243,231,.82);font-family:'Catamaran',sans-serif;font-size:.82rem}
@@ -77,7 +81,7 @@ nav.scrolled{box-shadow:0 8px 26px -16px rgba(20,61,29,.45);background:rgba(247,
 .btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;background:var(--green);color:var(--white);text-decoration:none;
   min-height:44px;padding:12px 22px;border-radius:40px;font-weight:600;font-size:.95rem;transition:transform .15s,background .15s;border:none;cursor:pointer;touch-action:manipulation}
 .btn:hover,.btn:focus-visible{background:var(--green-deep);transform:translateY(-2px)}
-.btn:focus-visible{outline-offset:3px;border-radius:999px}
+.btn:focus-visible{outline-offset:2px;border-radius:999px}
 .btn.y{background:var(--yellow);color:var(--green-ink)}
 .btn.y:hover,.btn.y:focus-visible{background:var(--yellow-deep)}
 .nav-wa{display:inline-flex;align-items:center;gap:7px;background:var(--wa);color:var(--white);text-decoration:none;
@@ -381,7 +385,7 @@ section{padding:90px 0}
 .faq-list summary::-webkit-details-marker{display:none}
 .faq-list summary::after{content:"+";font-family:'Mukta',sans-serif;font-size:1.5rem;line-height:1;color:var(--green);flex-shrink:0}
 .faq-list details[open] summary::after{content:"\2212"}
-.faq-list summary:focus-visible{outline:3px solid var(--yellow-deep);outline-offset:-3px}
+.faq-list summary:focus-visible{outline:3px solid var(--green-ink);outline-offset:-3px;box-shadow:none}
 .faq-list details p{color:var(--muted);line-height:1.6;margin:0;padding:0 22px 20px}
 
 /* contact */
@@ -416,6 +420,10 @@ section{padding:90px 0}
 /* floating WhatsApp */
 .wa-float{position:fixed;right:20px;bottom:20px;z-index:80;display:flex;align-items:center;gap:10px;background:var(--wa);color:var(--white);text-decoration:none;padding:13px 18px 13px 14px;border-radius:50px;font-weight:700;font-family:'Catamaran',sans-serif;box-shadow:0 10px 26px rgba(0,0,0,.28);transition:transform .15s}
 .wa-float:hover{transform:translateY(-3px)}
+/* Hidden while a hero is on screen (script.js); visibility also takes it out of the tab order. */
+.wa-float{transition:opacity .2s ease,transform .2s ease,visibility .2s}
+.wa-float.at-hero{opacity:0;visibility:hidden;transform:translateY(12px);pointer-events:none}
+@media(prefers-reduced-motion:reduce){.wa-float{transition:none}}
 .wa-float svg{width:24px;height:24px;flex-shrink:0}
 .wa-float .lbl{font-size:.95rem}
 @media(max-width:520px){.wa-float .lbl{display:none}.wa-float{padding:10px;border-radius:50%;right:16px;bottom:16px}}
@@ -543,7 +551,7 @@ body.vaav-sl-open .vaav-sl-pill,body.vaav-sl-open .wa-float,body.vaav-sl-open .m
   border-radius:50%;background:var(--wa);color:var(--white);margin-bottom:14px}
 .vaav-sl-sent-ic svg{width:26px;height:26px}
 .vaav-sl-sent-h{font-family:'Cormorant',serif;font-size:1.6rem;margin-bottom:6px}
-.vaav-sl-sent-h:focus-visible{outline:3px solid var(--yellow-deep);outline-offset:4px}
+.vaav-sl-sent-h:focus-visible{outline:3px solid var(--green-ink);outline-offset:4px;box-shadow:none}
 .vaav-sl-sent-list{font-size:.94rem;color:var(--ink);margin-bottom:6px}
 .vaav-sl-sent-reply{font-size:.9rem;color:var(--muted)}
 .vaav-sl-edit{display:block;width:100%;min-height:44px;margin-top:10px;background:none;border:1.5px solid var(--border);
@@ -643,6 +651,7 @@ body.vaav-sl-open .vaav-sl-pill,body.vaav-sl-open .wa-float,body.vaav-sl-open .m
 .svc-cta .btn{min-height:48px}
 .btn.svc-call{background:transparent;color:var(--green-deep);box-shadow:inset 0 0 0 2px var(--green-deep)}
 .btn.svc-call:hover,.btn.svc-call:focus-visible{background:var(--green-deep);color:var(--white)}
+.btn.svc-call:focus-visible{box-shadow:inset 0 0 0 2px var(--green-deep),0 0 0 2px var(--cream)}
 .svc-quick{margin:14px 0 0;font-size:.95rem}
 .svc-quick a{color:var(--green-deep);font-weight:600;text-underline-offset:3px}
 .svc-day p{max-width:62ch;line-height:1.7;margin:0 0 16px}
@@ -657,7 +666,7 @@ body.vaav-sl-open .vaav-sl-pill,body.vaav-sl-open .wa-float,body.vaav-sl-open .m
 .qf-field{display:grid;gap:6px;border:0;padding:0;margin:0;min-width:0}
 .qf-field > span,.qf-field legend{font-family:'Catamaran',sans-serif;font-weight:700;font-size:.9rem;color:var(--green-deep)}
 .qf-field input[type=text],.qf-field input[type=date],.qf-field input[type=number]{font:inherit;width:100%;min-height:46px;padding:8px 12px;border:1px solid var(--border-track);border-radius:10px;background:var(--cream);color:var(--ink)}
-.qf-field input:focus-visible,.qf-meals input:focus-visible{outline:3px solid var(--yellow-deep);outline-offset:1px}
+.qf-field input:focus-visible,.qf-meals input:focus-visible{outline:3px solid var(--green-ink);outline-offset:1px;box-shadow:none}
 .qf-meals{display:flex;flex-wrap:wrap;gap:4px 18px}
 .qf-meals legend{width:100%;margin-bottom:2px}
 .qf-meals label{display:inline-flex;align-items:center;gap:8px;min-height:44px}
@@ -678,3 +687,52 @@ body.vaav-sl-open .vaav-sl-pill,body.vaav-sl-open .wa-float,body.vaav-sl-open .m
 .svc-proof .review-grid{grid-template-columns:1fr;min-height:0;margin-bottom:28px}
 .svc-proof .kitchen-shot{margin:0 0 20px}
 @media(min-width:760px){.svc-proof .review-grid{grid-template-columns:1fr 1fr}}
+/* Service pages: one section rhythm (56px on phones, 80px above 760px) instead
+   of the site-wide 90px, and a tighter hero so its actions fit a 1280x590
+   laptop's first screen. Scoped to .svc-main; other pages keep their spacing. */
+.svc-main > section{padding:56px 0}
+.svc-main > .svc-hero{padding-top:28px}
+.svc-hero .sec-head{margin-bottom:20px}
+.svc-hero .menu-intro{margin:0 0 22px;max-width:62ch}
+.svc-hero .proof{margin:22px 0 0}
+.svc-tamil span{white-space:nowrap}
+.chip-short{display:none}
+@media(min-width:761px){
+  .svc-main > section{padding:80px 0}
+  .svc-main > .svc-hero{padding-top:36px}
+}
+@media(max-width:760px){
+  .proof li{padding:5px 12px;font-size:.82rem}
+  .proof .chip-long{display:none}
+  .proof .chip-short{display:inline}
+}
+/* Service pages: dish lists in two columns with every dish still visible (owner,
+   13 Sep 2026: columns rather than collapsed lists). A last card left alone on
+   its row spans the full width and takes three columns. */
+.svc-main .set-dishes{columns:2;column-gap:22px}
+.svc-main .set-dishes li{break-inside:avoid;padding:6px 0;border-bottom:0;line-height:1.35}
+@media(min-width:760px){
+  .svc-main .set-list > .set:last-child:nth-child(odd){grid-column:1/-1}
+  .svc-main .set-list > .set:last-child:nth-child(odd) .set-dishes{columns:3}
+}
+/* Quote form: required markers, the minimum-guests note, the after-send status
+   line, brand-coloured 20px checkboxes, and text links tall enough to tap. The
+   empty status line stays rendered (a live region that is display:none can go
+   unannounced), so it cancels the form's grid gap instead. */
+.qf-req{font-weight:600;font-size:.8rem;color:var(--muted)}
+.qf-help{font-size:.85rem;color:var(--muted)}
+.qf-status{margin:0;font-size:.95rem;font-weight:600;color:var(--green-deep)}
+.qf-status:empty{margin-top:-16px}
+.qf-status a{color:var(--green-deep)}
+.qf-meals input{width:20px;height:20px;margin:0;accent-color:var(--green)}
+.svc-quick a,.qf-alt a{display:inline-block;padding:10px 0}
+.svc-hero .svc-quick{margin-top:4px}
+/* Proof block: from 900px the reviews sit beside the kitchen photo and the
+   licence strip, and the photo is capped, so the block no longer outgrows a
+   1280x590 laptop screen. Placed after the 760px review-grid rule it overrides. */
+@media(min-width:900px){
+  .svc-proof-grid{display:grid;grid-template-columns:1.15fr .85fr;gap:28px;align-items:start}
+  .svc-proof .review-grid{grid-template-columns:1fr;margin-bottom:0}
+  .svc-proof .kitchen-shot img{aspect-ratio:4/3;max-height:340px}
+  .svc-proof .compliance{grid-template-columns:1fr}
+}

@@ -191,27 +191,27 @@
   </div>
 </nav>
 <!-- sync:chrome end -->
-<main id="main">
+<main id="main" class="svc-main">
 <section class="svc-hero">
   <div class="wrap">
     <nav class="breadcrumb" aria-label="Breadcrumb"><a href="/">Home</a> <span aria-hidden="true">/</span> <a href="/services/">Services</a> <span aria-hidden="true">/</span> <span aria-current="page">Wedding &amp; reception</span></nav>
     <div class="sec-head">
       <span class="eyebrow">Wedding &amp; reception</span>
       <h1>Wedding and reception catering in Chennai</h1>
-      <p class="svc-tamil" lang="ta">நிச்சயதார்த்தம் · திருமணம் · வரவேற்பு</p>
+      <p class="svc-tamil" lang="ta"><span>நிச்சயதார்த்தம் ·</span> <span>திருமணம் ·</span> <span>வரவேற்பு</span></p>
     </div>
     <p class="menu-intro">From the nichayathartham and the morning muhurtham saapadu to the evening reception, one pure-vegetarian kitchen cooks the whole day and our own cooks and servers run it, so your family can be guests at your own wedding.</p>
-    <ul class="proof" role="list">
-      <li>5.0 on Google</li>
-      <li>From 50 guests for a full sappadu</li>
-      <li>Cooks and servers included</li>
-      <li>Cooked fresh the same day</li>
-    </ul>
     <div class="svc-cta">
       <a class="btn y" href="#quote">Get a quote</a>
       <a class="btn svc-call" href="tel:+919655356333" data-cta-position="hero">Call +91 96553 56333</a>
     </div>
     <p class="svc-quick"><a data-wa-context="wedding and reception catering" data-cta-position="hero" href="https://wa.me/919655356333?text=Hello%20VAAV%20Kitchen%2C%20I'd%20like%20to%20enquire%20about%20wedding%20and%20reception%20catering." target="_blank" rel="noopener noreferrer">Or ask a quick question on WhatsApp</a></p>
+    <ul class="proof" role="list">
+      <li>5.0 on Google</li>
+      <li><span class="chip-long">From 50 guests for a full sappadu</span><span class="chip-short">From 50 guests</span></li>
+      <li><span class="chip-long">Cooks and servers included</span><span class="chip-short">Cooks &amp; servers</span></li>
+      <li><span class="chip-long">Cooked fresh the same day</span><span class="chip-short">Cooked fresh</span></li>
+    </ul>
   </div>
 </section>
 <section class="svc-day">
@@ -344,6 +344,7 @@
       <span class="eyebrow">Why families book us</span>
       <h2>Rated 5.0 on Google</h2>
     </div>
+    <div class="svc-proof-grid">
     <div class="review-grid" role="list">
       <figure class="review" role="listitem">
         <div class="r-stars" aria-label="5 out of 5 stars">★★★★★</div>
@@ -356,10 +357,11 @@
         <figcaption class="r-by"><span class="r-who"><span class="r-name">Varsha Balaraman</span> · Google review</span></figcaption>
       </figure>
     </div>
+    <div class="svc-proof-side">
     <figure class="kitchen-shot">
       <picture>
-        <source type="image/webp" srcset="/kitchen-400.webp 400w, /kitchen-800.webp 800w, /kitchen-1600.webp 1600w" sizes="(max-width: 760px) 100vw, 1140px">
-        <img src="/kitchen-800.jpg" srcset="/kitchen-400.jpg 400w, /kitchen-800.jpg 800w, /kitchen-1600.jpg 1600w" sizes="(max-width: 760px) 100vw, 1140px" width="1600" height="900" loading="lazy" decoding="async" alt="VAAV's kitchen in Perungalathur: steel prep tables, shelves of stocked spice jars, a gas range and a tiled splashback, with a cook preparing an order.">
+        <source type="image/webp" srcset="/kitchen-400.webp 400w, /kitchen-800.webp 800w, /kitchen-1600.webp 1600w" sizes="(max-width: 899px) 100vw, 480px">
+        <img src="/kitchen-800.jpg" srcset="/kitchen-400.jpg 400w, /kitchen-800.jpg 800w, /kitchen-1600.jpg 1600w" sizes="(max-width: 899px) 100vw, 480px" width="1600" height="900" loading="lazy" decoding="async" alt="VAAV's kitchen in Perungalathur: steel prep tables, shelves of stocked spice jars, a gas range and a tiled splashback, with a cook preparing an order.">
       </picture>
       <figcaption>Our kitchen in Perungalathur, where every order is cooked.</figcaption>
     </figure>
@@ -367,6 +369,8 @@
       <li><span class="cmp-k">FSSAI licence</span><span class="cmp-v">12426008001205</span></li>
       <li><span class="cmp-k">GST</span><span class="cmp-v">33BJKPK7360P2ZL</span></li>
     </ul>
+    </div>
+    </div>
   </div>
 </section>
 <section id="quote" class="quote-sec">
@@ -377,8 +381,8 @@
     </div>
     <form class="quote-form" action="/contact/" method="get" data-quote-occasion="Wedding &amp; reception" data-quote-ref="wedding-reception-catering page, quote form">
       <div class="qf-row">
-        <label class="qf-field"><span>Date</span><input type="date" id="qf-date" required></label>
-        <label class="qf-field"><span>Guests</span><input type="number" id="qf-guests" inputmode="numeric" min="30" step="1" required placeholder="e.g. 150"></label>
+        <label class="qf-field"><span>Date <span class="qf-req">(required)</span></span><input type="date" id="qf-date" required></label>
+        <label class="qf-field"><span>Guests <span class="qf-req">(required)</span></span><input type="number" id="qf-guests" inputmode="numeric" min="30" step="1" required aria-describedby="qf-guests-help" placeholder="e.g. 150"><small class="qf-help" id="qf-guests-help">Minimum 30 guests</small></label>
       </div>
       <fieldset class="qf-field qf-meals">
         <legend>Meals</legend>
@@ -391,6 +395,7 @@
       <label class="qf-field"><span>Menu you liked (optional)</span><input type="text" id="qf-menu"></label>
       <label class="qf-field"><span>Your name</span><input type="text" id="qf-name" autocomplete="name"></label>
       <button type="submit" class="wa-big">Send on WhatsApp</button>
+      <p class="qf-status" role="status" aria-live="polite"></p>
       <p class="qf-alt">Rather talk? <a href="tel:+919655356333" data-cta-position="quote_form">Call +91 96553 56333</a>, 7 AM to 9 PM.</p>
       <p class="qf-note">This opens WhatsApp with your details filled in. Nothing is stored on this website.</p>
     </form>

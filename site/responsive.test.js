@@ -146,3 +146,20 @@ describe('short laptop screens', () => {
     expect(CSS.indexOf(`.hero h1{font-size:${HERO_CLAMP}`)).toBeLessThan(CSS.indexOf('.hero{padding-top:40px}'));
   });
 });
+
+describe('keyboard focus', () => {
+  // A single colour cannot pass on both the light grounds (cream, white, yellow,
+  // WhatsApp green) and the dark ones (green buttons, the footer). Measured on
+  // 13 Sep 2026, the old yellow-deep ring was 1.23-1.58:1 on every light ground,
+  // where WCAG asks for 3:1. The two-tone ring passes on all of them.
+  it('the site-wide focus ring is a dark green outline with a cream inner ring', () => {
+    const rule = CSS.match(/(?:^|\n):focus-visible\{([^}]*)\}/)[1];
+    expect(rule).toContain('outline:3px solid var(--green-ink)');
+    expect(rule).toContain('outline-offset:2px');
+    expect(rule).toContain('box-shadow:0 0 0 2px var(--cream)');
+  });
+
+  it('no focus style still draws the low-contrast yellow ring', () => {
+    expect(CSS).not.toMatch(/focus-visible[^{]*\{[^}]*outline:[^;}]*var\(--yellow/);
+  });
+});

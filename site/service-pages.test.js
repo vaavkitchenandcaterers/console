@@ -47,7 +47,7 @@ describe('generated occasion service pages', () => {
     const hasOnionOrGarlic = m => m.groups.some(([, dishes]) => dishes.some(d => NOT_SATTVIC.includes(d)));
     const sattvic = tagged('puja-homam-catering').filter(m => !hasOnionOrGarlic(m));
     expect([...shown].sort()).toEqual(sattvic.map(m => slug(m.name)).sort());
-    expect(shown, 'sattvic puja and temple baseline').toEqual(['lunch-2', 'lunch-13', 'lunch-15']);
+    expect(shown, 'sattvic puja and temple baseline').toEqual(['lunch-2']);
     for (const dish of NOT_SATTVIC) {
       expect(
         tagged('puja-homam-catering').some(m => m.groups.some(([, d]) => d.includes(dish))),
@@ -88,6 +88,19 @@ describe('generated occasion service pages', () => {
     }
   });
 
+  it('marks the required fields, states the minimum, and has a status line for after sending', () => {
+    for (const key of SERVICES) {
+      const form = pageFor(key).match(/<form class="quote-form"[\s\S]*?<\/form>/)[0];
+      expect((form.match(/<span class="qf-req">\(required\)<\/span>/g) || []).length, `${key} required markers`).toBe(2);
+      expect(form).toMatch(/id="qf-guests"[^>]*aria-describedby="qf-guests-help"/);
+      expect(form).toContain('<small class="qf-help" id="qf-guests-help">Minimum 30 guests</small>');
+      expect(form).toContain('<p class="qf-status" role="status" aria-live="polite"></p>');
+    }
+    const script = read('./script.js');
+    expect(script).toContain('WhatsApp opened with your details.');
+    expect(script).toContain('Our minimum order is 30 guests.');
+  });
+
   it('offers the three actions in order of weight: quote, then call, then WhatsApp', () => {
     for (const key of SERVICES) {
       const hero = pageFor(key).match(/<section class="svc-hero">[\s\S]*?<\/section>/)[0];
@@ -100,9 +113,21 @@ describe('generated occasion service pages', () => {
     }
   });
 
-  it('names the occasion in Tamil, marked as Tamil', () => {
+  it('names the occasion in Tamil, marked as Tamil, wrapping only between names', () => {
     for (const key of SERVICES) {
-      expect(pageFor(key)).toContain(`<p class="svc-tamil" lang="ta">${SERVICE_META[key].tamil}</p>`);
+      const line = pageFor(key).match(/<p class="svc-tamil" lang="ta">([\s\S]*?)<\/p>/)[1];
+      expect(line.replace(/<[^>]+>/g, ''), `${key} Tamil text`).toBe(SERVICE_META[key].tamil);
+      expect((line.match(/<span>/g) || []).length, `${key} one no-break span per name`).toBe(SERVICE_META[key].tamil.split(' · ').length);
+    }
+  });
+
+  it('puts the actions before the proof chips, and gives long chips a short form for phones', () => {
+    for (const key of SERVICES) {
+      const hero = pageFor(key).match(/<section class="svc-hero">[\s\S]*?<\/section>/)[0];
+      expect(hero.indexOf('class="svc-cta"'), `${key} actions before chips`).toBeLessThan(hero.indexOf('class="proof"'));
+      for (const [full, short] of SERVICE_META[key].proof.filter(Array.isArray)) {
+        expect(hero).toContain(`<span class="chip-long">${escapeHtml(full)}</span><span class="chip-short">${escapeHtml(short)}</span>`);
+      }
     }
   });
 
@@ -143,7 +168,7 @@ describe('generated occasion service pages', () => {
       const skips = levels.map((l, i) => (i && l > levels[i - 1] + 1 ? `h${levels[i - 1]} → h${l}` : null)).filter(Boolean);
       expect(skips, `${key} skips a heading level`).toEqual([]);
       expect(html).not.toContain('href="#"');
-      expect(html.match(/<main id="main">[\s\S]*<\/main>/)[0], `${key} copy has an em dash`).not.toContain('—');
+      expect(html.match(/<main id="main"[^>]*>[\s\S]*<\/main>/)[0], `${key} copy has an em dash`).not.toContain('—');
     }
   });
 
@@ -157,6 +182,13 @@ describe('generated occasion service pages', () => {
       expect(sitemap).toContain(`<loc>${SITE}/services/${key}/</loc>`);
       expect(redirects).toMatch(new RegExp(`^/services/${key}/index\\.html\\s+/services/${key}/\\s+301!$`, 'm'));
     }
+  });
+
+  it('lays dish lists out in two columns on service pages, and spans a lone last card', () => {
+    const css = read('./style.css');
+    expect(css).toContain('.svc-main .set-dishes{columns:2');
+    expect(css).toContain('.svc-main .set-list > .set:last-child:nth-child(odd){grid-column:1/-1}');
+    for (const key of SERVICES) expect(pageFor(key)).toContain('<main id="main" class="svc-main">');
   });
 
   it('keeps meta descriptions short enough not to be cut off on a phone', () => {
@@ -184,6 +216,21 @@ describe('generated occasion service pages', () => {
     }
   });
 
+  it('puts the reviews beside the kitchen photo and licences on wide screens', () => {
+    for (const key of SERVICES) {
+      const proof = pageFor(key).match(/<section class="svc-proof">[\s\S]*?<\/section>/)[0];
+      const grid = proof.indexOf('class="svc-proof-grid"');
+      const reviews = proof.indexOf('class="review-grid"');
+      const side = proof.indexOf('class="svc-proof-side"');
+      expect(grid, `${key} proof grid`).toBeGreaterThan(-1);
+      expect(reviews, `${key} reviews inside the grid`).toBeGreaterThan(grid);
+      expect(side, `${key} photo and licences beside the reviews`).toBeGreaterThan(reviews);
+      expect(proof.indexOf('class="kitchen-shot"')).toBeGreaterThan(side);
+      expect(proof.indexOf('class="compliance"')).toBeGreaterThan(side);
+    }
+    expect(read('./style.css')).toContain('.svc-proof-grid{display:grid');
+  });
+
   it('turns the phone sticky bar into Call and Get a quote, keeping WhatsApp in the floating button', () => {
     for (const key of SERVICES) {
       const html = pageFor(key);
@@ -197,10 +244,10 @@ describe('generated occasion service pages', () => {
 
   it('the puja page names prasadam and pooja, and every sweet it names is in a set it shows', () => {
     const html = pageFor('puja-homam-catering');
-    const main = html.match(/<main id="main">[\s\S]*<\/main>/)[0];
+    const main = html.match(/<main id="main"[^>]*>[\s\S]*<\/main>/)[0];
     expect(main).toMatch(/prasadam/i);
     expect(main).toMatch(/pooja/i);
-    for (const dish of ['Laddu', 'Jangiri', 'Sweet Payasam']) {
+    for (const dish of ['Sweet Payasam']) {
       expect(main.match(/<section class="svc-day">[\s\S]*?<\/section>/)[0]).toContain(dish);
       expect(
         articles(html).some(([block]) => block.includes(`<li>${dish}</li>`)),

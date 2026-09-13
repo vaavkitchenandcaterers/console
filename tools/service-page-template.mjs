@@ -37,7 +37,11 @@ export const SERVICES = ['wedding-reception-catering', 'puja-homam-catering'];
  * carrying any of these is left off it. Sets are judged by their dish names as
  * menu-data.js writes them; add a dish here when a newly tagged set brings one.
  */
-export const NOT_SATTVIC = ['Masal Dosai', 'Masal Vadai', 'White Kuruma', 'Kadala Curry', 'Mushroom Gravy', 'Veg Biryani', 'Baby Corn 65'];
+export const NOT_SATTVIC = [
+  'Masal Dosai', 'Masal Vadai', 'White Kuruma', 'Kadala Curry', 'Mushroom Gravy', 'Veg Biryani', 'Baby Corn 65',
+  // Confirmed by the owner on 13 Sep 2026: cooked with onion.
+  'Mint Rice', 'White Pulao'
+];
 
 export const SERVICE_META = {
   'wedding-reception-catering': {
@@ -56,7 +60,8 @@ export const SERVICE_META = {
     ogDescription:
       'Banana-leaf virundhu sappadu for the muhurtham and a full dinner for the evening reception, cooked fresh and served by our own team.',
     intro: `From the nichayathartham and the morning muhurtham saapadu to the evening reception, one pure-vegetarian kitchen cooks the whole day and our own cooks and servers run it, so your family can be guests at your own wedding.`,
-    proof: ['5.0 on Google', 'From 50 guests for a full sappadu', 'Cooks and servers included', 'Cooked fresh the same day'],
+    // [full wording, phone wording]: the owner approved shorter chips on phones only.
+    proof: ['5.0 on Google', ['From 50 guests for a full sappadu', 'From 50 guests'], ['Cooks and servers included', 'Cooks & servers'], ['Cooked fresh the same day', 'Cooked fresh']],
     dayEyebrow: 'The day',
     dayHeading: 'Two meals, fully staffed',
     day: [
@@ -96,18 +101,18 @@ export const SERVICE_META = {
     ogDescription:
       'Sattvic, onion- and garlic-free meals for pujas, homams and shradham, and annadhanam for temple functions across Chennai.',
     intro: `Sattvic, onion- and garlic-free meals cooked the traditional way for grihapravesam, ayush homam, shradham and temple functions, and annadhanam when a temple feeds a crowd.`,
-    proof: ['5.0 on Google', 'Sattvic, no onion or garlic', 'From 30 guests', 'Cooks and servers included'],
+    proof: ['5.0 on Google', ['Sattvic, no onion or garlic', 'No onion or garlic'], 'From 30 guests', ['Cooks and servers included', 'Cooks & servers']],
     dayEyebrow: 'The occasion',
     dayHeading: 'Cooked for the ritual',
     day: [
       `A puja or homam meal is cooked sattvic, with no onion and no garlic, and prepared with the care the occasion deserves.`,
-      `For the prasadam, the sets below carry sweets such as Laddu, Jangiri and Sweet Payasam, and any of them can be tailored to what your pooja or homam calls for.`,
+      `For the prasadam, the menu below carries Sweet Payasam, and it can be tailored to what your pooja or homam calls for.`,
       `Grihapravesam, ayush homam and shradham each keep their own customs, so tell us the ritual and we agree the menu with you rather than hand you a fixed one.`,
       `Temple functions and annadhanam are a question of scale and timing: thousands of plates served hot and on time, with the planning and discipline a big function needs.`
     ],
-    menusHeading: 'Menus we cook for pujas and temple functions',
+    menusHeading: 'What we cook for pujas and temple functions',
     menusIntro: total =>
-      `The <b>${total}</b> sattvic sets we cook for pujas, homams and temple functions, all without onion or garlic. Any of them can be cooked to suit your ritual, including Jain.`,
+      `The <b>${total}</b> sattvic ${total === 1 ? 'set' : 'sets'} we cook for pujas, homams and temple functions, without onion or garlic. ${total === 1 ? 'It' : 'Any of them'} can be cooked to suit your ritual, including Jain.`,
     formHeading: 'Tell us about your puja or function',
     formOccasion: 'Puja, homam or temple function',
     waContext: 'puja and prasadam catering',
@@ -133,6 +138,20 @@ export function featuredSets(groups, maxPerCategory) {
   );
 }
 
+/** Tamil names that wrap only between names, each keeping its separator. */
+function tamilLine(tamil) {
+  const names = tamil.split(' · ');
+  return names.map((n, i) => `<span>${n}${i < names.length - 1 ? ' ·' : ''}</span>`).join(' ');
+}
+
+/** A proof chip. A [full, short] pair renders both; the stylesheet shows the short one on phones. */
+function proofChip(p) {
+  const [full, short] = [].concat(p);
+  return short
+    ? `      <li><span class="chip-long">${escapeHtml(full)}</span><span class="chip-short">${escapeHtml(short)}</span></li>`
+    : `      <li>${escapeHtml(full)}</li>`;
+}
+
 /** A set card plus its "Quote this menu" button, which fills the form's menu field. */
 function renderServiceSet(m) {
   const button = `        <p class="set-quote"><button type="button" class="btn" data-quote-set="${escapeHtml(m.name)}">Quote this menu</button></p>`;
@@ -152,8 +171,8 @@ function renderQuoteForm(key, meta) {
     // the URL. With it, script.js composes a WhatsApp message instead.
     `    <form class="quote-form" action="/contact/" method="get" data-quote-occasion="${escapeHtml(meta.formOccasion)}" data-quote-ref="${key} page, quote form">`,
     '      <div class="qf-row">',
-    '        <label class="qf-field"><span>Date</span><input type="date" id="qf-date" required></label>',
-    '        <label class="qf-field"><span>Guests</span><input type="number" id="qf-guests" inputmode="numeric" min="30" step="1" required placeholder="e.g. 150"></label>',
+    '        <label class="qf-field"><span>Date <span class="qf-req">(required)</span></span><input type="date" id="qf-date" required></label>',
+    '        <label class="qf-field"><span>Guests <span class="qf-req">(required)</span></span><input type="number" id="qf-guests" inputmode="numeric" min="30" step="1" required aria-describedby="qf-guests-help" placeholder="e.g. 150"><small class="qf-help" id="qf-guests-help">Minimum 30 guests</small></label>',
     '      </div>',
     '      <fieldset class="qf-field qf-meals">',
     '        <legend>Meals</legend>',
@@ -163,6 +182,8 @@ function renderQuoteForm(key, meta) {
     '      <label class="qf-field"><span>Menu you liked (optional)</span><input type="text" id="qf-menu"></label>',
     '      <label class="qf-field"><span>Your name</span><input type="text" id="qf-name" autocomplete="name"></label>',
     '      <button type="submit" class="wa-big">Send on WhatsApp</button>',
+    // Filled by script.js after submit, so the visitor knows what happened.
+    '      <p class="qf-status" role="status" aria-live="polite"></p>',
     `      <p class="qf-alt">Rather talk? <a href="${TEL}" data-cta-position="quote_form">Call ${PHONE}</a>, 7 AM to 9 PM.</p>`,
     '      <p class="qf-note">This opens WhatsApp with your details filled in. Nothing is stored on this website.</p>',
     '    </form>',
@@ -198,13 +219,16 @@ function renderProof() {
     '      <span class="eyebrow">Why families book us</span>',
     '      <h2>Rated 5.0 on Google</h2>',
     '    </div>',
+    // Stacked on phones; from 900px the reviews sit beside the kitchen and licences.
+    '    <div class="svc-proof-grid">',
     '    <div class="review-grid" role="list">',
     ...figures,
     '    </div>',
+    '    <div class="svc-proof-side">',
     '    <figure class="kitchen-shot">',
     '      <picture>',
-    '        <source type="image/webp" srcset="/kitchen-400.webp 400w, /kitchen-800.webp 800w, /kitchen-1600.webp 1600w" sizes="(max-width: 760px) 100vw, 1140px">',
-    `        <img src="/kitchen-800.jpg" srcset="/kitchen-400.jpg 400w, /kitchen-800.jpg 800w, /kitchen-1600.jpg 1600w" sizes="(max-width: 760px) 100vw, 1140px" width="1600" height="900" loading="lazy" decoding="async" alt="VAAV's kitchen in Perungalathur: steel prep tables, shelves of stocked spice jars, a gas range and a tiled splashback, with a cook preparing an order.">`,
+    '        <source type="image/webp" srcset="/kitchen-400.webp 400w, /kitchen-800.webp 800w, /kitchen-1600.webp 1600w" sizes="(max-width: 899px) 100vw, 480px">',
+    `        <img src="/kitchen-800.jpg" srcset="/kitchen-400.jpg 400w, /kitchen-800.jpg 800w, /kitchen-1600.jpg 1600w" sizes="(max-width: 899px) 100vw, 480px" width="1600" height="900" loading="lazy" decoding="async" alt="VAAV's kitchen in Perungalathur: steel prep tables, shelves of stocked spice jars, a gas range and a tiled splashback, with a cook preparing an order.">`,
     '      </picture>',
     '      <figcaption>Our kitchen in Perungalathur, where every order is cooked.</figcaption>',
     '    </figure>',
@@ -212,6 +236,8 @@ function renderProof() {
     '      <li><span class="cmp-k">FSSAI licence</span><span class="cmp-v">12426008001205</span></li>',
     '      <li><span class="cmp-k">GST</span><span class="cmp-v">33BJKPK7360P2ZL</span></li>',
     '    </ul>',
+    '    </div>',
+    '    </div>',
     '  </div>',
     '</section>'
   ].join('\n');
@@ -285,24 +311,26 @@ export function renderServicePage(key, menus, chrome) {
   ];
 
   const main = [
-    '<main id="main">',
+    '<main id="main" class="svc-main">',
     '<section class="svc-hero">',
     '  <div class="wrap">',
     `    <nav class="breadcrumb" aria-label="Breadcrumb"><a href="/">Home</a> <span aria-hidden="true">/</span> <a href="/services/">Services</a> <span aria-hidden="true">/</span> <span aria-current="page">${escapeHtml(meta.crumb)}</span></nav>`,
     '    <div class="sec-head">',
     `      <span class="eyebrow">${escapeHtml(meta.crumb)}</span>`,
     `      <h1>${escapeHtml(meta.h1)}</h1>`,
-    `      <p class="svc-tamil" lang="ta">${meta.tamil}</p>`,
+    `      <p class="svc-tamil" lang="ta">${tamilLine(meta.tamil)}</p>`,
     '    </div>',
     `    <p class="menu-intro">${escapeHtml(meta.intro)}</p>`,
-    '    <ul class="proof" role="list">',
-    ...meta.proof.map(p => `      <li>${escapeHtml(p)}</li>`),
-    '    </ul>',
+    // Actions before proof: on a short laptop screen the chips cost the buttons
+    // their place on the first screen.
     '    <div class="svc-cta">',
     '      <a class="btn y" href="#quote">Get a quote</a>',
     `      <a class="btn svc-call" href="${TEL}" data-cta-position="hero">Call ${PHONE}</a>`,
     '    </div>',
     `    <p class="svc-quick"><a data-wa-context="${escapeHtml(meta.waContext)}" data-cta-position="hero" href="${waHref}" target="_blank" rel="noopener noreferrer">Or ask a quick question on WhatsApp</a></p>`,
+    '    <ul class="proof" role="list">',
+    ...meta.proof.map(proofChip),
+    '    </ul>',
     '  </div>',
     '</section>',
     '<section class="svc-day">',
