@@ -83,4 +83,5 @@ https://vaavkitchenandcaterers.netlify.app/*  https://vaavkitchenandcaterers.com
 /menu-pages.test.js     /404.html   404!
 /redirects.test.js      /404.html   404!
 /responsive.test.js     /404.html   404!
+/seo-meta.test.js       /404.html   404!
 /shortlist.test.js      /404.html   404!
