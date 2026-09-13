@@ -722,3 +722,12 @@ body.vaav-sl-open .vaav-sl-pill,body.vaav-sl-open .wa-float,body.vaav-sl-open .m
 .qf-meals input{width:20px;height:20px;margin:0;accent-color:var(--green)}
 .svc-quick a,.qf-alt a{display:inline-block;padding:10px 0}
 .svc-hero .svc-quick{margin-top:4px}
+/* Proof block: from 900px the reviews sit beside the kitchen photo and the
+   licence strip, and the photo is capped, so the block no longer outgrows a
+   1280x590 laptop screen. Placed after the 760px review-grid rule it overrides. */
+@media(min-width:900px){
+  .svc-proof-grid{display:grid;grid-template-columns:1.15fr .85fr;gap:28px;align-items:start}
+  .svc-proof .review-grid{grid-template-columns:1fr;margin-bottom:0}
+  .svc-proof .kitchen-shot img{aspect-ratio:4/3;max-height:340px}
+  .svc-proof .compliance{grid-template-columns:1fr}
+}

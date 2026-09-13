@@ -216,6 +216,21 @@ describe('generated occasion service pages', () => {
     }
   });
 
+  it('puts the reviews beside the kitchen photo and licences on wide screens', () => {
+    for (const key of SERVICES) {
+      const proof = pageFor(key).match(/<section class="svc-proof">[\s\S]*?<\/section>/)[0];
+      const grid = proof.indexOf('class="svc-proof-grid"');
+      const reviews = proof.indexOf('class="review-grid"');
+      const side = proof.indexOf('class="svc-proof-side"');
+      expect(grid, `${key} proof grid`).toBeGreaterThan(-1);
+      expect(reviews, `${key} reviews inside the grid`).toBeGreaterThan(grid);
+      expect(side, `${key} photo and licences beside the reviews`).toBeGreaterThan(reviews);
+      expect(proof.indexOf('class="kitchen-shot"')).toBeGreaterThan(side);
+      expect(proof.indexOf('class="compliance"')).toBeGreaterThan(side);
+    }
+    expect(read('./style.css')).toContain('.svc-proof-grid{display:grid');
+  });
+
   it('turns the phone sticky bar into Call and Get a quote, keeping WhatsApp in the floating button', () => {
     for (const key of SERVICES) {
       const html = pageFor(key);
