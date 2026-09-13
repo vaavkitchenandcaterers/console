@@ -60,3 +60,22 @@ describe('business schema', () => {
     expect(new Set(areas).size).toBe(1);
   });
 });
+
+describe('homepage hero actions', () => {
+  const cta = html.match(/<div class="hero-cta[^"]*"[^>]*>([\s\S]*?)<\/div>/)[1];
+  const links = [...cta.matchAll(/<a\b[^>]*>[\s\S]*?<\/a>/g)].map(m => m[0]);
+
+  it('offers a WhatsApp quote first and the menu second', () => {
+    // A visitor who has already decided should not have to tour the menu to
+    // find a way to book.
+    expect(links).toHaveLength(2);
+    expect(links[0]).toContain('href="https://wa.me/919655356333');
+    expect(links[0]).toContain('data-wa-context=');
+    expect(links[1]).toContain('href="/menu/"');
+  });
+
+  it('opens WhatsApp safely even before script.js runs', () => {
+    expect(links[0]).toContain('target="_blank"');
+    expect(links[0]).toContain('rel="noopener noreferrer"');
+  });
+});
