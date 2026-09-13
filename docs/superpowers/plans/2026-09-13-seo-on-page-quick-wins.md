@@ -535,6 +535,95 @@ H1 to naming both, and holds the aria-label to the animated words."
 
 ---
 
+### Task 3b: Keep the hero button on screen on short laptops
+
+Added after Task 3's fold check failed. On a 1280×590 viewport (a 1920×1080 laptop at 150% scaling, the owner's machine) the new H1 wraps to 4 lines at 66px and puts the hero button at 652–701px, below the fold. The old H1 was 3 lines with the button at 578px. The owner chose this fix over shortening the H1. Measured in the browser before writing: 3 lines at 56px, button at 531–579px, fully visible.
+
+**Files:**
+- Modify: `site/responsive.test.js` (append a `describe` block at the end of the file)
+- Modify: `site/style.css` (insert after the `.hero p.lead{...}` rule, currently line 108)
+
+**Interfaces:**
+- Consumes: `CSS` (the stylesheet text) and `mediaConditionFor(needle: string): string | null`, both already defined in `site/responsive.test.js`.
+- Produces: nothing later tasks use.
+
+- [ ] **Step 1: Write the failing test**
+
+Append to the end of `site/responsive.test.js`:
+
+```js
+describe('short laptop screens', () => {
+  // A 1920×1080 laptop at 150% scaling is a 1280×590 CSS viewport. There the
+  // four-line hero headline pushed the only hero button below the fold, and a
+  // width breakpoint cannot see that: the screen is wide, just short.
+  const HERO_CLAMP = 'clamp(1.75rem,0.964rem + 3.929vw,4.5rem)';
+
+  it('trims the hero top padding on screens 620px tall or less', () => {
+    expect(mediaConditionFor('.hero{padding-top:40px}')).toMatch(/max-height:\s*620px/);
+  });
+
+  it('caps the hero headline at 3.5rem there, keeping the zoom-safe clamp underneath', () => {
+    // min() can only shrink the headline, so a landscape phone that is also
+    // short keeps its smaller clamp size instead of jumping up to 3.5rem.
+    const needle = `.hero h1{font-size:min(${HERO_CLAMP},3.5rem)}`;
+    expect(mediaConditionFor(needle)).toMatch(/max-height:\s*620px/);
+  });
+
+  it('keeps the base hero rules first, so the type-scale tests still read them', () => {
+    // clampFor('.hero h1') takes the first '.hero h1{' in the file. The short-
+    // screen override must come after it, or those tests parse the override.
+    expect(CSS.indexOf(`.hero h1{font-size:${HERO_CLAMP}`)).toBeLessThan(CSS.indexOf('.hero{padding-top:40px}'));
+  });
+});
+```
+
+- [ ] **Step 2: Run it to confirm it fails**
+
+Run (from `site/`): `npx vitest run responsive.test.js`
+Expected: FAIL on the first two new tests with `needle not found`. The third also fails, because `indexOf` returns -1 for the missing rule. Every existing test in the file passes.
+
+- [ ] **Step 3: Add the rule**
+
+In `site/style.css`, directly after this existing line:
+
+```css
+.hero p.lead{font-size:1.2rem;color:var(--muted);margin:22px 0 32px;max-width:34ch}
+```
+
+insert:
+
+```css
+/* short laptop screens (1280×590 at 150% scaling): keep the hero button above the fold */
+@media(max-height:620px){.hero{padding-top:40px}.hero h1{font-size:min(clamp(1.75rem,0.964rem + 3.929vw,4.5rem),3.5rem)}.hero p.lead{margin:16px 0 22px}}
+```
+
+It is written on one line with no space after `@media`, like the other breakpoints in this file. Only the top padding changes; `.hero`'s 90px bottom padding and background stay as they are.
+
+- [ ] **Step 4: Run the full suite**
+
+Run (from `site/`): `npm test`
+Expected: 0 failed. The existing `the hero headline hits its endpoints` test still reads the base rule, so it still expects 28px at 320px and 72px at 1440px.
+
+- [ ] **Step 5: Measure the fold**
+
+Run the dev server and open the homepage at **1280×590**, then at **375×812**.
+Expected at 1280×590: the H1 is 3 lines and the whole hero button is above 590px (measured before this plan change: 531–579px). Expected at 375×812: unchanged from Task 3, with the H1 at about 30px and the button above the fold. The phone is 812px tall, so the rule does not apply there.
+
+- [ ] **Step 6: Commit**
+
+```bash
+git add site/responsive.test.js site/style.css
+git commit -m "fix(hero): keep the hero button on screen on short laptops
+
+The longer H1 wraps to four lines on a 1280x590 viewport, a 1080p laptop
+at 150% scaling, and pushed the hero button below the fold. Only on
+screens 620px tall or less, trims the hero's top padding and caps the
+headline at 3.5rem with min(), so nothing ever grows. Measured: button
+at 531-579px."
+```
+
+---
+
 ### Task 4: WhatsApp quote button in the hero
 
 **Files:**
