@@ -202,6 +202,20 @@ window.VaavShortlist = createShortlist(localStorage);
   io.observe(hero);
 })();
 
+// --- keep the floating WhatsApp button off the hero: on desktop it sat over the
+//     hero's own actions and proof chips. Hidden while the homepage hero or a
+//     service page hero is on screen, shown once scrolled past. The phone sticky
+//     bar is unaffected (its observer above still watches only the homepage hero). ---
+(function () {
+  const float = document.getElementById('wa-float');
+  const hero = document.querySelector('.hero, .svc-hero');
+  if (!float || !hero || !('IntersectionObserver' in window)) return;
+  float.classList.add('at-hero');
+  new IntersectionObserver(entries => {
+    float.classList.toggle('at-hero', entries[0].isIntersecting);
+  }, { threshold: 0 }).observe(hero);
+})();
+
 // --- interactive menu explorer (nested ARIA tabs: category tablist -> menu-number tablist) ---
 (function () {
   const M = window.VAAV_MENUS;

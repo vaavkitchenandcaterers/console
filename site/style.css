@@ -416,6 +416,10 @@ section{padding:90px 0}
 /* floating WhatsApp */
 .wa-float{position:fixed;right:20px;bottom:20px;z-index:80;display:flex;align-items:center;gap:10px;background:var(--wa);color:var(--white);text-decoration:none;padding:13px 18px 13px 14px;border-radius:50px;font-weight:700;font-family:'Catamaran',sans-serif;box-shadow:0 10px 26px rgba(0,0,0,.28);transition:transform .15s}
 .wa-float:hover{transform:translateY(-3px)}
+/* Hidden while a hero is on screen (script.js); visibility also takes it out of the tab order. */
+.wa-float{transition:opacity .2s ease,transform .2s ease,visibility .2s}
+.wa-float.at-hero{opacity:0;visibility:hidden;transform:translateY(12px);pointer-events:none}
+@media(prefers-reduced-motion:reduce){.wa-float{transition:none}}
 .wa-float svg{width:24px;height:24px;flex-shrink:0}
 .wa-float .lbl{font-size:.95rem}
 @media(max-width:520px){.wa-float .lbl{display:none}.wa-float{padding:10px;border-radius:50%;right:16px;bottom:16px}}
