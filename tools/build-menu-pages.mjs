@@ -13,7 +13,8 @@
 import { readFileSync, writeFileSync, mkdirSync } from 'node:fs';
 import { join } from 'node:path';
 import { renderCategoryPage, renderOccasionPage, OCCASIONS } from './menu-page-template.mjs';
-import { regionNamed, regionsFor } from './sync-chrome.mjs';
+import { renderServicePage, SERVICES } from './service-page-template.mjs';
+import { regionNamed, regionsFor, chromeSourceFor } from './sync-chrome.mjs';
 import { countDishes } from '../site/menu-format.js';
 
 const SITE = new URL('../site/', import.meta.url);
@@ -114,6 +115,17 @@ export function buildAll() {
     for (const cat of ORDER) sets.push(...menus[cat].menus.filter(m => (m.occasions || []).includes(occ)));
     writePage(occ, html, sets);
   }
+
+  // The occasion service pages. Their chrome comes from a different page than
+  // the menu pages' (chromeSourceFor), so it is extracted separately.
+  for (const key of SERVICES) {
+    const page = `services/${key}/index.html`;
+    const html = renderServicePage(key, menus, loadChrome(chromeSourceFor(page)));
+    const dir = new URL(`services/${key}/`, SITE);
+    mkdirSync(dir, { recursive: true });
+    writeFileSync(new URL('index.html', dir), html, 'utf8');
+    console.log(`  wrote site/${page}`);
+  }
 }
 
 /** Write one page and report what went into it. */
@@ -128,12 +140,16 @@ function writePage(name, html, sets) {
 /** The sitemap block for the generated URLs, so lastmod is never hand-maintained. */
 export function sitemapBlock(date = new Date().toISOString().slice(0, 10)) {
   const entry = (path, priority) =>
-    `  <url>\n    <loc>https://vaavkitchenandcaterers.com/menu/${path}/</loc>\n` +
+    `  <url>\n    <loc>https://vaavkitchenandcaterers.com/${path}/</loc>\n` +
     `    <lastmod>${date}</lastmod>\n    <changefreq>monthly</changefreq>\n` +
     `    <priority>${priority}</priority>\n  </url>`;
   // Category pages rank above occasion pages: a category page is the complete
   // list of its sets, where an occasion page is a slice across all three.
-  return [...ORDER.map(c => entry(c, '0.8')), ...OCCASIONS.map(o => entry(o, '0.7'))].join('\n');
+  return [
+    ...ORDER.map(c => entry(`menu/${c}`, '0.8')),
+    ...OCCASIONS.map(o => entry(`menu/${o}`, '0.7')),
+    ...SERVICES.map(k => entry(`services/${k}`, '0.8'))
+  ].join('\n');
 }
 
 // Only run when invoked directly, so the test can import the module safely.

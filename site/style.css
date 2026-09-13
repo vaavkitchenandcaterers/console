@@ -633,3 +633,40 @@ body.vaav-sl-open .vaav-sl-pill,body.vaav-sl-open .wa-float,body.vaav-sl-open .m
 }
 .menu-flat-links{font-size:.95rem;color:var(--muted);margin:-8px 0 22px;line-height:1.6}
 .menu-flat-links a{color:var(--green-deep);font-weight:600}
+
+/* ── Occasion service pages (/services/<occasion>/) and their quote form ─────
+   Mobile-first, like the generated menu page block above. */
+.svc-tamil{font-family:'Catamaran',sans-serif;font-weight:700;font-size:1.05rem;color:var(--gold-text);margin:8px 0 0}
+.proof{list-style:none;margin:0 0 26px;padding:0;display:flex;flex-wrap:wrap;gap:8px}
+.proof li{font-family:'Catamaran',sans-serif;font-weight:700;font-size:.85rem;color:var(--green-deep);background:var(--white);border:1px solid var(--border);border-radius:999px;padding:6px 14px}
+.svc-cta{display:flex;flex-wrap:wrap;gap:12px;align-items:center}
+.svc-cta .btn{min-height:48px}
+.btn.svc-call{background:transparent;color:var(--green-deep);box-shadow:inset 0 0 0 2px var(--green-deep)}
+.btn.svc-call:hover,.btn.svc-call:focus-visible{background:var(--green-deep);color:var(--white)}
+.svc-quick{margin:14px 0 0;font-size:.95rem}
+.svc-quick a{color:var(--green-deep);font-weight:600;text-underline-offset:3px}
+.svc-day p{max-width:62ch;line-height:1.7;margin:0 0 16px}
+.set-quote{margin:4px 0 18px}
+.set-quote .btn{min-height:44px;font-size:.92rem;border:0;cursor:pointer}
+.steps{list-style:none;margin:0;padding:0;display:grid;gap:14px;counter-reset:step;max-width:760px}
+.steps li{counter-increment:step;position:relative;background:var(--white);border:1px solid var(--border);border-radius:14px;padding:16px 18px 16px 58px;line-height:1.6}
+.steps li::before{content:counter(step);position:absolute;left:20px;top:12px;font-family:'Cormorant',Georgia,serif;font-weight:700;font-size:1.6rem;color:var(--gold-text)}
+.quote-sec{background:var(--cream-deep)}
+.quote-form{max-width:640px;display:grid;gap:16px;background:var(--white);border:1px solid var(--border);border-radius:20px;padding:22px}
+.qf-row{display:grid;grid-template-columns:1fr;gap:16px}
+.qf-field{display:grid;gap:6px;border:0;padding:0;margin:0;min-width:0}
+.qf-field > span,.qf-field legend{font-family:'Catamaran',sans-serif;font-weight:700;font-size:.9rem;color:var(--green-deep)}
+.qf-field input[type=text],.qf-field input[type=date],.qf-field input[type=number]{font:inherit;width:100%;min-height:46px;padding:8px 12px;border:1px solid var(--border-track);border-radius:10px;background:var(--cream);color:var(--ink)}
+.qf-field input:focus-visible,.qf-meals input:focus-visible{outline:3px solid var(--yellow-deep);outline-offset:1px}
+.qf-meals{display:flex;flex-wrap:wrap;gap:4px 18px}
+.qf-meals legend{width:100%;margin-bottom:2px}
+.qf-meals label{display:inline-flex;align-items:center;gap:8px;min-height:44px}
+.quote-form .wa-big{border:0;cursor:pointer}
+.qf-alt,.qf-note{font-size:.92rem;color:var(--muted);margin:0}
+.qf-alt a{color:var(--green-deep);font-weight:700}
+.svc-others{color:var(--muted);line-height:1.7;max-width:62ch}
+.svc-others a{color:var(--green-deep);font-weight:600}
+@media(min-width:620px){
+  .qf-row{grid-template-columns:1fr 1fr}
+  .quote-form{padding:30px}
+}

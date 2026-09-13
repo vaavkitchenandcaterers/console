@@ -59,6 +59,10 @@ export const GENERATED_PAGES = [
   // so they carry the markers for the same reason the category pages do.
   'menu/housewarming/index.html',
   'menu/seemantham/index.html',
+  // The occasion service pages (ADR-0011). Chrome comes from /corporate/, not
+  // /menu/; see chromeSourceFor below.
+  'services/wedding-reception-catering/index.html',
+  'services/puja-homam-catering/index.html',
 ];
 
 for (const page of GENERATED_PAGES) {
