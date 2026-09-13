@@ -192,7 +192,7 @@ def build():
     )
 
     # --- proof rail, right edge -----------------------------------------
-    rail = [("5.0", "ON GOOGLE", True), ("25–2,500", "GUESTS", False)]
+    rail = [("5.0", "ON GOOGLE", True), ("30–2,500", "GUESTS", False)]
     fb, fs = cat_x(40), cat_b(18)
     # Centre the rail on the headline's optical axis rather than pinning it to
     # the top, so it stays balanced however many entries it carries.
