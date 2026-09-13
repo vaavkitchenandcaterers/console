@@ -30,6 +30,7 @@ const PAGES = [
   { path: '/menu-data.js',   must: ['VAAV_MENUS'] },
   { path: '/analytics.js',   must: ['gtag'] },
   { path: '/lead-events.js', must: ['leadEventFor'] },
+  { path: '/quote-form.js', must: ['buildQuoteMessage'] },
 ];
 
 // site/ is both the Netlify publish directory and the npm project root, so the
