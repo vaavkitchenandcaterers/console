@@ -601,10 +601,10 @@ const VAAV_REVIEWS = [
 (function () {
   const S = window.VaavShortlist;
   const body = document.getElementById('vaav-sl-body');
-  // Copy under review; see docs/site/2026-08-30-send-seam-plan.md, open question:
-  // is "within the hour" a promise the kitchen actually keeps? Change these two
-  // strings and nothing else if the honest answer is "same day".
-  const REPLY_OPEN = 'We usually reply within the hour.';
+  // Copy settled 13 Sep 2026: the owner confirmed "within the hour" is not a
+  // promise the kitchen can keep (docs/site/2026-08-30-send-seam-plan.md asked),
+  // so the open-hours line states the hours instead of a reply time.
+  const REPLY_OPEN = 'We reply between 7 AM and 9 PM, every day.';
   const REPLY_CLOSED = 'The kitchen opens at 7 AM, and we’ll reply then.';
   function replyLine() {
     const h = new Date().getHours();

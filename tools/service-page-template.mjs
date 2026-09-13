@@ -49,11 +49,11 @@ export const SERVICE_META = {
     intro: `From the nichayathartham and the morning muhurtham saapadu to the evening reception, one pure-vegetarian kitchen cooks the whole day and our own cooks and servers run it, so your family can be guests at your own wedding.`,
     proof: ['5.0 on Google', 'From 50 guests for a full sappadu', 'Cooks and servers included', 'Cooked fresh the same day'],
     dayEyebrow: 'The day',
-    dayHeading: 'Two meals, one team',
+    dayHeading: 'Two meals, fully staffed',
     day: [
       `The muhurtham saapadu is the traditional virundhu sappadu on banana leaf: sweets, sambar, rasam, kootu, poriyal, varuval, payasam and more.`,
       `The evening reception is a dinner, and a grander one. Banana-leaf, buffet or table service are all possible, whichever suits the hall.`,
-      `The same cooks and servers stay from the morning to the last reception plate, so nobody from the family has to step into the kitchen. Book as early as you can, especially for weekend and festival-season dates.`
+      `Both meals are fully staffed by our cooks and servers, from the morning to the last reception plate, so nobody from the family has to step into the kitchen. Book as early as you can, especially for weekend and festival-season dates.`
     ],
     menusHeading: 'Menus we cook for weddings and receptions',
     menusIntro: total =>
@@ -262,7 +262,7 @@ export function renderServicePage(key, menus, chrome) {
     '    </div>',
     '    <ol class="steps">',
     '      <li>Send your date, guest count and area, with the form below or on WhatsApp.</li>',
-    '      <li>We reply with a menu and a quote within the hour, any day between 7 AM and 9 PM.</li>',
+    '      <li>We reply with a menu and a quote, any day between 7 AM and 9 PM.</li>',
     '      <li>A 50% advance confirms your date, with the balance due on or before the day. Ask if you would like a tasting first.</li>',
     '    </ol>',
     '  </div>',
