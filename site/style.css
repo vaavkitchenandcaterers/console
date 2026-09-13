@@ -726,6 +726,19 @@ body.vaav-sl-open .vaav-sl-pill,body.vaav-sl-open .wa-float,body.vaav-sl-open .m
 .qf-meals input{width:20px;height:20px;margin:0;accent-color:var(--green)}
 .svc-quick a,.qf-alt a{display:inline-block;padding:10px 0}
 .svc-hero .svc-quick{margin-top:4px}
+/* Service pages: the "choose from all our set menus" tiles, one per meal, and the
+   quote form's menu dropdown (16px so iOS does not zoom into it). */
+.menu-tiles{list-style:none;margin:0 0 18px;padding:0;display:grid;grid-template-columns:1fr;gap:14px}
+.menu-tile{display:grid;grid-template-columns:1fr auto;align-items:center;gap:2px 12px;padding:18px 20px;background:var(--white);border:1px solid var(--border);border-radius:16px;text-decoration:none;color:var(--ink);transition:border-color .2s ease,transform .2s ease}
+.menu-tile:hover,.menu-tile:focus-visible{border-color:var(--green);transform:translateY(-2px)}
+.mt-label{font-family:'Cormorant',Georgia,serif;font-weight:700;font-size:1.6rem;line-height:1.1;color:var(--green-deep)}
+.mt-ta{font-family:'Catamaran',sans-serif;font-weight:700;font-size:.95rem;color:var(--gold-text)}
+.mt-count{font-family:'Catamaran',sans-serif;font-weight:700;font-size:.9rem;color:var(--muted)}
+.mt-go{grid-column:2;grid-row:1 / span 3;font-size:1.4rem;color:var(--green-deep)}
+@media(min-width:620px){.menu-tiles{grid-template-columns:repeat(3,1fr)}}
+@media(prefers-reduced-motion:reduce){.menu-tile{transition:none}}
+.qf-field select{font:inherit;font-size:16px;width:100%;min-height:46px;padding:8px 12px;border:1px solid var(--border-track);border-radius:10px;background:var(--cream);color:var(--ink)}
+.qf-field select:focus-visible{outline:3px solid var(--green-ink);outline-offset:1px;box-shadow:none}
 /* Proof block: from 900px the reviews sit beside the licence strip. Placed after
    the 760px review-grid rule it overrides. */
 @media(min-width:900px){

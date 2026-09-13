@@ -58,7 +58,7 @@ export const CATEGORY_META = {
   }
 };
 
-const ORDER = ['tiffin', 'lunch', 'dinner'];
+export const ORDER = ['tiffin', 'lunch', 'dinner'];
 
 /** Rebuild the head: keep the source chrome byte-for-byte, swap only the per-page meta. */
 export function buildHead(sourceHead, url, meta) {

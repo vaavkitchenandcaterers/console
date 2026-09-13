@@ -56,14 +56,24 @@ describe('generated occasion service pages', () => {
     }
   });
 
-  it('the wedding page features the largest wedding or reception set from each meal, and counts them all', () => {
+  it('the wedding page offers every set menu: a tile per meal and a dropdown in the form, and no menu cards', () => {
+    // Owner, 13 Sep 2026: no featured menus on the wedding page; all of them to choose from.
     const html = pageFor('wedding-reception-catering');
-    const expected = CATS.map(c => {
-      const sets = menus[c].menus.filter(m => (m.occasions || []).some(o => ['wedding', 'reception'].includes(o)));
-      return slug(sets.reduce((best, m) => (countDishes(m.groups) > countDishes(best.groups) ? m : best)).name);
-    });
-    expect(articles(html).map(m => m[1])).toEqual(expected);
-    expect(html).toContain(`<b>${tagged('wedding-reception-catering').length}</b>`);
+    const section = html.match(/<section id="menus">[\s\S]*?<\/section>/)[0];
+    expect(section, 'wedding page still shows menu cards').not.toContain('<article class="set"');
+    const all = CATS.reduce((n, c) => n + menus[c].menus.length, 0);
+    expect(all, 'set menu baseline').toBe(66);
+    expect(section).toContain(`<b>${all}</b>`);
+    for (const c of CATS) {
+      expect(section).toContain(`<a class="menu-tile" href="/menu/${c}/">`);
+      expect(section).toContain(`<span class="mt-count">${menus[c].menus.length} menus</span>`);
+    }
+    const select = html.match(/<select id="qf-menu">[\s\S]*?<\/select>/)?.[0];
+    expect(select, 'wedding form has no menu dropdown').toBeTruthy();
+    expect((select.match(/<optgroup /g) || []).length).toBe(CATS.length);
+    const options = [...select.matchAll(/<option(?: value="")?>([^<]*)<\/option>/g)].map(m => m[1]);
+    expect(options[0]).toBe('Not sure yet');
+    expect(options.slice(1), 'dropdown lists every set menu, in menu order').toEqual(CATS.flatMap(c => menus[c].menus.map(m => m.name)));
   });
 
   it('every set carries a Quote this menu button naming it', () => {

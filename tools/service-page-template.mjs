@@ -18,6 +18,7 @@ import { escapeHtml, countDishes } from '../site/menu-format.js';
 import { VAAV_REVIEWS } from '../site/reviews.js';
 import {
   GENERATED_BANNER,
+  ORDER,
   buildHead,
   renderSet,
   setsByCategory,
@@ -45,9 +46,9 @@ export const NOT_SATTVIC = [
 
 export const SERVICE_META = {
   'wedding-reception-catering': {
-    occasions: ['wedding', 'reception'],
-    // 40 tagged sets would bury the form; show the largest set from each meal.
-    maxPerCategory: 1,
+    // Owner, 13 Sep 2026: no featured menus; offer every one of the set menus,
+    // as a tile per meal and a dropdown in the quote form.
+    menuChoice: true,
     label: 'Wedding & reception catering',
     crumb: 'Wedding & reception',
     tamil: 'நிச்சயதார்த்தம் · திருமணம் · வரவேற்பு',
@@ -69,9 +70,9 @@ export const SERVICE_META = {
       `The evening reception is a dinner, and a grander one. Banana-leaf, buffet or table service are all possible, whichever suits the hall.`,
       `Both meals are fully staffed by our cooks and servers, from the morning to the last reception plate, so nobody from the family has to step into the kitchen. Book as early as you can, especially for weekend and festival-season dates.`
     ],
-    menusHeading: 'Menus we cook for weddings and receptions',
+    menusHeading: 'Choose from all our set menus',
     menusIntro: total =>
-      `One set from each meal, the largest of the <b>${total}</b> we cook for weddings and receptions. Every one can be tailored, including Jain and no onion-garlic.`,
+      `Pick from all <b>${total}</b> of our set menus for the muhurtham, the reception or both. Every one can be tailored, including Jain and no onion-garlic.`,
     formHeading: 'Tell us about your wedding',
     formOccasion: 'Wedding & reception',
     waContext: 'wedding and reception catering',
@@ -158,7 +159,49 @@ function renderServiceSet(m) {
   return renderSet(m, 3).replace(/\n      <\/article>$/, `\n${button}\n      </article>`);
 }
 
-function renderQuoteForm(key, meta) {
+/** Every set menu, as a tile per meal linking to that meal's full menu page. */
+function renderMenuChoice(meta, menus) {
+  const total = ORDER.reduce((n, c) => n + menus[c].menus.length, 0);
+  return [
+    '<section id="menus">',
+    '  <div class="wrap">',
+    '    <div class="sec-head">',
+    '      <span class="eyebrow">Menus</span>',
+    `      <h2>${escapeHtml(meta.menusHeading)}</h2>`,
+    '    </div>',
+    // menusIntro is authored HTML carrying the count in <b>; the one value inserted raw.
+    `    <p class="menu-intro">${meta.menusIntro(total)}</p>`,
+    '    <ul class="menu-tiles" role="list">',
+    ...ORDER.map(c =>
+      `      <li><a class="menu-tile" href="/menu/${c}/"><span class="mt-label">${escapeHtml(menus[c].label)}</span>` +
+      `<span class="mt-ta" lang="ta">${escapeHtml(menus[c].tamil)}</span>` +
+      `<span class="mt-count">${menus[c].menus.length} menus</span><span class="mt-go" aria-hidden="true">→</span></a></li>`
+    ),
+    '    </ul>',
+    '    <p class="set-more">Or browse them one at a time on the <a href="/menu/">menu page</a>, and pick the one you like in the form below.</p>',
+    '  </div>',
+    '</section>'
+  ].join('\n');
+}
+
+/** The form's menu field: a grouped dropdown of every set where the page offers them all. */
+function menuField(meta, menus) {
+  if (!meta.menuChoice) {
+    return ['      <label class="qf-field"><span>Menu you liked (optional)</span><input type="text" id="qf-menu"></label>'];
+  }
+  return [
+    '      <label class="qf-field"><span>Menu you liked (optional)</span><select id="qf-menu">',
+    '        <option value="">Not sure yet</option>',
+    ...ORDER.map(c => [
+      `        <optgroup label="${escapeHtml(menus[c].label)}">`,
+      ...menus[c].menus.map(m => `          <option>${escapeHtml(m.name)}</option>`),
+      '        </optgroup>'
+    ].join('\n')),
+    '      </select></label>'
+  ];
+}
+
+function renderQuoteForm(key, meta, menus) {
   return [
     '<section id="quote" class="quote-sec">',
     '  <div class="wrap">',
@@ -179,7 +222,7 @@ function renderQuoteForm(key, meta) {
     ...MEALS.map(m => `        <label><input type="checkbox" value="${m}"> ${m}</label>`),
     '      </fieldset>',
     '      <label class="qf-field"><span>Area or venue</span><input type="text" id="qf-area" autocomplete="address-level2" placeholder="e.g. Tambaram"></label>',
-    '      <label class="qf-field"><span>Menu you liked (optional)</span><input type="text" id="qf-menu"></label>',
+    ...menuField(meta, menus),
     '      <label class="qf-field"><span>Your name</span><input type="text" id="qf-name" autocomplete="name"></label>',
     '      <button type="submit" class="wa-big">Send on WhatsApp</button>',
     // Filled by script.js after submit, so the visitor knows what happened.
@@ -286,13 +329,34 @@ function buildServiceSchema(key, meta) {
 export function renderServicePage(key, menus, chrome) {
   const meta = SERVICE_META[key];
   if (!meta) throw new Error(`no SERVICE_META for "${key}"`);
-  const exclude = meta.excludeDishes || [];
-  const groups = setsByCategory(menus, meta.occasions)
-    .map(g => ({ ...g, sets: g.sets.filter(m => !(m.groups || []).some(([, dishes]) => (dishes || []).some(d => exclude.includes(d)))) }))
-    .filter(g => g.sets.length > 0);
-  if (!groups.length) throw new Error(`no menu in menu-data.js is tagged ${meta.occasions.join(' or ')}`);
-  const total = groups.reduce((n, g) => n + g.sets.length, 0);
-  const sets = featuredSets(groups, meta.maxPerCategory);
+  let menusSection;
+  if (meta.menuChoice) {
+    menusSection = renderMenuChoice(meta, menus);
+  } else {
+    const exclude = meta.excludeDishes || [];
+    const groups = setsByCategory(menus, meta.occasions)
+      .map(g => ({ ...g, sets: g.sets.filter(m => !(m.groups || []).some(([, dishes]) => (dishes || []).some(d => exclude.includes(d)))) }))
+      .filter(g => g.sets.length > 0);
+    if (!groups.length) throw new Error(`no menu in menu-data.js is tagged ${meta.occasions.join(' or ')}`);
+    const total = groups.reduce((n, g) => n + g.sets.length, 0);
+    const sets = featuredSets(groups, meta.maxPerCategory);
+    menusSection = [
+      '<section id="menus">',
+      '  <div class="wrap">',
+      '    <div class="sec-head">',
+      '      <span class="eyebrow">Menus</span>',
+      `      <h2>${escapeHtml(meta.menusHeading)}</h2>`,
+      '    </div>',
+      // menusIntro is authored HTML carrying the count in <b>; the one value inserted raw.
+      `    <p class="menu-intro">${meta.menusIntro(total)}</p>`,
+      '    <div class="set-list">',
+      sets.map(m => renderServiceSet(m)).join('\n'),
+      '    </div>',
+      '    <p class="set-more">Every set can be tailored to your day. <a href="/menu/">Browse all 66 sets one at a time</a>.</p>',
+      '  </div>',
+      '</section>'
+    ].join('\n');
+  }
   const url = `${SITE}/services/${key}/`;
   const waHref =
     "https://wa.me/919655356333?text=Hello%20VAAV%20Kitchen%2C%20I'd%20like%20to%20enquire%20about%20" +
@@ -336,20 +400,7 @@ export function renderServicePage(key, menus, chrome) {
     ...meta.day.map(p => `    <p>${escapeHtml(p)}</p>`),
     '  </div>',
     '</section>',
-    '<section id="menus">',
-    '  <div class="wrap">',
-    '    <div class="sec-head">',
-    '      <span class="eyebrow">Menus</span>',
-    `      <h2>${escapeHtml(meta.menusHeading)}</h2>`,
-    '    </div>',
-    // menusIntro is authored HTML carrying the count in <b>; the one value inserted raw.
-    `    <p class="menu-intro">${meta.menusIntro(total)}</p>`,
-    '    <div class="set-list">',
-    sets.map(m => renderServiceSet(m)).join('\n'),
-    '    </div>',
-    '    <p class="set-more">Every set can be tailored to your day. <a href="/menu/">Browse all 66 sets one at a time</a>.</p>',
-    '  </div>',
-    '</section>',
+    menusSection,
     '<section class="svc-steps">',
     '  <div class="wrap">',
     '    <div class="sec-head">',
@@ -364,7 +415,7 @@ export function renderServicePage(key, menus, chrome) {
     '  </div>',
     '</section>',
     renderProof(),
-    renderQuoteForm(key, meta),
+    renderQuoteForm(key, meta, menus),
     '<section class="svc-faq">',
     '  <div class="wrap">',
     '    <div class="sec-head">',
