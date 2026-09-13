@@ -196,9 +196,10 @@ function renderQuoteForm(key, meta) {
 const PROOF_REVIEWERS = ['Dhakshinamoorthi Arumugam', 'Varsha Balaraman'];
 
 /**
- * Proof just above the quote form: two Google reviews, the kitchen, and its
- * licence and GST numbers. Nothing new is claimed; the reviews are the
- * homepage's and the rest is already on /corporate/.
+ * Proof just above the quote form: two Google reviews and the kitchen's licence
+ * and GST numbers. Nothing new is claimed; the reviews are the homepage's and the
+ * numbers are already on /corporate/. No kitchen photo: the owner wants it on
+ * /about/, not here (13 Sep 2026).
  */
 function renderProof() {
   const figures = PROOF_REVIEWERS.map(name => {
@@ -219,19 +220,12 @@ function renderProof() {
     '      <span class="eyebrow">Why families book us</span>',
     '      <h2>Rated 5.0 on Google</h2>',
     '    </div>',
-    // Stacked on phones; from 900px the reviews sit beside the kitchen and licences.
+    // Stacked on phones; from 900px the reviews sit beside the licence strip.
     '    <div class="svc-proof-grid">',
     '    <div class="review-grid" role="list">',
     ...figures,
     '    </div>',
     '    <div class="svc-proof-side">',
-    '    <figure class="kitchen-shot">',
-    '      <picture>',
-    '        <source type="image/webp" srcset="/kitchen-400.webp 400w, /kitchen-800.webp 800w, /kitchen-1600.webp 1600w" sizes="(max-width: 899px) 100vw, 480px">',
-    `        <img src="/kitchen-800.jpg" srcset="/kitchen-400.jpg 400w, /kitchen-800.jpg 800w, /kitchen-1600.jpg 1600w" sizes="(max-width: 899px) 100vw, 480px" width="1600" height="900" loading="lazy" decoding="async" alt="VAAV's kitchen in Perungalathur: steel prep tables, shelves of stocked spice jars, a gas range and a tiled splashback, with a cook preparing an order.">`,
-    '      </picture>',
-    '      <figcaption>Our kitchen in Perungalathur, where every order is cooked.</figcaption>',
-    '    </figure>',
     '    <ul class="compliance" role="list">',
     '      <li><span class="cmp-k">FSSAI licence</span><span class="cmp-v">12426008001205</span></li>',
     '      <li><span class="cmp-k">GST</span><span class="cmp-v">33BJKPK7360P2ZL</span></li>',

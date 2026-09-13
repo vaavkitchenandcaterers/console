@@ -198,7 +198,7 @@ describe('generated occasion service pages', () => {
     }
   });
 
-  it('shows proof just above the quote form: two Google reviews, the kitchen, the FSSAI and GST numbers', () => {
+  it('shows proof just above the quote form: two Google reviews and the FSSAI and GST numbers, and no kitchen photo', () => {
     for (const key of SERVICES) {
       const html = pageFor(key);
       const proof = html.match(/<section class="svc-proof">[\s\S]*?<\/section>/)?.[0];
@@ -212,11 +212,12 @@ describe('generated occasion service pages', () => {
       for (const r of shown) expect(proof).toContain(escapeHtml(r.text));
       expect(proof).toContain('12426008001205');
       expect(proof).toContain('33BJKPK7360P2ZL');
-      expect(proof).toContain('src="/kitchen-800.jpg"');
+      // The owner wants the kitchen photo on /about/ only (13 Sep 2026).
+      expect(html, `${key} shows the kitchen photo`).not.toMatch(/kitchen-(400|800|1600)\.(jpg|webp)|class="kitchen-shot"/);
     }
   });
 
-  it('puts the reviews beside the kitchen photo and licences on wide screens', () => {
+  it('puts the reviews beside the licence strip on wide screens', () => {
     for (const key of SERVICES) {
       const proof = pageFor(key).match(/<section class="svc-proof">[\s\S]*?<\/section>/)[0];
       const grid = proof.indexOf('class="svc-proof-grid"');
@@ -224,8 +225,7 @@ describe('generated occasion service pages', () => {
       const side = proof.indexOf('class="svc-proof-side"');
       expect(grid, `${key} proof grid`).toBeGreaterThan(-1);
       expect(reviews, `${key} reviews inside the grid`).toBeGreaterThan(grid);
-      expect(side, `${key} photo and licences beside the reviews`).toBeGreaterThan(reviews);
-      expect(proof.indexOf('class="kitchen-shot"')).toBeGreaterThan(side);
+      expect(side, `${key} licences beside the reviews`).toBeGreaterThan(reviews);
       expect(proof.indexOf('class="compliance"')).toBeGreaterThan(side);
     }
     expect(read('./style.css')).toContain('.svc-proof-grid{display:grid');
