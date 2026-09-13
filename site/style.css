@@ -697,3 +697,12 @@ body.vaav-sl-open .vaav-sl-pill,body.vaav-sl-open .wa-float,body.vaav-sl-open .m
   .proof .chip-long{display:none}
   .proof .chip-short{display:inline}
 }
+/* Service pages: dish lists in two columns with every dish still visible (owner,
+   13 Sep 2026: columns rather than collapsed lists). A last card left alone on
+   its row spans the full width and takes three columns. */
+.svc-main .set-dishes{columns:2;column-gap:22px}
+.svc-main .set-dishes li{break-inside:avoid;padding:6px 0;border-bottom:0;line-height:1.35}
+@media(min-width:760px){
+  .svc-main .set-list > .set:last-child:nth-child(odd){grid-column:1/-1}
+  .svc-main .set-list > .set:last-child:nth-child(odd) .set-dishes{columns:3}
+}

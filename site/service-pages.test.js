@@ -171,6 +171,13 @@ describe('generated occasion service pages', () => {
     }
   });
 
+  it('lays dish lists out in two columns on service pages, and spans a lone last card', () => {
+    const css = read('./style.css');
+    expect(css).toContain('.svc-main .set-dishes{columns:2');
+    expect(css).toContain('.svc-main .set-list > .set:last-child:nth-child(odd){grid-column:1/-1}');
+    for (const key of SERVICES) expect(pageFor(key)).toContain('<main id="main" class="svc-main">');
+  });
+
   it('keeps meta descriptions short enough not to be cut off on a phone', () => {
     for (const key of SERVICES) {
       const d = pageFor(key).match(/<meta name="description" content="([^"]*)">/)[1].replace(/&amp;/g, '&');
