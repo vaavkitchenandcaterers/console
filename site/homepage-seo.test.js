@@ -28,3 +28,35 @@ describe('homepage H1', () => {
     expect(textOf(h1)).toBe(label);
   });
 });
+
+describe('business schema', () => {
+  // Every page that describes the business must describe it the same way, or
+  // search engines are handed five slightly different versions of one entity.
+  const PAGES_WITH_BUSINESS = [
+    'index.html',
+    'services/index.html',
+    'about/index.html',
+    'contact/index.html',
+    'corporate/index.html',
+  ];
+  const MAPS_PROFILE = 'https://www.google.com/maps?cid=16612426966021584661';
+  const businessOn = page => ldBlocks(read(page)).find(b => b['@type'] === 'FoodEstablishment');
+
+  for (const page of PAGES_WITH_BUSINESS) {
+    it(`${page} names the localities served, Chennai first`, () => {
+      const area = businessOn(page).areaServed;
+      expect(Array.isArray(area), 'areaServed should be a list').toBe(true);
+      expect(area[0]).toEqual({ '@type': 'City', name: 'Chennai' });
+      expect(area.map(a => a.name)).toContain('Perungalathur');
+    });
+
+    it(`${page} links the Google Business Profile with sameAs`, () => {
+      expect(businessOn(page).sameAs).toContain(MAPS_PROFILE);
+    });
+  }
+
+  it('every page states the same service area', () => {
+    const areas = PAGES_WITH_BUSINESS.map(p => JSON.stringify(businessOn(p).areaServed));
+    expect(new Set(areas).size).toBe(1);
+  });
+});
