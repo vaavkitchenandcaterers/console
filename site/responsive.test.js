@@ -122,3 +122,27 @@ describe('layout breakpoints', () => {
     expect(mediaConditionFor(needle)).toMatch(/max-width:\s*900px/);
   });
 });
+
+describe('short laptop screens', () => {
+  // A 1920×1080 laptop at 150% scaling is a 1280×590 CSS viewport. There the
+  // four-line hero headline pushed the only hero button below the fold, and a
+  // width breakpoint cannot see that: the screen is wide, just short.
+  const HERO_CLAMP = 'clamp(1.75rem,0.964rem + 3.929vw,4.5rem)';
+
+  it('trims the hero top padding on screens 620px tall or less', () => {
+    expect(mediaConditionFor('.hero{padding-top:40px}')).toMatch(/max-height:\s*620px/);
+  });
+
+  it('caps the hero headline at 3.5rem there, keeping the zoom-safe clamp underneath', () => {
+    // min() can only shrink the headline, so a landscape phone that is also
+    // short keeps its smaller clamp size instead of jumping up to 3.5rem.
+    const needle = `.hero h1{font-size:min(${HERO_CLAMP},3.5rem)}`;
+    expect(mediaConditionFor(needle)).toMatch(/max-height:\s*620px/);
+  });
+
+  it('keeps the base hero rules first, so the type-scale tests still read them', () => {
+    // clampFor('.hero h1') takes the first '.hero h1{' in the file. The short-
+    // screen override must come after it, or those tests parse the override.
+    expect(CSS.indexOf(`.hero h1{font-size:${HERO_CLAMP}`)).toBeLessThan(CSS.indexOf('.hero{padding-top:40px}'));
+  });
+});

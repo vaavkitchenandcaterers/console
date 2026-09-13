@@ -213,15 +213,15 @@ describe('the shared chrome regions', () => {
     }
   });
 
-  it("index.html keeps the two head tags no other page has", () => {
-    // The keywords meta and the inline monogram fallback icon are index-only.
-    // They sit between head regions on that page, which is exactly the sort of
-    // thing a region drawn one line too wide would erase.
+  it("index.html keeps the head tag no other page has", () => {
+    // The inline monogram fallback icon is index-only. It sits between head
+    // regions on that page, which is exactly the sort of thing a region drawn
+    // one line too wide would erase. The keywords meta used to be a second
+    // such tag; it was removed as dead SEO weight, and no page may regain it.
     const html = read('index.html');
-    expect(html).toContain('<meta name="keywords" content=');
     expect(html).toContain('<link rel="alternate icon" href="data:image/svg+xml,');
-    for (const page of PAGES.filter(p => p !== 'index.html')) {
-      expect(read(page), `${page} should not have gained keywords`).not.toContain('name="keywords"');
+    for (const page of PAGES) {
+      expect(read(page), `${page} should not carry a keywords meta`).not.toContain('name="keywords"');
     }
   });
 

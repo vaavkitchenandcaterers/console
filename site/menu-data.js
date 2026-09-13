@@ -1,4 +1,4 @@
-// VAAV Kitchen and Caterers — full menu dataset (66 set menus).
+// VAAV Kitchen and Caterers: full menu dataset (66 set menus).
 // Grouped by category; each menu lists its dishes under section labels.
 window.VAAV_MENUS = {
   tiffin: {
@@ -31,7 +31,7 @@ window.VAAV_MENUS = {
   lunch: {
     label: "Lunch",
     tamil: "மதிய உணவு",
-    note: "The classic banana-leaf sappadu — from a simple rice, sambar and rasam plate to a full feast with payasam, poriyal and varuval. <strong>Pick the size that fits your day.</strong>",
+    note: "The classic banana-leaf sappadu, from a simple rice, sambar and rasam plate to a full feast with payasam, poriyal and varuval. <strong>Pick the size that fits your day.</strong>",
     menus: [
       { name: "Lunch 1", occasions: ["corporate"], groups: [["Items", ["White Rice","Sambar","Rasam","Poriyal"]]] },
       { name: "Lunch 2", occasions: ["housewarming","puja"], groups: [["Items", ["Sweet Payasam","White Rice","Sambar","Rasam","Buttermilk","Koottu","Appalam","Pickle"]]] },
@@ -58,7 +58,7 @@ window.VAAV_MENUS = {
   dinner: {
     label: "Dinner",
     tamil: "இரவு உணவு",
-    note: "Grand evening spreads for weddings and receptions — sweets, starters, biryani and a full main course. <strong>Built to impress a hall full of guests.</strong>",
+    note: "Grand evening spreads for weddings and receptions: sweets, starters, biryani and a full main course. <strong>Built to impress a hall full of guests.</strong>",
     menus: [
       { name: "Dinner 1", occasions: ["birthday","corporate"], groups: [["Sweet",["Gulab Jamun"]],["Starter",["Gobi 65"]],["Main Course",["Veg Biryani","Onion Raita","Phulka","Chana Masala","Bisi Bele Bath","Bagalabath","Potato Chips","Mango Pickle"]]] },
       { name: "Dinner 2", occasions: ["housewarming","birthday"], groups: [["Sweet",["Angoori Rasamalai"]],["Starter",["Baby Corn 65"]],["Main Course",["Poori","Chana Masala","Idiyappam","White Kuruma","Heart Idli","Kara Chutney","Tiffin Sambar","Jackfruit Biryani","Cucumber Onion Raita"]]] },

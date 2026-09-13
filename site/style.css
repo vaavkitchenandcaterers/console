@@ -1,5 +1,5 @@
 /* ============================================================
-   VAAV Kitchen and Caterers — Authentic Tamil Catering, Chennai
+   VAAV Kitchen and Caterers: Authentic Tamil Catering, Chennai
    Design language: Tamil temple palette (green / kumkum / turmeric)
    Fonts: Cormorant (display), Mukta (body), Catamaran (labels)
    ============================================================ */
@@ -19,7 +19,7 @@
   --wa:#25D366;
   --wa-deep:#1ebe5b;
   --white:#fff;
-  --border:#e2d9c1;       /* hairline border on cards/panels — canonicalized from 7 near-duplicate shades */
+  --border:#e2d9c1;       /* hairline border on cards/panels, canonicalized from 7 near-duplicate shades */
   --border-track:#c9bda0; /* scrollbar track, paired with --border as the thumb */
 }
 *{margin:0;padding:0;box-sizing:border-box}
@@ -106,6 +106,8 @@ nav.scrolled{box-shadow:0 8px 26px -16px rgba(20,61,29,.45);background:rgba(247,
 .hero h1{font-size:clamp(1.75rem,0.964rem + 3.929vw,4.5rem);color:var(--green-deep);letter-spacing:-.01em}
 .hero h1 em{font-style:italic;color:var(--kumkum)}
 .hero p.lead{font-size:1.2rem;color:var(--muted);margin:22px 0 32px;max-width:34ch}
+/* short laptop screens (1280×590 at 150% scaling): keep the hero button above the fold */
+@media(max-height:620px){.hero{padding-top:40px}.hero h1{font-size:min(clamp(1.75rem,0.964rem + 3.929vw,4.5rem),3.5rem)}.hero p.lead{margin:16px 0 22px}}
 .hero-cta{display:flex;gap:16px;flex-wrap:wrap;align-items:center}
 .ghost{color:var(--green-deep);text-decoration:none;font-weight:600;border-bottom:2px solid var(--yellow);padding-bottom:2px}
 .ghost:hover{border-color:var(--yellow-deep)}
@@ -535,7 +537,7 @@ body.vaav-sl-open .vaav-sl-pill,body.vaav-sl-open .wa-float,body.vaav-sl-open .m
 .vaav-sl-send:hover{background:var(--green-ink)}
 .vaav-sl-clear{background:transparent;border:0;color:var(--muted);font-family:'Catamaran',sans-serif;font-weight:700;text-decoration:underline;cursor:pointer;padding:6px;align-self:center;min-height:44px}
 .vaav-sl-help{font-size:.8rem;color:var(--muted);text-align:center}
-/* sent state — replaces the form once the enquiry has gone */
+/* sent state: replaces the form once the enquiry has gone */
 .vaav-sl-sent{text-align:center;padding:26px 8px 20px}
 .vaav-sl-sent-ic{display:inline-flex;align-items:center;justify-content:center;width:52px;height:52px;
   border-radius:50%;background:var(--wa);color:var(--white);margin-bottom:14px}
@@ -580,7 +582,7 @@ body.vaav-sl-open .vaav-sl-pill,body.vaav-sl-open .wa-float,body.vaav-sl-open .m
   pointer-events:none;z-index:120;will-change:transform,opacity}
 .feast-chip svg{width:14px;height:14px}
 
-/* compliance strip — registration numbers stated plainly, used on /corporate/ and /about/ */
+/* compliance strip: registration numbers stated plainly, used on /corporate/ and /about/ */
 .compliance{display:grid;gap:1px;background:var(--border);border:1px solid var(--border);border-radius:14px;overflow:hidden;margin:0}
 .compliance li{display:flex;flex-wrap:wrap;gap:4px 18px;align-items:baseline;background:var(--cream);padding:14px 18px}
 .cmp-k{font-family:'Catamaran',sans-serif;font-weight:800;font-size:.7rem;text-transform:uppercase;letter-spacing:.14em;color:var(--muted);flex:0 0 150px}
@@ -595,7 +597,7 @@ body.vaav-sl-open .vaav-sl-pill,body.vaav-sl-open .wa-float,body.vaav-sl-open .m
 .svc-more:hover,.svc-more:focus-visible{color:var(--kumkum)}
 @media(max-width:520px){.svc-more{display:block;margin:10px 0 0}}
 
-/* kitchen photograph — shared by /corporate/ and /about/ */
+/* kitchen photograph: shared by /corporate/ and /about/ */
 .kitchen-shot{margin:0}
 .kitchen-shot img{width:100%;height:auto;aspect-ratio:16/9;object-fit:cover;border-radius:14px;border:1px solid var(--border);background:var(--cream-deep)}
 .kitchen-shot figcaption{margin-top:10px;font-size:.88rem;color:var(--muted);text-align:center}
