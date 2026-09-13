@@ -31,6 +31,14 @@ const PHONE = '+91 96553 56333';
 
 export const SERVICES = ['wedding-reception-catering', 'puja-homam-catering'];
 
+/**
+ * Dishes ordinarily cooked with onion or garlic. The puja page promises neither,
+ * and the owner decided on 13 Sep 2026 to show only sattvic menus there, so a set
+ * carrying any of these is left off it. Sets are judged by their dish names as
+ * menu-data.js writes them; add a dish here when a newly tagged set brings one.
+ */
+export const NOT_SATTVIC = ['Masal Dosai', 'Masal Vadai', 'White Kuruma', 'Kadala Curry', 'Mushroom Gravy', 'Veg Biryani', 'Baby Corn 65'];
+
 export const SERVICE_META = {
   'wedding-reception-catering': {
     occasions: ['wedding', 'reception'],
@@ -73,8 +81,9 @@ export const SERVICE_META = {
   },
   'puja-homam-catering': {
     occasions: ['puja', 'temple'],
-    // Seven sets in all: short enough to show every one.
+    // Only sattvic sets, and all of them: few enough to show every one.
     maxPerCategory: 0,
+    excludeDishes: NOT_SATTVIC,
     label: 'Puja, homam & temple catering',
     crumb: 'Puja, homam & temple',
     tamil: 'பூஜை · ஹோமம் · அன்னதானம்',
@@ -92,13 +101,13 @@ export const SERVICE_META = {
     dayHeading: 'Cooked for the ritual',
     day: [
       `A puja or homam meal is cooked sattvic, with no onion and no garlic, and prepared with the care the occasion deserves.`,
-      `For the prasadam, the sets below carry sweets such as Ashoka Halwa, Kaju Katli and Sweet Payasam, and any of them can be tailored to what your pooja or homam calls for.`,
+      `For the prasadam, the sets below carry sweets such as Laddu, Jangiri and Sweet Payasam, and any of them can be tailored to what your pooja or homam calls for.`,
       `Grihapravesam, ayush homam and shradham each keep their own customs, so tell us the ritual and we agree the menu with you rather than hand you a fixed one.`,
       `Temple functions and annadhanam are a question of scale and timing: thousands of plates served hot and on time, with the planning and discipline a big function needs.`
     ],
     menusHeading: 'Menus we cook for pujas and temple functions',
     menusIntro: total =>
-      `All <b>${total}</b> sets we cook for pujas, homams and temple functions. Every one can be tailored, including Jain and fully sattvic.`,
+      `The <b>${total}</b> sattvic sets we cook for pujas, homams and temple functions, all without onion or garlic. Any of them can be cooked to suit your ritual, including Jain.`,
     formHeading: 'Tell us about your puja or function',
     formOccasion: 'Puja, homam or temple function',
     waContext: 'puja and prasadam catering',
@@ -257,7 +266,10 @@ function buildServiceSchema(key, meta) {
 export function renderServicePage(key, menus, chrome) {
   const meta = SERVICE_META[key];
   if (!meta) throw new Error(`no SERVICE_META for "${key}"`);
-  const groups = setsByCategory(menus, meta.occasions);
+  const exclude = meta.excludeDishes || [];
+  const groups = setsByCategory(menus, meta.occasions)
+    .map(g => ({ ...g, sets: g.sets.filter(m => !(m.groups || []).some(([, dishes]) => (dishes || []).some(d => exclude.includes(d)))) }))
+    .filter(g => g.sets.length > 0);
   if (!groups.length) throw new Error(`no menu in menu-data.js is tagged ${meta.occasions.join(' or ')}`);
   const total = groups.reduce((n, g) => n + g.sets.length, 0);
   const sets = featuredSets(groups, meta.maxPerCategory);

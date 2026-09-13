@@ -2,7 +2,7 @@ import { describe, it, expect } from 'vitest';
 import { readFileSync } from 'node:fs';
 import { loadMenus, loadChrome } from '../tools/build-menu-pages.mjs';
 import { GENERATED_PAGES, chromeSourceFor } from '../tools/sync-chrome.mjs';
-import { renderServicePage, SERVICES, SERVICE_META } from '../tools/service-page-template.mjs';
+import { renderServicePage, SERVICES, SERVICE_META, NOT_SATTVIC } from '../tools/service-page-template.mjs';
 import { slug } from '../tools/menu-page-template.mjs';
 import { escapeHtml, countDishes } from './menu-format.js';
 import { VAAV_REVIEWS } from './reviews.js';
@@ -40,10 +40,20 @@ describe('generated occasion service pages', () => {
     }
   });
 
-  it('the puja page lists every puja and temple set, and nothing else', () => {
+  it('the puja page lists every sattvic puja and temple set, and no set carrying onion or garlic', () => {
+    // The page promises no onion and no garlic, so a set with a NOT_SATTVIC dish
+    // must never appear, and every tagged set without one must.
     const shown = articles(pageFor('puja-homam-catering')).map(m => m[1]);
-    expect([...shown].sort()).toEqual(tagged('puja-homam-catering').map(m => slug(m.name)).sort());
-    expect(shown.length, 'puja and temple baseline').toBe(7);
+    const hasOnionOrGarlic = m => m.groups.some(([, dishes]) => dishes.some(d => NOT_SATTVIC.includes(d)));
+    const sattvic = tagged('puja-homam-catering').filter(m => !hasOnionOrGarlic(m));
+    expect([...shown].sort()).toEqual(sattvic.map(m => slug(m.name)).sort());
+    expect(shown, 'sattvic puja and temple baseline').toEqual(['lunch-2', 'lunch-13', 'lunch-15']);
+    for (const dish of NOT_SATTVIC) {
+      expect(
+        tagged('puja-homam-catering').some(m => m.groups.some(([, d]) => d.includes(dish))),
+        `${dish} is listed as not sattvic, but no puja or temple set carries it: remove it from NOT_SATTVIC`
+      ).toBe(true);
+    }
   });
 
   it('the wedding page features the largest wedding or reception set from each meal, and counts them all', () => {
@@ -186,14 +196,15 @@ describe('generated occasion service pages', () => {
   });
 
   it('the puja page names prasadam and pooja, and every sweet it names is in a set it shows', () => {
-    const main = pageFor('puja-homam-catering').match(/<main id="main">[\s\S]*<\/main>/)[0];
+    const html = pageFor('puja-homam-catering');
+    const main = html.match(/<main id="main">[\s\S]*<\/main>/)[0];
     expect(main).toMatch(/prasadam/i);
     expect(main).toMatch(/pooja/i);
-    for (const dish of ['Ashoka Halwa', 'Kaju Katli', 'Sweet Payasam']) {
-      expect(main).toContain(dish);
+    for (const dish of ['Laddu', 'Jangiri', 'Sweet Payasam']) {
+      expect(main.match(/<section class="svc-day">[\s\S]*?<\/section>/)[0]).toContain(dish);
       expect(
-        tagged('puja-homam-catering').some(m => m.groups.some(g => g[1].includes(dish))),
-        `${dish} is named on the page but is in no puja or temple set`
+        articles(html).some(([block]) => block.includes(`<li>${dish}</li>`)),
+        `${dish} is named on the page but is in no set the page shows`
       ).toBe(true);
     }
   });
