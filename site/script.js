@@ -2,7 +2,7 @@ import { createShortlist, formatEventDate } from './shortlist.js';
 import { escapeHtml, countDishes } from './menu-format.js';
 
 /* ============================================================
-   VAAV Kitchen and Caterers — site interactivity
+   VAAV Kitchen and Caterers: site interactivity
    Single place to change contact details:
    ============================================================ */
 const WHATSAPP_NUMBER = "919655356333";     // country code + digits, no symbols
@@ -51,14 +51,14 @@ document.querySelectorAll('.js-greviews').forEach(a => {
 });
 
 /* ============================================================
-   MENU SHORTLIST — customer collects set menus, sends one
+   MENU SHORTLIST: customer collects set menus, sends one
    WhatsApp enquiry. State persists in localStorage; pill +
    drawer are injected here so no HTML file has to change.
    ============================================================ */
 window.VaavShortlist = createShortlist(localStorage);
 
 /* ============================================================
-   TESTIMONIALS — paste your real Google reviews here.
+   TESTIMONIALS: paste your real Google reviews here.
    Each: { name, text, rating (1-5), when }.  Keep 3–6 for a tidy grid.
    ============================================================ */
 const VAAV_REVIEWS = [
@@ -124,8 +124,8 @@ const VAAV_REVIEWS = [
   function sync() {
     const n = window.VaavShortlist.count();
     el.textContent = n === 0
-      ? 'Your feast is empty — tap “Add to my feast” on any menu below to start building.'
-      : n + (n === 1 ? ' menu' : ' menus') + ' in your feast — tap “My feast” to review & send.';
+      ? 'Your feast is empty. Tap “Add to my feast” on any menu below to start building.'
+      : n + (n === 1 ? ' menu' : ' menus') + ' in your feast. Tap “My feast” to review & send.';
     el.classList.toggle('has-items', n > 0);
   }
   document.addEventListener('vaav:shortlistchange', sync);
@@ -230,7 +230,7 @@ const VAAV_REVIEWS = [
     const txt = addBtn.querySelector('.mc-add-txt');
     if (txt) txt.textContent = full ? 'Feast is full (20)' : (has ? '✓ In your feast' : '+ Add to my feast');
     addBtn.setAttribute('aria-label',
-      full ? 'Feast is full — remove a menu from your feast to add another'
+      full ? 'Feast is full. Remove a menu from your feast to add another'
            : (has ? 'Remove ' : 'Add ') + nm + (has ? ' from your feast' : ' to your feast'));
   }
 
@@ -256,7 +256,7 @@ const VAAV_REVIEWS = [
     occEl.appendChild(mk('', 'Any occasion'));
     OCCASIONS.forEach(function (o) {
       const n = data.menus.filter(function (m) { return (m.occasions || []).indexOf(o[0]) !== -1; }).length;
-      // A chip with no sets in this category is normally hidden — but never the
+      // A chip with no sets in this category is normally hidden, but never the
       // active one, or the filter becomes invisible and the user cannot clear it.
       if (n || curOcc === o[0]) occEl.appendChild(mk(o[0], o[1]));
     });
@@ -293,7 +293,7 @@ const VAAV_REVIEWS = [
       cardEl.className = 'menu-card is-empty';
       cardEl.removeAttribute('aria-labelledby');
       cardEl.innerHTML = '<p class="mc-none">We don\'t lay out a ' + M[curCat].label.toLowerCase() +
-        ' spread for this occasion — try another meal, or pick another occasion.</p>';
+        ' spread for this occasion. Try another meal, or pick another occasion.</p>';
       return;
     }
     shown.forEach((m, i) => {
@@ -330,7 +330,7 @@ const VAAV_REVIEWS = [
     html += '<div class="rail-cta">';
     html += '<button type="button" class="mc-add' + (inList ? ' added' : '') + '" data-id="' + slId + '" aria-pressed="' + (inList ? 'true' : 'false') + '">' +
       '<span class="mc-add-txt">' + (inList ? '✓ In your feast' : '+ Add to my feast') + '</span></button>';
-    html += '<p class="rail-note">Mix and match across any set — we’ll tailor it to your event.</p></div>';
+    html += '<p class="rail-note">Mix and match across any set, and we’ll tailor it to your event.</p></div>';
     html += '</div><div class="mc-body"><div class="mc-groups">';
     let n = 0;
     menu.groups.forEach(([title, items]) => {
@@ -365,7 +365,7 @@ const VAAV_REVIEWS = [
   render();
 
   // Keep the visible card's Add button in sync when the shortlist changes elsewhere
-  // (e.g. a menu removed via the drawer) — otherwise the button would still read "Added".
+  // (e.g. a menu removed via the drawer); otherwise the button would still read "Added".
   document.addEventListener('vaav:shortlistchange', function () {
     const addBtn = cardEl.querySelector('.mc-add');
     if (!addBtn || !window.VaavShortlist) return;
@@ -374,7 +374,7 @@ const VAAV_REVIEWS = [
 })();
 
 // Nav active-state is now static per page (aria-current="page" in each page's HTML),
-// so the old scroll-spy is removed — multipage nav links point to other pages, not #anchors.
+// so the old scroll-spy is removed: multipage nav links point to other pages, not #anchors.
 
 // --- scroll-triggered reveal for service cards ---
 (function () {
@@ -542,11 +542,11 @@ const VAAV_REVIEWS = [
 (function () {
   const S = window.VaavShortlist;
   const body = document.getElementById('vaav-sl-body');
-  // Copy under review — see docs/site/2026-08-30-send-seam-plan.md, open question:
+  // Copy under review; see docs/site/2026-08-30-send-seam-plan.md, open question:
   // is "within the hour" a promise the kitchen actually keeps? Change these two
   // strings and nothing else if the honest answer is "same day".
   const REPLY_OPEN = 'We usually reply within the hour.';
-  const REPLY_CLOSED = 'The kitchen opens at 7 AM — we’ll reply then.';
+  const REPLY_CLOSED = 'The kitchen opens at 7 AM, and we’ll reply then.';
   function replyLine() {
     const h = new Date().getHours();
     return (h >= 7 && h < 21) ? REPLY_OPEN : REPLY_CLOSED;
@@ -598,7 +598,7 @@ const VAAV_REVIEWS = [
     });
 
     body.querySelector('.vaav-sl-edit').addEventListener('click', function () {
-      S.setNotes(S.getState().notes); // any mutator clears sentAt — see Task 1
+      S.setNotes(S.getState().notes); // any mutator clears sentAt; see Task 1
       render();
       const first = body.querySelector('.vaav-sl-remove');
       if (first) first.focus();
@@ -626,8 +626,8 @@ const VAAV_REVIEWS = [
     h += '</div>';
     h += '<p class="vaav-sl-where">' +
       (S.isPersistent()
-        ? 'Saved on this phone only — send it to keep it.'
-        : 'Your browser isn’t saving this — send it before you leave the page.') +
+        ? 'Saved on this phone only. Send it to keep it.'
+        : 'Your browser isn’t saving this. Send it before you leave the page.') +
       '</p>';
     h += '<label class="vaav-sl-fieldlabel" for="vaav-sl-notes">Special requests</label>' +
       '<textarea id="vaav-sl-notes" class="vaav-sl-notes" placeholder="No onion or garlic, extra sweet…">' + escapeHtml(st.notes) + '</textarea>';
@@ -680,7 +680,7 @@ const VAAV_REVIEWS = [
       send.addEventListener('click', function () {
         // Deferred one tick so the browser's default navigation to WhatsApp is
         // already underway before this DOM node is replaced. Not a delay for
-        // effect — the operation itself is instant.
+        // effect; the operation itself is instant.
         setTimeout(function () { S.markSent(); }, 0);
       });
     }

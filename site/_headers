@@ -1,6 +1,6 @@
 # Security headers for Netlify / Cloudflare Pages static hosting.
-# (These complement the CSP <meta> tag in index.html; some headers — like
-#  X-Frame-Options and HSTS — can ONLY be set here, not via <meta>.)
+# (These complement the CSP <meta> tag in index.html; some headers, like
+#  X-Frame-Options and HSTS, can ONLY be set here, not via <meta>.)
 /*
   Content-Security-Policy: default-src 'self'; base-uri 'self'; object-src 'none'; img-src 'self' data: https://www.googletagmanager.com https://*.google-analytics.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; script-src 'self' https://www.googletagmanager.com; frame-src https://www.google.com https://maps.google.com; connect-src 'self' https://*.google-analytics.com https://*.analytics.google.com https://*.googletagmanager.com; form-action 'self'; frame-ancestors 'self'; upgrade-insecure-requests
   X-Frame-Options: SAMEORIGIN
@@ -14,7 +14,7 @@
 # they are not fingerprinted: the filenames carry no content hash, so a cached
 # copy can only be replaced by waiting out max-age or by renaming the file.
 # Thirty days removes the per-request revalidation these assets currently pay
-# on every page load, while keeping the worst case bounded — a photo replaced
+# on every page load, while keeping the worst case bounded: a photo replaced
 # in place still reaches returning visitors within a month.
 #
 # To publish an image change immediately, rename the file. The reference in the

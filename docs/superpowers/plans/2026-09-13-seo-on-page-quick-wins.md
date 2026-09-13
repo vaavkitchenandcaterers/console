@@ -978,6 +978,8 @@ git add site/index.html site/contact/index.html site/about/index.html site/seo-m
 git commit -m "style(copy): replace the em-dashes this branch added"
 ```
 
+**Follow-up, same day:** the owner then asked for the remaining em-dashes across the site to go as well. Every file the site serves under `site/`, and every source that generates one (`tools/chrome/` and the page-bound strings in `tools/menu-page-template.mjs`), was cleaned with the same per-sentence rules: a full stop where the dash started a new instruction, a comma or ", and" where it continued the sentence, a colon before a list, a pipe in social titles, a middle dot in the numbered card labels, and parentheses around set counts. `npm run sync:chrome` and `npm run build:menu` then carried the change into the pages: 130 replacements across 19 source files, and 0 em-dashes left in anything the site serves. Code comments in build tools and test files never ship, so they stay as they are.
+
 ---
 
 ### Task 7: Whole-site verification

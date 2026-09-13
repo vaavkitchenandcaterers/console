@@ -2,7 +2,7 @@
 // reaches HTML, and how the dish count in a set is counted.
 //
 // Both were written out separately in the browser code, the page generator and
-// the drift test, and had already drifted — the test escaped three characters
+// the drift test, and had already drifted: the test escaped three characters
 // where the code escaped four, and half the counts guarded an empty group while
 // the other half did not. The count is shown to customers in four places (the
 // picker pill, the menu card, the shortlist drawer, the generated pages) and
@@ -10,7 +10,7 @@
 //
 // Lives in site/ because site/script.js is browser ESM and can only import what
 // is actually served. Imported by site/script.js, tools/menu-page-template.mjs
-// and site/menu-pages.test.js — keep it dependency-free and runtime-only.
+// and site/menu-pages.test.js, so keep it dependency-free and runtime-only.
 
 /**
  * Escape a value for HTML text or a double-quoted attribute. Four characters:

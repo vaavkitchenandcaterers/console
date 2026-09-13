@@ -10,14 +10,14 @@
 # permanent redirect instead.
 #
 # The rule matches that exact host, so Netlify's deploy previews and branch
-# deploys — deploy-preview-N--<site>.netlify.app — are untouched and stay
+# deploys (deploy-preview-N--<site>.netlify.app) are untouched and stay
 # browsable. `301!` forces the redirect: without the bang, a request for a
 # path that exists as a static file (which is all of them) would be served
 # rather than redirected.
 
 https://vaavkitchenandcaterers.netlify.app/*  https://vaavkitchenandcaterers.com/:splat  301!
 
-# Every page is also reachable at its explicit index.html — /services/ and
+# Every page is also reachable at its explicit index.html: /services/ and
 # /services/index.html both returned 200, so each page had a second URL. Both
 # carry the same canonical, pointing at the clean form, and none of the
 # index.html URLs are indexed, so this was never the active problem; it is
@@ -31,7 +31,7 @@ https://vaavkitchenandcaterers.netlify.app/*  https://vaavkitchenandcaterers.com
 #
 # These need the forcing bang for the same reason as the rule above: each
 # index.html is a real file in the publish directory and would otherwise be
-# served rather than redirected. Requests for the clean URL are unaffected —
+# served rather than redirected. Requests for the clean URL are unaffected;
 # a rule matches the requested path, and "/" is not "/index.html".
 
 /index.html               /               301!
@@ -61,7 +61,7 @@ https://vaavkitchenandcaterers.netlify.app/*  https://vaavkitchenandcaterers.com
 # path answers exactly as a path that was never there does.
 #
 # The bang matters more here than anywhere else in this file. Every one of
-# these paths is a real file sitting in the publish directory — precisely the
+# these paths is a real file sitting in the publish directory, precisely the
 # case where an unforced rule loses to the file and the file is served anyway.
 # Unforced, these rules would read correctly and do nothing at all.
 #
