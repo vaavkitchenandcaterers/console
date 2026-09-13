@@ -12,6 +12,7 @@ import {
   regionFor,
   findRegion,
   urlPathFor,
+  chromeSourceFor,
 } from '../tools/sync-chrome.mjs';
 
 const sources = loadSources();
@@ -70,20 +71,15 @@ describe('the shared chrome regions', () => {
       }
     });
 
-    it('the generated category pages inherit the same block, byte for byte', () => {
-      // sync:chrome deliberately does not write these — build-menu-pages.mjs copies
-      // their chrome out of menu/index.html. This is what makes the ordering matter:
-      // sync first, then build:menu, or these three carry the previous chrome.
-      //
-      // Every region so far is in scope on menu/index.html, so every region
-      // reaches the generated three. A region that skipped the hub would reach
-      // none of them, and this assertion would be vacuous rather than wrong.
-      expect(region.pages, `${name} must cover the hub to reach the generated pages`).toContain(
-        'menu/index.html'
-      );
-      const hub = findRegion(region, read('menu/index.html'), 'menu/index.html').text;
+    it('the generated pages inherit the same block, byte for byte, from their chrome source', () => {
+      // sync:chrome deliberately does not write these. build-menu-pages.mjs copies
+      // their chrome out of a hand-maintained page (chromeSourceFor), so the
+      // ordering matters: sync first, then build:menu, or they carry old chrome.
       for (const page of GENERATED_PAGES) {
+        const source = chromeSourceFor(page);
+        expect(region.pages, `${name} must cover ${source} to reach ${page}`).toContain(source);
         expect(PAGES, `${page} must not be synced directly`).not.toContain(page);
+        const hub = findRegion(region, read(source), source).text;
         const { text } = findRegion(region, read(page), page);
         expect(text, `${page} ${name} is stale — run \`npm run build:menu\``).toBe(hub);
       }
@@ -122,9 +118,9 @@ describe('the shared chrome regions', () => {
     // one begins, whatever order the table happens to be in.
     for (const page of [...PAGES, ...GENERATED_PAGES]) {
       const html = read(page);
-      // The generated three inherit menu/index.html's regions verbatim, so
+      // Generated pages inherit their chrome source's regions verbatim, so
       // that is the scope to read them against.
-      const spans = regionsFor(PAGES.includes(page) ? page : 'menu/index.html')
+      const spans = regionsFor(PAGES.includes(page) ? page : chromeSourceFor(page))
         .map(r => ({ name: r.name, ...findRegion(r, html, page) }))
         .sort((a, b) => a.from - b.from);
       for (let i = 1; i < spans.length; i++) {
@@ -143,7 +139,7 @@ describe('the shared chrome regions', () => {
     const HEAD_REGIONS = ['head-csp', 'head-assets', 'head-social', 'head-twitter-image'];
     for (const page of [...PAGES, ...GENERATED_PAGES]) {
       const html = read(page);
-      const scope = PAGES.includes(page) ? page : 'menu/index.html';
+      const scope = PAGES.includes(page) ? page : chromeSourceFor(page);
       const headEnd = html.indexOf('</head>');
       expect(headEnd, `${page} has no </head>`).toBeGreaterThan(0);
       for (const name of HEAD_REGIONS) {
@@ -186,7 +182,7 @@ describe('the shared chrome regions', () => {
     const canonicals = new Map();
     for (const page of [...PAGES, ...GENERATED_PAGES]) {
       const html = read(page);
-      const scope = PAGES.includes(page) ? page : 'menu/index.html';
+      const scope = PAGES.includes(page) ? page : chromeSourceFor(page);
       const title = html.match(/<title>[\s\S]*?<\/title>/)?.[0];
       const canonical = html.match(/<link rel="canonical" href="[^"]*">/)?.[0];
       expect(title, `${page} has no title`).toBeTruthy();
@@ -307,5 +303,15 @@ describe('the shared chrome regions', () => {
         `index.html has no ${region.marker} markers`
       );
     }
+  });
+
+  it('every generated page names the hand-maintained page its chrome is copied from', () => {
+    for (const page of GENERATED_PAGES) {
+      const source = chromeSourceFor(page);
+      expect(PAGES, `${page} copies chrome from ${source}, which is not synced`).toContain(source);
+      if (page.startsWith('menu/')) expect(source).toBe('menu/index.html');
+      if (page.startsWith('services/')) expect(source).toBe('corporate/index.html');
+    }
+    expect(() => chromeSourceFor('about/index.html')).toThrow(/not a generated page/);
   });
 });

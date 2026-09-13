@@ -13,7 +13,8 @@
 import { readFileSync, writeFileSync, mkdirSync } from 'node:fs';
 import { join } from 'node:path';
 import { renderCategoryPage, renderOccasionPage, OCCASIONS } from './menu-page-template.mjs';
-import { regionNamed, regionsFor } from './sync-chrome.mjs';
+import { renderServicePage, SERVICES } from './service-page-template.mjs';
+import { regionNamed, regionsFor, chromeSourceFor } from './sync-chrome.mjs';
 import { countDishes } from '../site/menu-format.js';
 
 const SITE = new URL('../site/', import.meta.url);
@@ -56,19 +57,19 @@ const HUB = 'menu/index.html';
  * menu/index.html. Extracting rather than duplicating means the CSP, the nav
  * and the footer cannot drift from the rest of the site.
  */
-export function loadChrome() {
-  const src = readFileSync(new URL('menu/index.html', SITE), 'utf8');
+export function loadChrome(hub = HUB) {
+  const src = readFileSync(new URL(hub, SITE), 'utf8');
   const footerAt = src.indexOf(FOOTER.startPrefix);
   if (footerAt < 0) {
     throw new Error(
-      `menu/index.html has no "${FOOTER.startPrefix}" marker — run \`npm run sync:chrome\` first`
+      `${hub} has no "${FOOTER.startPrefix}" marker — run \`npm run sync:chrome\` first`
     );
   }
   const head = src.slice(src.indexOf('<head>') + '<head>'.length, src.indexOf('</head>')).trim();
   const top = src.slice(src.indexOf('<body>'), src.indexOf('<main')).trimEnd();
   const bottom = src.slice(footerAt).trimEnd();
   for (const [name, part] of Object.entries({ head, top, bottom })) {
-    if (!part) throw new Error(`could not extract "${name}" from menu/index.html`);
+    if (!part) throw new Error(`could not extract "${name}" from ${hub}`);
   }
   if (!head.includes('Content-Security-Policy')) throw new Error('extracted head has no CSP');
   if (!top.includes('</nav>')) throw new Error('extracted top chrome has no nav');
@@ -78,7 +79,7 @@ export function loadChrome() {
   // Every machine-owned region of the hub has to land whole in exactly one of
   // the three parts, markers included. Anything else means a slice boundary
   // has cut through a region.
-  for (const region of regionsFor(HUB)) {
+  for (const region of regionsFor(hub)) {
     const parts = Object.entries({ head, top, bottom }).filter(
       ([, part]) => part.includes(region.startMarker) || part.includes(region.endMarker)
     );
@@ -114,6 +115,17 @@ export function buildAll() {
     for (const cat of ORDER) sets.push(...menus[cat].menus.filter(m => (m.occasions || []).includes(occ)));
     writePage(occ, html, sets);
   }
+
+  // The occasion service pages. Their chrome comes from a different page than
+  // the menu pages' (chromeSourceFor), so it is extracted separately.
+  for (const key of SERVICES) {
+    const page = `services/${key}/index.html`;
+    const html = renderServicePage(key, menus, loadChrome(chromeSourceFor(page)));
+    const dir = new URL(`services/${key}/`, SITE);
+    mkdirSync(dir, { recursive: true });
+    writeFileSync(new URL('index.html', dir), html, 'utf8');
+    console.log(`  wrote site/${page}`);
+  }
 }
 
 /** Write one page and report what went into it. */
@@ -128,12 +140,16 @@ function writePage(name, html, sets) {
 /** The sitemap block for the generated URLs, so lastmod is never hand-maintained. */
 export function sitemapBlock(date = new Date().toISOString().slice(0, 10)) {
   const entry = (path, priority) =>
-    `  <url>\n    <loc>https://vaavkitchenandcaterers.com/menu/${path}/</loc>\n` +
+    `  <url>\n    <loc>https://vaavkitchenandcaterers.com/${path}/</loc>\n` +
     `    <lastmod>${date}</lastmod>\n    <changefreq>monthly</changefreq>\n` +
     `    <priority>${priority}</priority>\n  </url>`;
   // Category pages rank above occasion pages: a category page is the complete
   // list of its sets, where an occasion page is a slice across all three.
-  return [...ORDER.map(c => entry(c, '0.8')), ...OCCASIONS.map(o => entry(o, '0.7'))].join('\n');
+  return [
+    ...ORDER.map(c => entry(`menu/${c}`, '0.8')),
+    ...OCCASIONS.map(o => entry(`menu/${o}`, '0.7')),
+    ...SERVICES.map(k => entry(`services/${k}`, '0.8'))
+  ].join('\n');
 }
 
 // Only run when invoked directly, so the test can import the module safely.

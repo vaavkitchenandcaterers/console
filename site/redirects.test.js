@@ -55,7 +55,7 @@ const nonContent = publishedFiles().filter(f => NON_CONTENT.some(re => re.test(f
 // be an independent statement of what must keep working.
 const RUNTIME_CRITICAL = [
   '/404.html', '/style.css', '/script.js', '/shortlist.js',
-  '/menu-data.js', '/menu-format.js', '/analytics.js', '/lead-events.js',
+  '/menu-data.js', '/menu-format.js', '/analytics.js', '/lead-events.js', '/quote-form.js', '/reviews.js',
   '/robots.txt', '/sitemap.xml', '/_headers', '/_redirects',
   '/favicon-64.png', '/logo.png', '/og-card.jpg',
   '/kitchen-400.jpg', '/kitchen-800.jpg', '/kitchen-1600.jpg',

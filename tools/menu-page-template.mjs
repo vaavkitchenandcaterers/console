@@ -61,7 +61,7 @@ export const CATEGORY_META = {
 const ORDER = ['tiffin', 'lunch', 'dinner'];
 
 /** Rebuild the head: keep the source chrome byte-for-byte, swap only the per-page meta. */
-function buildHead(sourceHead, url, meta) {
+export function buildHead(sourceHead, url, meta) {
   let h = sourceHead
     // Drop the source page's JSON-LD; this page carries its own.
     .replace(/<script type="application\/ld\+json">[\s\S]*?<\/script>\s*/g, '')
@@ -127,7 +127,7 @@ function buildSchema(catKey, data) {
  * stylesheet keys off .set-name / .set-group rather than the element, because
  * the element is no longer fixed.
  */
-function renderSet(m, level = 2) {
+export function renderSet(m, level = 2) {
   const occ = (m.occasions || []).map(o => escapeHtml(titleCase(o))).join(', ');
   const total = countDishes(m.groups);
   const parts = [];
@@ -178,7 +178,7 @@ export function renderCategoryPage(catKey, data, chrome) {
     '    </div>',
     '    <p class="set-more">Mix and match across any set, and we tailor the spread to your event. <a href="/menu/">Browse the menus one at a time</a>, or see every ' +
       others.map(c => `<a href="/menu/${c}/">${escapeHtml(CATEGORY_META[c].h1.replace(' set menus', ''))} set</a>`).join(' and every ') +
-      '.</p>',
+      '. Planning a wedding or a puja? See how we cater a <a href="/services/wedding-reception-catering/">wedding and reception</a> or a <a href="/services/puja-homam-catering/">puja or homam</a>.</p>',
     `    <p class="set-cta"><a class="btn" data-wa-context="${escapeHtml(data.label.toLowerCase())} catering" href="${waHref}" target="_blank" rel="noopener noreferrer">Ask for a ${escapeHtml(data.label.toLowerCase())} quote on WhatsApp</a></p>`,
     '  </section>',
     '</main>'
@@ -210,7 +210,7 @@ export function renderCategoryPage(catKey, data, chrome) {
  * stays — it still drives the nav toggle, the WhatsApp links, the year stamp
  * and the shortlist pill on these pages.
  */
-function withoutDataset(bottom) {
+export function withoutDataset(bottom) {
   return bottom.replace(/<script src="\/menu-data\.js"[^>]*><\/script>\n?/, '');
 }
 
@@ -222,7 +222,7 @@ function withoutDataset(bottom) {
  * entitled to the tag — and this runs for the drift tests too, not just the
  * generator, since those call the render functions directly.
  */
-function assertNoDataset(html, pageName) {
+export function assertNoDataset(html, pageName) {
   if (/<script[^>]+menu-data\.js/.test(html)) {
     throw new Error(
       `the ${pageName} page still ships menu-data.js — the strip no longer matches the tag in menu/index.html`
@@ -290,18 +290,19 @@ export const OCCASION_META = {
 };
 
 /**
- * The sets tagged with one occasion, grouped by category, in menu order.
+ * The sets tagged with one occasion (or any of several), grouped by category, in menu order.
  * A category with no matching set is dropped entirely — seemantham has no
  * dinner set, and an empty heading over an empty list is worse than no
  * section at all.
  */
-export function setsByCategory(menus, occKey) {
+export function setsByCategory(menus, occKeys) {
+  const keys = [].concat(occKeys);
   return ORDER
     .map(cat => ({
       cat,
       label: menus[cat].label,
       total: menus[cat].menus.length,
-      sets: menus[cat].menus.filter(m => (m.occasions || []).includes(occKey))
+      sets: menus[cat].menus.filter(m => (m.occasions || []).some(o => keys.includes(o)))
     }))
     .filter(group => group.sets.length > 0);
 }

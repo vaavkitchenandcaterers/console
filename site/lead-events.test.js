@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import { readFileSync } from 'node:fs';
-import { leadEventFor, POSITIONS } from './lead-events.js';
+import { leadEventFor, quoteLeadEvent, POSITIONS } from './lead-events.js';
 
 const WA = 'https://wa.me/919655356333?text=Hello%20VAAV';
 const link = fields => Object.assign({ href: '', id: '', className: '', dataset: {} }, fields);
@@ -46,6 +46,23 @@ describe('leadEventFor', () => {
 
   it('returns null when there is no link at all', () => {
     expect(leadEventFor(null)).toBeNull();
+  });
+
+  it('lets a link name its own position with data-cta-position', () => {
+    expect(leadEventFor(link({ href: 'tel:+919655356333', className: 'js-call-link', dataset: { ctaPosition: 'hero' } })))
+      .toEqual(lead('call', 'hero'));
+    expect(leadEventFor(link({ href: WA, dataset: { ctaPosition: 'hero', waContext: 'wedding and reception catering' } })))
+      .toEqual(lead('whatsapp', 'hero', 'wedding and reception catering'));
+  });
+});
+
+describe('quoteLeadEvent', () => {
+  it('describes a quote form submission', () => {
+    expect(quoteLeadEvent('Wedding & reception')).toEqual(lead('quote_form', 'quote_form', 'Wedding & reception'));
+  });
+
+  it('falls back to general when the form names no occasion', () => {
+    expect(quoteLeadEvent('')).toEqual(lead('quote_form', 'quote_form'));
   });
 });
 

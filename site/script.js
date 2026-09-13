@@ -1,6 +1,8 @@
 import { createShortlist, formatEventDate } from './shortlist.js';
 import { escapeHtml, countDishes } from './menu-format.js';
-import { leadEventFor } from './lead-events.js';
+import { leadEventFor, quoteLeadEvent } from './lead-events.js';
+import { buildQuoteMessage } from './quote-form.js';
+import { VAAV_REVIEWS } from './reviews.js';
 
 /* ============================================================
    VAAV Kitchen and Caterers: site interactivity
@@ -69,14 +71,56 @@ document.querySelectorAll('.js-greviews').forEach(a => {
 window.VaavShortlist = createShortlist(localStorage);
 
 /* ============================================================
-   TESTIMONIALS: paste your real Google reviews here.
-   Each: { name, text, rating (1-5), when }.  Keep 3–6 for a tidy grid.
+   QUOTE FORM (occasion service pages): compose a WhatsApp
+   message. Nothing is stored on or sent to this site.
    ============================================================ */
-const VAAV_REVIEWS = [
-  { name: "Varsha Balaraman", rating: 5, when: "9 weeks ago", text: "I have given order for Tiffin that too in a short span with 100% doubt becoz I could not be able to judge the vendor by Google reviews. But the food they provided is really awesome. The quality and quantity of the food is really worth the money. Please do trust this guys for your events." },
-  { name: "Dhakshinamoorthi Arumugam", rating: 5, when: "12 weeks ago", text: "I have ordered breakfast and lunch for our family function. The food was so delicious and very tasty. The attitude of the Caterer is also very conducive and encouraging." },
-  { name: "Suganya Venkatraman", rating: 5, when: "14 weeks ago", text: "Good taste and good service." }
-];
+(function () {
+  const form = document.querySelector('form.quote-form');
+  if (!form) return;
+  const byId = id => document.getElementById(id);
+  const f = { date: byId('qf-date'), guests: byId('qf-guests'), area: byId('qf-area'), menu: byId('qf-menu'), name: byId('qf-name') };
+  f.date.min = todayISO();
+
+  // Shared with the shortlist drawer: details typed in one appear in the other.
+  const S = window.VaavShortlist;
+  const ev = S.getState().event;
+  ['name', 'guests', 'date'].forEach(function (k) {
+    if (!f[k].value && ev[k]) f[k].value = ev[k];
+    f[k].addEventListener('input', function () { S.setEventField(k, f[k].value); });
+  });
+
+  document.querySelectorAll('[data-quote-set]').forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      f.menu.value = btn.dataset.quoteSet;
+      form.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      f.date.focus({ preventScroll: true });
+    });
+  });
+
+  form.addEventListener('submit', function (e) {
+    e.preventDefault();
+    if (!form.reportValidity()) return;
+    const occasion = form.dataset.quoteOccasion || '';
+    const meals = [...form.querySelectorAll('.qf-meals input:checked')].map(function (i) { return i.value; });
+    const url = waLink(buildQuoteMessage({
+      occasion: occasion, date: f.date.value, guests: f.guests.value, meals: meals,
+      area: f.area.value, menu: f.menu.value, name: f.name.value
+    }, form.dataset.quoteRef || ''));
+    S.setEventField('occasion', occasion);
+    const lead = quoteLeadEvent(occasion);
+    if (typeof window.gtag === 'function') window.gtag('event', lead.name, lead.params);
+    // Not window.open(url, '_blank', 'noopener'): with noopener it always returns
+    // null, which would make the fallback below open WhatsApp a second time.
+    const win = window.open(url, '_blank');
+    if (win) win.opener = null;
+    else window.location.href = url;
+  });
+})();
+
+/* ============================================================
+   TESTIMONIALS: the reviews live in site/reviews.js, shared with
+   the occasion service pages. Paste real Google reviews there.
+   ============================================================ */
 
 (function () {
   const grid = document.getElementById('reviewGrid');
@@ -553,10 +597,10 @@ const VAAV_REVIEWS = [
 (function () {
   const S = window.VaavShortlist;
   const body = document.getElementById('vaav-sl-body');
-  // Copy under review; see docs/site/2026-08-30-send-seam-plan.md, open question:
-  // is "within the hour" a promise the kitchen actually keeps? Change these two
-  // strings and nothing else if the honest answer is "same day".
-  const REPLY_OPEN = 'We usually reply within the hour.';
+  // Copy settled 13 Sep 2026: the owner confirmed "within the hour" is not a
+  // promise the kitchen can keep (docs/site/2026-08-30-send-seam-plan.md asked),
+  // so the open-hours line states the hours instead of a reply time.
+  const REPLY_OPEN = 'We reply between 7 AM and 9 PM, every day.';
   const REPLY_CLOSED = 'The kitchen opens at 7 AM, and we’ll reply then.';
   function replyLine() {
     const h = new Date().getHours();

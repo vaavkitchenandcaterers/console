@@ -33,6 +33,12 @@ export function leadEventFor(link) {
 
   const context = (link.dataset && link.dataset.waContext) || '';
   const hit = POSITIONS.find(([selector]) => matches(link, selector));
-  const cta_position = hit ? hit[1] : (context ? 'context_button' : 'inline');
+  const own = (link.dataset && link.dataset.ctaPosition) || '';
+  const cta_position = own || (hit ? hit[1] : (context ? 'context_button' : 'inline'));
   return { name: 'generate_lead', params: { method, cta_position, occasion: context || 'general' } };
+}
+
+/** The lead a quote form submission produces. Not a click, so leadEventFor() never sees it. */
+export function quoteLeadEvent(occasion) {
+  return { name: 'generate_lead', params: { method: 'quote_form', cta_position: 'quote_form', occasion: occasion || 'general' } };
 }

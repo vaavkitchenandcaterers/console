@@ -45,6 +45,8 @@ https://vaavkitchenandcaterers.netlify.app/*  https://vaavkitchenandcaterers.com
 /menu/dinner/index.html   /menu/dinner/   301!
 /menu/housewarming/index.html  /menu/housewarming/  301!
 /menu/seemantham/index.html    /menu/seemantham/    301!
+/services/wedding-reception-catering/index.html  /services/wedding-reception-catering/  301!
+/services/puja-homam-catering/index.html        /services/puja-homam-catering/        301!
 
 # site/ is both the Netlify publish directory and the npm project root, so the
 # files that say how the site is built and tested are served alongside the site
@@ -80,6 +82,9 @@ https://vaavkitchenandcaterers.netlify.app/*  https://vaavkitchenandcaterers.com
 /chrome-sync.test.js    /404.html   404!
 /homepage-seo.test.js   /404.html   404!
 /lead-events.test.js    /404.html   404!
+/quote-form.test.js     /404.html   404!
+/service-pages.test.js  /404.html   404!
+/services-hub.test.js   /404.html   404!
 /guest-minimum.test.js  /404.html   404!
 /menu-data.test.js      /404.html   404!
 /menu-occasion-pages.test.js  /404.html   404!
