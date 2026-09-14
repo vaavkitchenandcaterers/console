@@ -917,3 +917,25 @@ section.sec{padding-top:24px;padding-bottom:56px}
   .sec .more-tiles .sec-head{margin-bottom:32px}
   .sec .more-tiles .sec-head h2{font-size:2.1rem}
 }
+/* Home page: the service-page rhythm, in its own scope. Sections 40px a side on
+   phones and 56px from 761px (the site-wide 90px left 180px between blocks),
+   headings 24px (32px) above their content, the intro without its -6px, and
+   grounds that alternate so no two neighbouring sections share one (Why, Reviews
+   and FAQ ran as one beige band). Not .svc-main: its About rules turn .stat-row
+   into a three-column grid on phones, which would break the four-stat trust band.
+   The FAQ list keeps its centred 760px column (owner, 14 Sep 2026). */
+.home-main > section:not(.trust-band){padding:40px 0}
+.home-main .sec-head{max-width:760px;margin-bottom:24px}
+.home-main .sec-head h2{text-wrap:balance}
+.home-main .menu-intro{margin:0 0 24px;max-width:62ch}
+.home-main .reviews-summary{margin-bottom:24px}
+.home-main .section-cta{margin-top:24px}
+.home-main > #packages{background:var(--cream-deep)}
+.home-main > #why,.home-main > #faq{background:transparent}
+.home-main #home-cta .eyebrow{display:block}
+.home-main #home-cta h2{margin-top:0}
+@media(min-width:761px){
+  .home-main > section:not(.trust-band){padding:56px 0}
+  .home-main .sec-head{margin-bottom:32px}
+  .home-main .section-cta{margin-top:32px}
+}

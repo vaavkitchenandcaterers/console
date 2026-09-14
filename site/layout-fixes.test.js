@@ -112,3 +112,33 @@ describe('category menu page jump list', () => {
     expect(rules('.set-jump a')[0]).toMatch(/min-width:44px;min-height:44px/);
   });
 });
+
+describe('home page section rhythm', () => {
+  const main = HOME.match(/<main id="main" class="home-main">([\s\S]*?)<\/main>/);
+
+  it('wraps the seven sections after the hero in main#main, and the skip link targets it', () => {
+    expect(main, 'no <main id="main" class="home-main">').not.toBeNull();
+    const secs = [...main[1].matchAll(/<section\b[^>]*?(?:id="([^"]+)"|class="(trust-band)")/g)].map(m => m[1] || m[2]);
+    expect(secs).toEqual(['trust-band', 'services', 'packages', 'why', 'reviews', 'faq', 'home-cta']);
+    // script.js observes .hero for the phone action bar and the floating WhatsApp button.
+    expect(HOME.indexOf('<header class="hero"'), 'hero stays before main').toBeLessThan(HOME.indexOf('<main id="main"'));
+    expect(HOME).toContain('<a class="skip-link" href="#main">Skip to content</a>');
+    // .svc-main's About rules make .stat-row a three-column grid on phones.
+    expect(HOME, 'home must not borrow .svc-main').not.toContain('svc-main');
+  });
+
+  it('uses the service-page spacing numbers, scoped to .home-main', () => {
+    const pad = rules('.home-main > section:not(.trust-band)');
+    expect(pad[0]).toMatch(/padding:40px 0/);
+    expect(pad[1]).toMatch(/padding:56px 0/);
+    const head = rules('.home-main .sec-head');
+    expect(head[0]).toMatch(/margin-bottom:24px/);
+    expect(head[1]).toMatch(/margin-bottom:32px/);
+    expect(rules('.home-main .menu-intro')[0]).toMatch(/margin:0 0 24px/);
+  });
+
+  it('alternates grounds, so Why, Reviews and FAQ no longer run as one band', () => {
+    expect(rules('.home-main > #packages')[0]).toMatch(/background:var\(--cream-deep\)/);
+    expect(rules('.home-main > #why,.home-main > #faq')[0]).toMatch(/background:transparent/);
+  });
+});
