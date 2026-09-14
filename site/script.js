@@ -391,8 +391,13 @@ window.VaavShortlist = createShortlist(localStorage);
       p.onclick = () => { curIdx = i; render(); };
       pickEl.appendChild(p);
     });
+    // Centre the active pill inside the row only. scrollIntoView would also
+    // scroll the window to reach the row, jumping /menu/ down on first load.
     const activePill = pickEl.querySelector('.mp.active');
-    if (activePill) activePill.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
+    if (activePill) {
+      const row = pickEl.getBoundingClientRect(), pill = activePill.getBoundingClientRect();
+      pickEl.scrollBy({ left: (pill.left - row.left) - (row.width - pill.width) / 2, behavior: 'smooth' });
+    }
 
     // selected menu card
     const menu = shown[curIdx];
