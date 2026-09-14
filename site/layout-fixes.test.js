@@ -32,3 +32,18 @@ describe('menu explorer keeps the page still', () => {
     expect(JS).toMatch(/pickEl\.scrollBy\(\{\s*left:/);
   });
 });
+
+describe('the closed feast drawer stays out of sight and out of reach', () => {
+  it('is visibility:hidden while closed, so its close button leaves the tab order', () => {
+    expect(rules('.vaav-sl-drawer')[0]).toMatch(/visibility:hidden/);
+    expect(rules('.vaav-sl-drawer.open')[0]).toMatch(/visibility:visible/);
+  });
+
+  it('casts its shadow only while open, on both the side panel and the phone sheet', () => {
+    // An off-canvas panel still paints its box-shadow into the viewport.
+    for (const body of rules('.vaav-sl-drawer')) expect(body).not.toMatch(/box-shadow/);
+    const open = rules('.vaav-sl-drawer.open');
+    expect(open).toHaveLength(2);
+    for (const body of open) expect(body).toMatch(/box-shadow:/);
+  });
+});
