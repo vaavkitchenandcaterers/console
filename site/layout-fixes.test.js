@@ -81,3 +81,10 @@ describe('home hero leaf on phones', () => {
     expect(CSS).toContain('@media(max-width:760px){.hd-leaf2,.hd-anise{display:none}.hd-leaf1{top:10px;width:46px;opacity:.4}}');
   });
 });
+
+describe('top utility bar tap targets', () => {
+  it('gives every top-bar link the full 38px bar height to tap', () => {
+    const [link] = rules('a.tb-item');
+    expect(link).toMatch(/min-height:38px/);
+  });
+});
