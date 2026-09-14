@@ -92,6 +92,18 @@ describe('generated menu category pages', () => {
     }
   });
 
+  it('ends with described tiles to the other two meals and both occasion service pages', () => {
+    for (const cat of CATS) {
+      const block = pageFor(cat).match(/<div class="more-tiles">[\s\S]*?<\/ul>/)[0];
+      const hrefs = [...block.matchAll(/<a class="menu-tile" href="([^"]+)"/g)].map(m => m[1]);
+      expect(hrefs, `${cat} tiles`).toEqual([
+        ...CATS.filter(c => c !== cat).map(c => `/menu/${c}/`),
+        '/services/wedding-reception-catering/', '/services/puja-homam-catering/'
+      ]);
+      expect((block.match(/<span class="mt-desc">[^<]+<\/span>/g) || []).length, `${cat} tile descriptions`).toBe(hrefs.length);
+    }
+  });
+
   it('/menu/ links to all three category pages and they are in the sitemap', () => {
     const hub = readFileSync(new URL('./menu/index.html', import.meta.url), 'utf8');
     const sitemap = readFileSync(new URL('./sitemap.xml', import.meta.url), 'utf8');

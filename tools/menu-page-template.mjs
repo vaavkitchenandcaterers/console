@@ -60,6 +60,39 @@ export const CATEGORY_META = {
 
 export const ORDER = ['tiffin', 'lunch', 'dinner'];
 
+/** One line per category, for the "Keep exploring" tiles at the foot of the other menu pages. */
+const CATEGORY_BLURB = {
+  tiffin: 'Idli, dosai, pongal and vadai spreads',
+  lunch: 'Banana-leaf sappadu, simple to full feast',
+  dinner: 'Sweets, starters, biryani and a full main course'
+};
+
+// The two occasion service pages, as tiles. service-page-template.mjs imports
+// this module, so its SERVICE_META cannot be imported back here;
+// site/service-pages.test.js pins these to it instead.
+export const SERVICE_TILES = [
+  { href: '/services/wedding-reception-catering/', label: 'Wedding & reception catering', blurb: 'Muhurtham saapadu to the evening reception' },
+  { href: '/services/puja-homam-catering/', label: 'Puja, homam & temple catering', blurb: 'Sattvic meals, no onion or garlic' }
+];
+
+/** The "Keep exploring" tile row that ends a menu page: a name to scan and one line to choose by. */
+function renderMoreTiles(tiles) {
+  return [
+    '    <div class="more-tiles">',
+    '      <div class="sec-head">',
+    '        <p class="eyebrow">Keep exploring</p>',
+    '        <h2>More menus and occasions</h2>',
+    '      </div>',
+    '      <ul class="menu-tiles occ-tiles" role="list">',
+    ...tiles.map(t =>
+      `        <li><a class="menu-tile" href="${t.href}"><span class="mt-label">${escapeHtml(t.label)}</span>` +
+      `<span class="mt-desc">${escapeHtml(t.blurb)}</span><span class="mt-go" aria-hidden="true">→</span></a></li>`
+    ),
+    '      </ul>',
+    '    </div>'
+  ].join('\n');
+}
+
 /** Rebuild the head: keep the source chrome byte-for-byte, swap only the per-page meta. */
 export function buildHead(sourceHead, url, meta) {
   let h = sourceHead
@@ -176,10 +209,12 @@ export function renderCategoryPage(catKey, data, chrome) {
     // argument, which would land in renderSet's `level` and emit <h0>, <h1>…
     data.menus.map(m => renderSet(m, 2)).join('\n'),
     '    </div>',
-    '    <p class="set-more">Mix and match across any set, and we tailor the spread to your event. <a href="/menu/">Browse the menus one at a time</a>, or see every ' +
-      others.map(c => `<a href="/menu/${c}/">${escapeHtml(CATEGORY_META[c].h1.replace(' set menus', ''))} set</a>`).join(' and every ') +
-      '. Planning a wedding or a puja? See how we cater a <a href="/services/wedding-reception-catering/">wedding and reception</a> or a <a href="/services/puja-homam-catering/">puja or homam</a>.</p>',
+    '    <p class="set-more">Mix and match across any set, and we tailor the spread to your event.</p>',
     `    <p class="set-cta"><a class="btn" data-wa-context="${escapeHtml(data.label.toLowerCase())} catering" href="${waHref}" target="_blank" rel="noopener noreferrer">Ask for a ${escapeHtml(data.label.toLowerCase())} quote on WhatsApp</a></p>`,
+    renderMoreTiles([
+      ...others.map(c => ({ href: `/menu/${c}/`, label: CATEGORY_META[c].h1, blurb: CATEGORY_BLURB[c] })),
+      ...SERVICE_TILES
+    ]),
     '  </section>',
     '</main>'
   ].join('\n');
@@ -261,6 +296,7 @@ export const OCCASION_META = {
     label: 'Housewarming',
     noun: 'housewarming',
     plural: 'housewarmings',
+    blurb: 'Set menus for a grihapravesam',
     h1: 'Housewarming catering menus',
     eyebrow: 'By occasion &middot; Housewarming',
     title: n => `Housewarming Catering Menu: ${n} Pure Veg Sets | VAAV Kitchen`,
@@ -276,6 +312,7 @@ export const OCCASION_META = {
     label: 'Seemantham',
     noun: 'seemantham',
     plural: 'seemanthams',
+    blurb: 'Set menus for the baby shower',
     h1: 'Seemantham catering menus',
     eyebrow: 'By occasion &middot; Seemantham',
     title: n => `Seemantham Catering Menu: ${n} Pure Veg Sets | VAAV Kitchen`,
@@ -393,10 +430,13 @@ export function renderOccasionPage(occKey, menus, chrome) {
     `    <p class="menu-intro">${meta.intro}</p>`,
     `    <p class="set-count"><b>${count}</b> sets &middot; every dish listed below &middot; all customisable, including Jain and no onion-garlic.</p>`,
     ...sections,
-    '    <p class="set-more">Not seeing the shape of your function? <a href="/menu/">Browse all 66 sets one at a time</a>' +
-      others.map(o => `, or see the sets we cook for a <a href="/menu/${o}/">${escapeHtml(OCCASION_META[o].noun)}</a>`).join('') +
-      '. We tailor any set to your day.</p>',
+    '    <p class="set-more">Not seeing the shape of your function? We tailor any set to your day.</p>',
     `    <p class="set-cta"><a class="btn" data-wa-context="${escapeHtml(meta.noun)} catering" href="${waHref}" target="_blank" rel="noopener noreferrer">Ask for a ${escapeHtml(meta.noun)} quote on WhatsApp</a></p>`,
+    renderMoreTiles([
+      ...others.map(o => ({ href: `/menu/${o}/`, label: OCCASION_META[o].h1, blurb: OCCASION_META[o].blurb })),
+      ...SERVICE_TILES,
+      { href: '/menu/', label: 'Every set menu', blurb: 'Browse them one at a time and build your feast' }
+    ]),
     '  </section>',
     '</main>'
   ].join('\n');

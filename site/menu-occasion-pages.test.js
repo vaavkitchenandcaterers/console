@@ -136,6 +136,18 @@ describe('generated menu occasion pages', () => {
     }
   });
 
+  it('ends with described tiles to the other occasion, both service pages and the menu hub', () => {
+    for (const occ of OCCASIONS) {
+      const block = pageFor(occ).match(/<div class="more-tiles">[\s\S]*?<\/ul>/)[0];
+      const hrefs = [...block.matchAll(/<a class="menu-tile" href="([^"]+)"/g)].map(m => m[1]);
+      expect(hrefs, `${occ} tiles`).toEqual([
+        ...OCCASIONS.filter(o => o !== occ).map(o => `/menu/${o}/`),
+        '/services/wedding-reception-catering/', '/services/puja-homam-catering/', '/menu/'
+      ]);
+      expect((block.match(/<span class="mt-desc">[^<]+<\/span>/g) || []).length, `${occ} tile descriptions`).toBe(hrefs.length);
+    }
+  });
+
   it('is reachable from /menu/ and /services/, and listed in the sitemap', () => {
     const hub = read('./menu/index.html');
     const services = read('./services/index.html');

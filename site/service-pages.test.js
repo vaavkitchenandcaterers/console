@@ -3,6 +3,7 @@ import { readFileSync } from 'node:fs';
 import { loadMenus, loadChrome } from '../tools/build-menu-pages.mjs';
 import { GENERATED_PAGES, chromeSourceFor } from '../tools/sync-chrome.mjs';
 import { renderServicePage, SERVICES, SERVICE_META } from '../tools/service-page-template.mjs';
+import { SERVICE_TILES } from '../tools/menu-page-template.mjs';
 import { escapeHtml } from './menu-format.js';
 import { VAAV_REVIEWS } from './reviews.js';
 
@@ -174,6 +175,12 @@ describe('generated occasion service pages', () => {
       expect((sec.match(/<span class="mt-desc">[^<]+<\/span>/g) || []).length, `${key} tile descriptions`).toBe(hrefs.length);
       expect(sec).toContain('<a href="/services/">every occasion we cater</a>');
     }
+  });
+
+  it('is described the same on the menu pages\' tiles as on its own "other occasions" tiles', () => {
+    expect(SERVICE_TILES).toEqual(
+      SERVICES.map(k => ({ href: `/services/${k}/`, label: SERVICE_META[k].label, blurb: SERVICE_META[k].blurb }))
+    );
   });
 
   it('matches /corporate/ CSP, and is in the sitemap and _redirects', () => {
