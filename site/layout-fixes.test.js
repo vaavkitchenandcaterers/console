@@ -47,3 +47,12 @@ describe('the closed feast drawer stays out of sight and out of reach', () => {
     for (const body of open) expect(body).toMatch(/box-shadow:/);
   });
 });
+
+describe('about page quote attribution', () => {
+  it('opts out of the site footer band that the bare footer{} rule paints', () => {
+    const [by] = rules('.quote-card .by');
+    expect(by).toMatch(/background:none/);
+    expect(by).toMatch(/padding:0/);
+    expect(by).toMatch(/text-align:left/);
+  });
+});
