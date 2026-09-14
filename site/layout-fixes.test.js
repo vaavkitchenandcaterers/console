@@ -74,3 +74,10 @@ describe('home hero rotating word', () => {
     expect(rules('.cyc-track b span')[0]).toMatch(/text-decoration:underline 2px var\(--yellow\)/);
   });
 });
+
+describe('home hero leaf on phones', () => {
+  it('is pinned near the top so it clears the eyebrow line', () => {
+    // At top:9% of a tall phone hero the leaf landed on "AUTHENTIC TAMIL CATERING".
+    expect(CSS).toContain('@media(max-width:760px){.hd-leaf2,.hd-anise{display:none}.hd-leaf1{top:10px;width:46px;opacity:.4}}');
+  });
+});

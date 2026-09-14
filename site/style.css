@@ -105,7 +105,7 @@ nav.scrolled{box-shadow:0 8px 26px -16px rgba(20,61,29,.45);background:rgba(247,
 .hd-anise{top:8%;right:3.5%;width:44px;color:var(--yellow-deep);opacity:.55}
 .hd-anise svg{animation-delay:.6s;animation-duration:9s}
 @keyframes floaty{0%,100%{transform:translateY(0)}50%{transform:translateY(-13px)}}
-@media(max-width:760px){.hd-leaf2,.hd-anise{display:none}.hd-leaf1{width:46px;opacity:.4}}
+@media(max-width:760px){.hd-leaf2,.hd-anise{display:none}.hd-leaf1{top:10px;width:46px;opacity:.4}}
 .hero-grid{display:grid;grid-template-columns:1.05fr .95fr;gap:56px;align-items:center}
 .hero h1{font-size:clamp(1.75rem,0.964rem + 3.929vw,4.5rem);color:var(--green-deep);letter-spacing:-.01em}
 .hero h1 em{font-style:italic;color:var(--kumkum)}
