@@ -825,6 +825,15 @@ body.vaav-sl-open .vaav-sl-pill,body.vaav-sl-open .wa-float,body.vaav-sl-open .m
 .svc-main .wa-cta-inner .wa-call{margin-top:8px}
 .svc-main .wa-cta-inner .g-reviews-dark{margin-top:16px}
 @media(min-width:761px){.svc-main .contact-grid{margin-top:40px}}
+/* Laptops, the short 1280x590 screen included: a tighter contact hero so the whole
+   WhatsApp button lands on the first screen. 28px top, the grid 24px under the
+   intro, the card padded 24px with 16px from its text to the button. */
+@media(min-width:761px){
+  .svc-main > #contact.svc-hero{padding-top:28px}
+  .svc-main .contact-grid{margin-top:24px}
+  .svc-main .wa-cta-inner{padding:24px}
+  .svc-main .wa-cta-inner p{margin-bottom:16px}
+}
 @media(min-width:761px){.svc-main .svc-list{margin-top:40px}}
 @media(min-width:900px){.svc-main .svc-list{grid-template-columns:1fr 1fr}}
 /* Generated menu pages: the five /menu/<category>/ and /menu/<occasion>/ pages are
