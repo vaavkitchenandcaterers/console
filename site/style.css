@@ -661,7 +661,9 @@ body.vaav-sl-open .vaav-sl-pill,body.vaav-sl-open .wa-float,body.vaav-sl-open .m
 .quote-sec{background:var(--cream-deep)}
 .quote-form{max-width:640px;display:grid;gap:16px;background:var(--white);border:1px solid var(--border);border-radius:20px;padding:22px}
 .qf-row{display:grid;grid-template-columns:1fr;gap:16px}
-.qf-field{display:grid;gap:6px;border:0;padding:0;margin:0;min-width:0}
+/* align-content:start: in the two-column row the Guests cell is taller (its help
+   line), and a stretched Date cell would grow its input to match. */
+.qf-field{display:grid;gap:6px;align-content:start;border:0;padding:0;margin:0;min-width:0}
 .qf-field > span,.qf-field legend{font-family:'Catamaran',sans-serif;font-weight:700;font-size:.9rem;color:var(--green-deep)}
 .qf-field input[type=text],.qf-field input[type=date],.qf-field input[type=number]{font:inherit;width:100%;min-height:46px;padding:8px 12px;border:1px solid var(--border-track);border-radius:10px;background:var(--cream);color:var(--ink)}
 .qf-field input:focus-visible,.qf-meals input:focus-visible{outline:3px solid var(--green-ink);outline-offset:1px;box-shadow:none}
@@ -706,11 +708,11 @@ body.vaav-sl-open .vaav-sl-pill,body.vaav-sl-open .wa-float,body.vaav-sl-open .m
 /* Quote form: required markers, the minimum-guests note, the after-send status
    line, brand-coloured 20px checkboxes, and text links tall enough to tap. The
    empty status line stays rendered (a live region that is display:none can go
-   unannounced), so it cancels the form's grid gap instead. */
+   unannounced), but out of the grid flow, so it adds no second gap. */
 .qf-req{font-weight:600;font-size:.8rem;color:var(--muted)}
 .qf-help{font-size:.85rem;color:var(--muted)}
 .qf-status{margin:0;font-size:.95rem;font-weight:600;color:var(--green-deep)}
-.qf-status:empty{margin-top:-16px}
+.qf-status:empty{position:absolute}
 .qf-status a{color:var(--green-deep)}
 .qf-meals input{width:20px;height:20px;margin:0;accent-color:var(--green)}
 .svc-quick a,.qf-alt a{display:inline-block;padding:10px 0}

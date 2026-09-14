@@ -156,7 +156,7 @@ function renderMenuChoice(meta, menus) {
 function menuField(meta, menus) {
   if (!meta.menuChoice) return [];
   return [
-    '      <label class="qf-field"><span>Menu you liked (optional)</span><select id="qf-menu">',
+    '      <label class="qf-field"><span>Set menu</span><select id="qf-menu">',
     '        <option value="">Not sure yet</option>',
     ...ORDER.map(c => [
       `        <optgroup label="${escapeHtml(menus[c].label)}">`,
@@ -184,7 +184,7 @@ function renderQuoteForm(key, meta, menus) {
     '        <label class="qf-field"><span>Guests <span class="qf-req">(required)</span></span><input type="number" id="qf-guests" inputmode="numeric" min="30" step="1" required aria-describedby="qf-guests-help" placeholder="e.g. 150"><small class="qf-help" id="qf-guests-help">Minimum 30 guests</small></label>',
     '      </div>',
     '      <fieldset class="qf-field qf-meals">',
-    '        <legend>Meals</legend>',
+    '        <legend>Which meals?</legend>',
     ...MEALS.map(m => `        <label><input type="checkbox" value="${m}"> ${m}</label>`),
     '      </fieldset>',
     '      <label class="qf-field"><span>Area or venue</span><input type="text" id="qf-area" autocomplete="address-level2" placeholder="e.g. Tambaram"></label>',
@@ -193,8 +193,9 @@ function renderQuoteForm(key, meta, menus) {
     '      <button type="submit" class="wa-big">Send on WhatsApp</button>',
     // Filled by script.js after submit, so the visitor knows what happened.
     '      <p class="qf-status" role="status" aria-live="polite"></p>',
-    `      <p class="qf-alt">Rather talk? <a href="${TEL}" data-cta-position="quote_form">Call ${PHONE}</a>, 7 AM to 9 PM.</p>`,
+    // Says what the button does before the fallback, so the note reads as part of it.
     '      <p class="qf-note">This opens WhatsApp with your details filled in. Nothing is stored on this website.</p>',
+    `      <p class="qf-alt">Rather talk? <a href="${TEL}" data-cta-position="quote_form">Call ${PHONE}</a>, 7 AM to 9 PM.</p>`,
     '    </form>',
     '  </div>',
     '</section>'
