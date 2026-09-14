@@ -159,7 +159,9 @@ nav.scrolled{box-shadow:0 8px 26px -16px rgba(20,61,29,.45);background:rgba(247,
 /* ---------- Sections ---------- */
 section{padding:90px 0}
 .sec-head{max-width:34rem;margin-bottom:48px}
-.sec-head h2{font-size:clamp(1.5rem,1.1rem + 2vw,2.9rem);color:var(--green-deep);margin-top:10px}
+/* The h1 too: inner pages put their page title in .sec-head, and without it the
+   title fell back to the browser's 32px ink, smaller than the h2s below it. */
+.sec-head h1,.sec-head h2{font-size:clamp(1.5rem,1.1rem + 2vw,2.9rem);color:var(--green-deep);margin-top:10px}
 
 /* services */
 .cards{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;list-style:none;margin:0;padding:0}
