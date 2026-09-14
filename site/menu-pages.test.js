@@ -70,6 +70,23 @@ describe('generated menu category pages', () => {
     }
   });
 
+  it('opens with a jump list to every set, and every set links back to it', () => {
+    for (const cat of CATS) {
+      const html = pageFor(cat);
+      const nav = html.match(/<nav class="set-jump" id="set-jump" aria-label="Jump to a set">([\s\S]*?)<\/nav>/);
+      expect(nav, `${cat} has no jump list`).not.toBeNull();
+      const targets = [...nav[1].matchAll(/href="#([^"]+)"/g)].map(x => x[1]);
+      expect(targets, `${cat} jump list order`).toEqual(menus[cat].menus.map(m => slug(m.name)));
+      const backs = (html.match(/<a class="set-top" href="#set-jump">/g) || []).length;
+      expect(backs, `${cat} back links`).toBe(menus[cat].menus.length);
+    }
+    // Occasion pages have no #set-jump; a back link there would point nowhere.
+    for (const occ of ['housewarming', 'seemantham']) {
+      const html = readFileSync(new URL(`./menu/${occ}/index.html`, import.meta.url), 'utf8');
+      expect(html, `${occ} must not carry set-top links`).not.toContain('class="set-top"');
+    }
+  });
+
   it('no generated page reintroduces a placeholder href', () => {
     for (const cat of CATS) {
       expect(pageFor(cat), `${cat} has href="#"`).not.toContain('href="#"');

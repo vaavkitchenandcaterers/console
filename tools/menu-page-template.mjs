@@ -159,8 +159,10 @@ function buildSchema(catKey, data) {
  * h2, so 3. The group label always sits one level below the name, and the
  * stylesheet keys off .set-name / .set-group rather than the element, because
  * the element is no longer fixed.
+ *
+ * `backHref`, when given, ends the set with a "Back to all sets" link to it.
  */
-export function renderSet(m, level = 2) {
+export function renderSet(m, level = 2, backHref = '') {
   const occ = (m.occasions || []).map(o => escapeHtml(titleCase(o))).join(', ');
   const total = countDishes(m.groups);
   const parts = [];
@@ -176,6 +178,9 @@ export function renderSet(m, level = 2) {
     for (const dish of items || []) parts.push(`          <li>${escapeHtml(dish)}</li>`);
     parts.push('        </ul>');
   }
+  // Category pages run to 30,000px on a phone; each set links back to the jump
+  // list at the top. Occasion pages pass nothing: they have no list to return to.
+  if (backHref) parts.push(`        <p class="set-back"><a class="set-top" href="${backHref}">Back to all sets <span aria-hidden="true">↑</span></a></p>`);
   parts.push('      </article>');
   return parts.join('\n');
 }
@@ -204,10 +209,16 @@ export function renderCategoryPage(catKey, data, chrome) {
     // data.note is authored HTML containing <strong>; it is the one value inserted raw.
     `    <p class="menu-intro">${data.note}</p>`,
     `    <p class="set-count"><b>${data.menus.length}</b> sets &middot; every dish listed below &middot; all customisable, including Jain and no onion-garlic.</p>`,
+    // Numbers, not names, so 26 links fit a phone in a few rows; the aria-label
+    // carries the full set name for screen readers.
+    `    <nav class="set-jump" id="set-jump" aria-label="Jump to a set"><span class="set-jump-label">Jump to a set</span>${data.menus.map(m => {
+      const short = m.name.startsWith(`${data.label} `) ? m.name.slice(data.label.length + 1) : m.name;
+      return `<a href="#${slug(m.name)}" aria-label="${escapeHtml(m.name)}">${escapeHtml(short)}</a>`;
+    }).join('')}</nav>`,
     '    <div class="set-list">',
     // Arrow, not a bare reference: Array#map passes the index as the second
     // argument, which would land in renderSet's `level` and emit <h0>, <h1>…
-    data.menus.map(m => renderSet(m, 2)).join('\n'),
+    data.menus.map(m => renderSet(m, 2, '#set-jump')).join('\n'),
     '    </div>',
     '    <p class="set-more">Mix and match across any set, and we tailor the spread to your event.</p>',
     `    <p class="set-cta"><a class="btn" data-wa-context="${escapeHtml(data.label.toLowerCase())} catering" href="${waHref}" target="_blank" rel="noopener noreferrer">Get a ${escapeHtml(data.label.toLowerCase())} quote on WhatsApp</a></p>`,

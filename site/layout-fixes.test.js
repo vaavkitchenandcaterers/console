@@ -104,3 +104,11 @@ describe('wordmark subtitle', () => {
     expect(small).toMatch(/letter-spacing:\.2em/);
   });
 });
+
+describe('category menu page jump list', () => {
+  it('lands jumped-to sets below the sticky nav and keeps every jump link a 44px target', () => {
+    expect(rules('.sec .set')[0]).toMatch(/scroll-margin-top:96px/);
+    expect(rules('.set-jump')[0]).toMatch(/scroll-margin-top:96px/);
+    expect(rules('.set-jump a')[0]).toMatch(/min-width:44px;min-height:44px/);
+  });
+});

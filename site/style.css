@@ -629,6 +629,15 @@ body.vaav-sl-open .vaav-sl-pill,body.vaav-sl-open .wa-float,body.vaav-sl-open .m
 .set-dishes li:last-child{border-bottom:0}
 .set-more{color:var(--muted);font-size:.98rem;line-height:1.65;margin:30px 0 18px;max-width:60ch}
 .set-cta{margin:0 0 10px}
+/* Jump list + back links on the long category menu pages (menu-page-template.mjs) */
+.set-jump{position:static;top:auto;z-index:auto;background:transparent;backdrop-filter:none;border:0;box-shadow:none;display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin:0 0 28px;scroll-margin-top:96px}
+.set-jump-label{flex-basis:100%;font-family:'Catamaran',sans-serif;font-weight:800;font-size:.8rem;letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
+.set-jump a{display:inline-flex;align-items:center;justify-content:center;min-width:44px;min-height:44px;padding:0 10px;border:1px solid var(--border);border-radius:22px;background:var(--white);color:var(--green-deep);font-family:'Catamaran',sans-serif;font-weight:700;text-decoration:none;transition:background .15s,color .15s}
+.set-jump a:hover,.set-jump a:focus-visible{background:var(--green);border-color:var(--green);color:var(--white)}
+.sec .set{scroll-margin-top:96px}
+.set-back{margin:0 0 6px}
+.set-top{display:inline-flex;align-items:center;gap:6px;min-height:44px;color:var(--green-deep);font-family:'Catamaran',sans-serif;font-weight:700;font-size:.88rem;text-decoration:none}
+.set-top:hover{text-decoration:underline}
 @media(min-width:760px){
   .set-list{grid-template-columns:1fr 1fr;gap:24px}
   .set{padding:26px 26px 10px}
