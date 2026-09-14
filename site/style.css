@@ -825,6 +825,35 @@ body.vaav-sl-open .vaav-sl-pill,body.vaav-sl-open .wa-float,body.vaav-sl-open .m
 .svc-main .wa-cta-inner .wa-call{margin-top:8px}
 .svc-main .wa-cta-inner .g-reviews-dark{margin-top:16px}
 @media(min-width:761px){.svc-main .contact-grid{margin-top:40px}}
+/* /about/ uses this layout too. The eyebrow is a block 8px over the h1, the h1 16px
+   over the story, the two story paragraphs 16px apart (they had no gap). The markup
+   is two columns: .about-story (text, then the button) and .about-aside (the quote
+   card, then the stats). From 900px they sit side by side, top-aligned, the stats
+   24px under the quote and the button 16px under the story, so it lands on a
+   1280x590 laptop's first screen. Below 900px both wrappers dissolve into one flex
+   column ordered story, stats, button, quote, so on phones the button still
+   finishes the story. Stats sit 24px apart so the three fit one row on a phone.
+   The reviews run 24px from the rating pill to the cards and 24px between cards. */
+.svc-main #about .eyebrow{display:block}
+.svc-main #about h1{margin:8px 0 16px}
+.svc-main .about-lede{margin:0}
+.svc-main .about-lede + .about-lede{margin-top:16px}
+.svc-main .stat-row{margin:0;gap:24px}
+.svc-main .about-story > .btn{display:flex;width:fit-content;margin-top:24px}
+.svc-main #about .about-grid{align-items:start}
+.svc-main .about-aside{display:grid;gap:24px;align-content:start}
+@media(max-width:899.98px){
+  .svc-main #about .about-grid{display:flex;flex-direction:column;align-items:stretch;gap:0}
+  .svc-main .about-story,.svc-main .about-aside{display:contents}
+  .svc-main .about-story > *{order:1}
+  .svc-main .about-aside .stat-row{order:2;margin-top:24px}
+  .svc-main .about-story > .btn{order:3}
+  .svc-main .about-aside .quote-card{order:4;margin-top:40px}
+}
+@media(min-width:761px){.svc-main > #about.svc-hero{padding-top:28px}}
+@media(min-width:900px){.svc-main .about-story > .btn{margin-top:16px}}
+.svc-main .reviews-summary{margin-bottom:24px}
+.svc-main .reviews-summary + .review-grid{gap:24px}
 /* Laptops, the short 1280x590 screen included: a tighter contact hero so the whole
    WhatsApp button lands on the first screen. 28px top, the grid 24px under the
    intro, the card padded 24px with 16px from its text to the button. */

@@ -183,8 +183,23 @@ describe('generated occasion service pages', () => {
     );
   });
 
-  it('/corporate/ and /contact/ share the service-page layout and end with the same occasion tiles', () => {
-    for (const page of ['corporate', 'contact']) {
+  it('/about/ keeps the button in the story column and the stats beside the quote, ordered stats-first on phones', () => {
+    const html = read('./about/index.html');
+    const story = html.match(/<div class="about-story[^"]*"[\s\S]*?<\/div>\s*<div class="about-aside">/)?.[0];
+    const aside = html.match(/<div class="about-aside">[\s\S]*?<\/ul>\s*<\/div>/)?.[0];
+    expect(story, 'no .about-story column').toBeTruthy();
+    expect(aside, 'no .about-aside column').toBeTruthy();
+    expect(story).toContain('class="btn"');
+    expect(story, 'stats belong beside the quote, not in the story').not.toContain('class="stat-row"');
+    expect(aside.indexOf('class="quote-card'), 'quote before stats in the aside').toBeLessThan(aside.indexOf('class="stat-row"'));
+    // Below 900px the columns dissolve and CSS order puts the stats before the button.
+    const css = read('./style.css');
+    expect(css).toContain('.svc-main .about-aside .stat-row{order:2;');
+    expect(css).toContain('.svc-main .about-story > .btn{order:3}');
+  });
+
+  it('/corporate/, /contact/ and /about/ share the service-page layout and end with the same occasion tiles', () => {
+    for (const page of ['corporate', 'contact', 'about']) {
       const html = read(`./${page}/index.html`);
       expect(html, `/${page}/ layout class`).toContain('<main id="main" class="svc-main">');
       const sec = html.match(/<section class="svc-others-sec">[\s\S]*?<\/section>/)?.[0];
