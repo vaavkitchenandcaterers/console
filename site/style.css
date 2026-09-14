@@ -810,6 +810,21 @@ body.vaav-sl-open .vaav-sl-pill,body.vaav-sl-open .wa-float,body.vaav-sl-open .m
 /* Its closing band opens on a small eyebrow: as a block it drops the taller line
    strut an inline span sits on, which set the band's content 5px below centre. */
 .svc-main #home-cta .eyebrow{display:block}
+/* /contact/ uses this layout too. Its hero has no .sec-head: the eyebrow is a block
+   16px under the breadcrumb and 8px over the h1, the intro 16px under that, the grid
+   32px (40px) below. The WhatsApp card leads the grid (first on phones, the left
+   column on laptops) and sits at the top of its cell instead of centred beside the
+   details, with one scale inside: 16px badge to heading, 8px heading to text, 24px
+   to the button, 8px to the call link, 16px to the reviews badge. */
+.svc-main #contact .eyebrow{display:block}
+.svc-main #contact h1{margin:8px 0 16px}
+.svc-main .contact-intro{margin-bottom:0}
+.svc-main .contact-grid{margin-top:32px}
+.svc-main .wa-cta{align-items:flex-start}
+.svc-main #contact .wa-cta-inner h2{margin:0 0 8px}
+.svc-main .wa-cta-inner .wa-call{margin-top:8px}
+.svc-main .wa-cta-inner .g-reviews-dark{margin-top:16px}
+@media(min-width:761px){.svc-main .contact-grid{margin-top:40px}}
 @media(min-width:761px){.svc-main .svc-list{margin-top:40px}}
 @media(min-width:900px){.svc-main .svc-list{grid-template-columns:1fr 1fr}}
 /* Generated menu pages: the five /menu/<category>/ and /menu/<occasion>/ pages are

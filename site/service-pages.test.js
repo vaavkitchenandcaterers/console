@@ -183,17 +183,25 @@ describe('generated occasion service pages', () => {
     );
   });
 
-  it('/corporate/ shares the service-page layout and ends with the same occasion tiles', () => {
-    const html = read('./corporate/index.html');
-    expect(html).toContain('<main id="main" class="svc-main">');
-    const sec = html.match(/<section class="svc-others-sec">[\s\S]*?<\/section>/)?.[0];
-    expect(sec, '/corporate/ has no "Other occasions" section').toBeTruthy();
-    const hrefs = [...sec.matchAll(/<a class="menu-tile" href="([^"]+)"/g)].map(m => m[1]);
-    expect(hrefs).toEqual([...SERVICES.map(k => `/services/${k}/`), '/menu/housewarming/', '/menu/seemantham/']);
-    for (const t of SERVICE_TILES) {
-      expect(sec, `${t.href} tile copy drifted`).toContain(`<span class="mt-label">${escapeHtml(t.label)}</span><span class="mt-desc">${escapeHtml(t.blurb)}</span>`);
+  it('/corporate/ and /contact/ share the service-page layout and end with the same occasion tiles', () => {
+    for (const page of ['corporate', 'contact']) {
+      const html = read(`./${page}/index.html`);
+      expect(html, `/${page}/ layout class`).toContain('<main id="main" class="svc-main">');
+      const sec = html.match(/<section class="svc-others-sec">[\s\S]*?<\/section>/)?.[0];
+      expect(sec, `/${page}/ has no "Other occasions" section`).toBeTruthy();
+      const hrefs = [...sec.matchAll(/<a class="menu-tile" href="([^"]+)"/g)].map(m => m[1]);
+      expect(hrefs, `/${page}/ tiles`).toEqual([...SERVICES.map(k => `/services/${k}/`), '/menu/housewarming/', '/menu/seemantham/']);
+      for (const t of SERVICE_TILES) {
+        expect(sec, `/${page}/ ${t.href} tile copy drifted`).toContain(`<span class="mt-label">${escapeHtml(t.label)}</span><span class="mt-desc">${escapeHtml(t.blurb)}</span>`);
+      }
+      expect(sec).toContain('<a href="/services/">every occasion we cater</a>');
     }
-    expect(sec).toContain('<a href="/services/">every occasion we cater</a>');
+  });
+
+  it('/contact/ puts the WhatsApp card before the contact details, so it leads on phones', () => {
+    const grid = read('./contact/index.html').match(/<div class="contact-grid">[\s\S]*?<div class="map-embed">/)[0];
+    expect(grid.indexOf('class="wa-cta')).toBeGreaterThan(-1);
+    expect(grid.indexOf('class="wa-cta'), 'WhatsApp card after the details').toBeLessThan(grid.indexOf('class="info-list"'));
   });
 
   it('matches /corporate/ CSP, and is in the sitemap and _redirects', () => {
