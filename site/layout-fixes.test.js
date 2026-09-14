@@ -149,3 +149,12 @@ describe('home hero', () => {
     expect(CSS).toContain('@media(max-width:760px){.hero{padding-bottom:40px}.hero .medallion{display:none}}');
   });
 });
+
+describe('home service cards', () => {
+  it('each card opens the page for its occasion, not the services overview', () => {
+    const cards = HOME.match(/<ul class="cards" id="serviceCards"[\s\S]*?<\/ul>/)[0];
+    const hrefs = [...cards.matchAll(/<a class="card" href="([^"]+)"/g)].map(m => m[1]);
+    expect(hrefs).toEqual(['/services/wedding-reception-catering/', '/menu/housewarming/', '/corporate/']);
+    expect(cards).not.toContain('see all services');
+  });
+});
