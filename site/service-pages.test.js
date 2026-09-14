@@ -183,6 +183,19 @@ describe('generated occasion service pages', () => {
     );
   });
 
+  it('/corporate/ shares the service-page layout and ends with the same occasion tiles', () => {
+    const html = read('./corporate/index.html');
+    expect(html).toContain('<main id="main" class="svc-main">');
+    const sec = html.match(/<section class="svc-others-sec">[\s\S]*?<\/section>/)?.[0];
+    expect(sec, '/corporate/ has no "Other occasions" section').toBeTruthy();
+    const hrefs = [...sec.matchAll(/<a class="menu-tile" href="([^"]+)"/g)].map(m => m[1]);
+    expect(hrefs).toEqual([...SERVICES.map(k => `/services/${k}/`), '/menu/housewarming/', '/menu/seemantham/']);
+    for (const t of SERVICE_TILES) {
+      expect(sec, `${t.href} tile copy drifted`).toContain(`<span class="mt-label">${escapeHtml(t.label)}</span><span class="mt-desc">${escapeHtml(t.blurb)}</span>`);
+    }
+    expect(sec).toContain('<a href="/services/">every occasion we cater</a>');
+  });
+
   it('matches /corporate/ CSP, and is in the sitemap and _redirects', () => {
     const re = /<meta http-equiv="Content-Security-Policy"[^>]*>/;
     const base = read('./corporate/index.html').match(re)[0];

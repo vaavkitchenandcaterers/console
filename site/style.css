@@ -791,6 +791,15 @@ body.vaav-sl-open .vaav-sl-pill,body.vaav-sl-open .wa-float,body.vaav-sl-open .m
   .svc-main .svc-proof-grid{gap:32px}
   .svc-main .svc-proof .review-grid{margin-bottom:0}
 }
+/* /corporate/ uses this layout too: its licence strip and kitchen photo share one
+   headless section, the photo a block-gap below the strip. */
+.svc-main .compliance + .kitchen-shot{margin-top:24px}
+@media(min-width:761px){.svc-main .compliance + .kitchen-shot{margin-top:32px}}
+/* Its hero ends on a bare .btn: as a block it drops the 4px line strut an inline
+   button sits on. Its closing band's h2 loses the 10px top margin that pushed the
+   band's content below centre. */
+.svc-hero > .wrap > .btn{display:flex;width:fit-content}
+.svc-main #home-cta h2{margin-top:0}
 /* Generated menu pages: the five /menu/<category>/ and /menu/<occasion>/ pages are
    the only ones with section.wrap.sec. .wrap's padding:0 24px was overriding
    section{padding:90px 0}, so each page sat flush on the header and the footer.
