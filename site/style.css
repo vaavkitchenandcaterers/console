@@ -839,6 +839,15 @@ body.vaav-sl-open .vaav-sl-pill,body.vaav-sl-open .wa-float,body.vaav-sl-open .m
 .svc-main .about-lede{margin:0}
 .svc-main .about-lede + .about-lede{margin-top:16px}
 .svc-main .stat-row{margin:0;gap:24px}
+/* Phones: three equal columns, and the stat type scaled so each figure and label
+   holds one line. At 2.2rem "Pure Veg" is 124px and "COOKED FRESH" 102px against
+   75-112px cells on a 375px phone, so both broke in two. The home page's trust band
+   keeps its own stat sizes; this is scoped to .svc-main (the About page). */
+@media(max-width:519.98px){
+  .svc-main .stat-row{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+  .svc-main .stat .n{font-size:clamp(1.35rem,0.7rem + 3.2vw,1.6rem)}
+  .svc-main .stat .l{font-size:.7rem;letter-spacing:.04em}
+}
 .svc-main .about-story > .btn{display:flex;width:fit-content;margin-top:24px}
 .svc-main #about .about-grid{align-items:start}
 .svc-main .about-aside{display:grid;gap:24px;align-content:start}
