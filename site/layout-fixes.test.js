@@ -88,3 +88,11 @@ describe('top utility bar tap targets', () => {
     expect(link).toMatch(/min-height:38px/);
   });
 });
+
+describe('menu hub heading', () => {
+  it('names the category and the city, as the owner approved on 14 Sep 2026', () => {
+    const MENU = read('./menu/index.html');
+    const h1s = [...MENU.matchAll(/<h1\b[^>]*>([\s\S]*?)<\/h1>/g)].map(m => m[1]);
+    expect(h1s).toEqual(['Pure veg catering menus &amp; packages in Chennai']);
+  });
+});
