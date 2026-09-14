@@ -91,7 +91,7 @@ nav.scrolled{box-shadow:0 8px 26px -16px rgba(20,61,29,.45);background:rgba(247,
 .nav-wa svg{width:18px;height:18px;flex-shrink:0}
 
 /* ---------- Hero ---------- */
-.hero{position:relative;padding:76px 0 90px;overflow:hidden;
+.hero{position:relative;padding:76px 0 56px;overflow:hidden;
   background:
     radial-gradient(1050px 520px at 90% -10%, rgba(254,228,5,.22), transparent 60%),
     radial-gradient(820px 560px at -8% 112%, rgba(179,51,31,.09), transparent 55%)}
@@ -939,3 +939,7 @@ section.sec{padding-top:24px;padding-bottom:56px}
   .home-main .sec-head{margin-bottom:32px}
   .home-main .section-cta{margin-top:32px}
 }
+/* Home hero on phones: the logo medallion repeated the header logo and its badges
+   repeated the trust band, 400px of it before any content (owner, 14 Sep 2026:
+   hide it). The hero closes 40px under its buttons; the 76px top stays for the leaf. */
+@media(max-width:760px){.hero{padding-bottom:40px}.hero .medallion{display:none}}

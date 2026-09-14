@@ -142,3 +142,10 @@ describe('home page section rhythm', () => {
     expect(rules('.home-main > #why,.home-main > #faq')[0]).toMatch(/background:transparent/);
   });
 });
+
+describe('home hero', () => {
+  it('closes on the section rhythm, and drops the logo medallion on phones (owner, 14 Sep 2026)', () => {
+    expect(rules('.hero')[0]).toMatch(/padding:76px 0 56px/);
+    expect(CSS).toContain('@media(max-width:760px){.hero{padding-bottom:40px}.hero .medallion{display:none}}');
+  });
+});
