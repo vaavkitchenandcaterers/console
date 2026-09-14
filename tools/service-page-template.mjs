@@ -37,6 +37,7 @@ export const SERVICE_META = {
     // as a tile per meal and a dropdown in the quote form.
     menuChoice: true,
     label: 'Wedding & reception catering',
+    blurb: 'Muhurtham saapadu to the evening reception',
     crumb: 'Wedding & reception',
     tamil: 'நிச்சயதார்த்தம் · திருமணம் · வரவேற்பு',
     tamilLatin: ['Nichayathartham', 'Thirumanam', 'Varaverpu'],
@@ -77,6 +78,7 @@ export const SERVICE_META = {
     // sattvic menu, so no menu section and no menu field in the form.
     menuChoice: false,
     label: 'Puja, homam & temple catering',
+    blurb: 'Sattvic meals, no onion or garlic',
     crumb: 'Puja, homam & temple',
     tamil: 'பூஜை · ஹோமம் · அன்னதானம்',
     tamilLatin: ['Poojai', 'Homam', 'Annadhanam'],
@@ -300,11 +302,12 @@ export function renderServicePage(key, menus, chrome) {
   const waHref =
     "https://wa.me/919655356333?text=Hello%20VAAV%20Kitchen%2C%20I'd%20like%20to%20enquire%20about%20" +
     encodeURIComponent(meta.waContext) + '.';
+  // The other occasions, as tiles: a name to scan and one line to choose by.
   const others = [
-    ...SERVICES.filter(k => k !== key).map(k => `<a href="/services/${k}/">${escapeHtml(SERVICE_META[k].label.toLowerCase())}</a>`),
-    '<a href="/menu/housewarming/">housewarming menus</a>',
-    '<a href="/menu/seemantham/">seemantham menus</a>',
-    '<a href="/corporate/">corporate and bulk meals</a>'
+    ...SERVICES.filter(k => k !== key).map(k => ({ href: `/services/${k}/`, label: SERVICE_META[k].label, blurb: SERVICE_META[k].blurb })),
+    { href: '/menu/housewarming/', label: 'Housewarming menus', blurb: 'Set menus for a grihapravesam' },
+    { href: '/menu/seemantham/', label: 'Seemantham menus', blurb: 'Set menus for the baby shower' },
+    { href: '/corporate/', label: 'Corporate & bulk meals', blurb: 'Daily meals for offices, hostels and messes' }
   ];
 
   const main = [
@@ -368,8 +371,17 @@ export function renderServicePage(key, menus, chrome) {
     '</section>',
     '<section class="svc-others-sec">',
     '  <div class="wrap">',
-    '    <h2 class="set-section">Other occasions we cater</h2>',
-    `    <p class="svc-others">See ${others.join(', ')}, or <a href="/services/">every service</a>.</p>`,
+    '    <div class="sec-head">',
+    '      <span class="eyebrow">Keep exploring</span>',
+    '      <h2>Other occasions we cater</h2>',
+    '    </div>',
+    '    <ul class="menu-tiles occ-tiles" role="list">',
+    ...others.map(o =>
+      `      <li><a class="menu-tile" href="${o.href}"><span class="mt-label">${escapeHtml(o.label)}</span>` +
+      `<span class="mt-desc">${escapeHtml(o.blurb)}</span><span class="mt-go" aria-hidden="true">→</span></a></li>`
+    ),
+    '    </ul>',
+    '    <p class="set-more">Planning something else? See <a href="/services/">every occasion we cater</a>.</p>',
     '  </div>',
     '</section>',
     '</main>'
