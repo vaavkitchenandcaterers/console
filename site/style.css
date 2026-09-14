@@ -68,7 +68,7 @@ nav.scrolled{box-shadow:0 8px 26px -16px rgba(20,61,29,.45);background:rgba(247,
 .brand .logo-tile img{width:100%;height:100%;object-fit:contain;border-radius:11px}
 .brand:hover .logo-tile{transform:translateY(-1px);box-shadow:0 10px 24px -8px rgba(20,61,29,.55)}
 .brand .bt{font-family:'Catamaran',sans-serif;font-weight:800;font-size:1.45rem;color:var(--green-deep);letter-spacing:.05em;line-height:1;text-transform:uppercase}
-.brand .bt small{display:block;font-size:.6rem;letter-spacing:.24em;color:var(--green);font-weight:700;opacity:.9;margin-top:3px}
+.brand .bt small{display:block;font-size:.7rem;letter-spacing:.2em;color:var(--green);font-weight:700;opacity:.9;margin-top:3px}
 .nav-links{display:flex;gap:30px;align-items:center}
 .nav-links a{text-decoration:none;color:var(--ink);font-weight:500;font-size:.95rem;position:relative;transition:color .15s}
 .nav-links a:not(.nav-wa)::after{content:"";position:absolute;left:0;right:0;bottom:-6px;height:2px;background:var(--yellow-deep);transform:scaleX(0);transform-origin:left;transition:transform .2s}

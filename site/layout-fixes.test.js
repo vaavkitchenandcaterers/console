@@ -96,3 +96,11 @@ describe('menu hub heading', () => {
     expect(h1s).toEqual(['Pure veg catering menus &amp; packages in Chennai']);
   });
 });
+
+describe('wordmark subtitle', () => {
+  it('is 0.7rem (11.2px), up from an illegible 9.6px, as the owner approved on 14 Sep 2026', () => {
+    const [small] = rules('.brand .bt small');
+    expect(small).toMatch(/font-size:\.7rem/);
+    expect(small).toMatch(/letter-spacing:\.2em/);
+  });
+});
