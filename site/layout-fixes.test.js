@@ -171,3 +171,10 @@ describe('home package cards', () => {
     for (const m of btns) expect(m[2].startsWith(m[3]), `aria-label "${m[2]}"`).toBe(true);
   });
 });
+
+describe('home section links', () => {
+  it('extend their hit area 12px above and below without moving the underline', () => {
+    expect(rules('.home-main .section-cta .ghost')[0]).toMatch(/position:relative/);
+    expect(rules('.home-main .section-cta .ghost::after')[0]).toMatch(/content:"";position:absolute;inset:-12px -4px/);
+  });
+});

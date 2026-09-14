@@ -943,3 +943,7 @@ section.sec{padding-top:24px;padding-bottom:56px}
    repeated the trust band, 400px of it before any content (owner, 14 Sep 2026:
    hide it). The hero closes 40px under its buttons; the 76px top stays for the leaf. */
 @media(max-width:760px){.hero{padding-bottom:40px}.hero .medallion{display:none}}
+/* Home: the underlined section links were 31px tall; an invisible 12px extension
+   above and below makes each a 44px+ tap target without moving the underline. */
+.home-main .section-cta .ghost{position:relative}
+.home-main .section-cta .ghost::after{content:"";position:absolute;inset:-12px -4px}
