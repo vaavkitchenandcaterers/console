@@ -2,9 +2,9 @@ import { describe, it, expect } from 'vitest';
 import { readFileSync } from 'node:fs';
 import { loadMenus, loadChrome } from '../tools/build-menu-pages.mjs';
 import { GENERATED_PAGES, chromeSourceFor } from '../tools/sync-chrome.mjs';
-import { renderServicePage, SERVICES, SERVICE_META, NOT_SATTVIC } from '../tools/service-page-template.mjs';
-import { slug } from '../tools/menu-page-template.mjs';
-import { escapeHtml, countDishes } from './menu-format.js';
+import { renderServicePage, SERVICES, SERVICE_META } from '../tools/service-page-template.mjs';
+import { SERVICE_TILES } from '../tools/menu-page-template.mjs';
+import { escapeHtml } from './menu-format.js';
 import { VAAV_REVIEWS } from './reviews.js';
 
 // The occasion service pages are generated and committed, so a retagged set or
@@ -21,9 +21,6 @@ const pageFile = key => `services/${key}/index.html`;
 const pageFor = key => read(`./${pageFile(key)}`);
 const ldBlocks = html =>
   [...html.matchAll(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/g)].map(m => JSON.parse(m[1]));
-const articles = html => [...html.matchAll(/<article class="set" id="([^"]+)">[\s\S]*?<\/article>/g)];
-const tagged = key =>
-  CATS.flatMap(c => menus[c].menus.filter(m => (m.occasions || []).some(o => SERVICE_META[key].occasions.includes(o))));
 
 describe('generated occasion service pages', () => {
   it('each committed page is byte-identical to what the generator produces', () => {
@@ -40,39 +37,34 @@ describe('generated occasion service pages', () => {
     }
   });
 
-  it('the puja page lists every sattvic puja and temple set, and no set carrying onion or garlic', () => {
-    // The page promises no onion and no garlic, so a set with a NOT_SATTVIC dish
-    // must never appear, and every tagged set without one must.
-    const shown = articles(pageFor('puja-homam-catering')).map(m => m[1]);
-    const hasOnionOrGarlic = m => m.groups.some(([, dishes]) => dishes.some(d => NOT_SATTVIC.includes(d)));
-    const sattvic = tagged('puja-homam-catering').filter(m => !hasOnionOrGarlic(m));
-    expect([...shown].sort()).toEqual(sattvic.map(m => slug(m.name)).sort());
-    expect(shown, 'sattvic puja and temple baseline').toEqual(['lunch-2']);
-    for (const dish of NOT_SATTVIC) {
-      expect(
-        tagged('puja-homam-catering').some(m => m.groups.some(([, d]) => d.includes(dish))),
-        `${dish} is listed as not sattvic, but no puja or temple set carries it: remove it from NOT_SATTVIC`
-      ).toBe(true);
-    }
+  it('the puja page shows no menus and asks for none, until the owner supplies a sattvic menu', () => {
+    // Owner, 13 Sep 2026: no menu on the puja page. A menu here would promise
+    // dishes the kitchen has not yet set as sattvic.
+    const html = pageFor('puja-homam-catering');
+    expect(html).not.toContain('<section id="menus">');
+    expect(html).not.toContain('<article class="set"');
+    expect(html, 'puja form still has a menu field').not.toContain('id="qf-menu"');
+    expect(html).not.toContain('data-quote-set');
   });
 
-  it('the wedding page features the largest wedding or reception set from each meal, and counts them all', () => {
+  it('the wedding page offers every set menu: a tile per meal and a dropdown in the form, and no menu cards', () => {
+    // Owner, 13 Sep 2026: no featured menus on the wedding page; all of them to choose from.
     const html = pageFor('wedding-reception-catering');
-    const expected = CATS.map(c => {
-      const sets = menus[c].menus.filter(m => (m.occasions || []).some(o => ['wedding', 'reception'].includes(o)));
-      return slug(sets.reduce((best, m) => (countDishes(m.groups) > countDishes(best.groups) ? m : best)).name);
-    });
-    expect(articles(html).map(m => m[1])).toEqual(expected);
-    expect(html).toContain(`<b>${tagged('wedding-reception-catering').length}</b>`);
-  });
-
-  it('every set carries a Quote this menu button naming it', () => {
-    for (const key of SERVICES) {
-      for (const [block] of articles(pageFor(key))) {
-        const name = block.match(/<h3 class="set-name">([^<]+)<\/h3>/)[1];
-        expect(block, `${key} ${name}`).toContain(`data-quote-set="${name}">Quote this menu</button>`);
-      }
+    const section = html.match(/<section id="menus">[\s\S]*?<\/section>/)[0];
+    expect(section, 'wedding page still shows menu cards').not.toContain('<article class="set"');
+    const all = CATS.reduce((n, c) => n + menus[c].menus.length, 0);
+    expect(all, 'set menu baseline').toBe(66);
+    expect(section).toContain(`<b>${all}</b>`);
+    for (const c of CATS) {
+      expect(section).toContain(`<a class="menu-tile" href="/menu/${c}/">`);
+      expect(section).toContain(`<span class="mt-count">${menus[c].menus.length} menus</span>`);
     }
+    const select = html.match(/<select id="qf-menu">[\s\S]*?<\/select>/)?.[0];
+    expect(select, 'wedding form has no menu dropdown').toBeTruthy();
+    expect((select.match(/<optgroup /g) || []).length).toBe(CATS.length);
+    const options = [...select.matchAll(/<option(?: value="")?>([^<]*)<\/option>/g)].map(m => m[1]);
+    expect(options[0]).toBe('Not sure yet');
+    expect(options.slice(1), 'dropdown lists every set menu, in menu order').toEqual(CATS.flatMap(c => menus[c].menus.map(m => m.name)));
   });
 
   it('has one quote form, and no field has a name, so nothing a visitor types can reach a URL', () => {
@@ -172,6 +164,61 @@ describe('generated occasion service pages', () => {
     }
   });
 
+  it('shows the other occasions as described tiles, never this page, then every occasion', () => {
+    for (const key of SERVICES) {
+      const sec = pageFor(key).match(/<section class="svc-others-sec">[\s\S]*?<\/section>/)[0];
+      const hrefs = [...sec.matchAll(/<a class="menu-tile" href="([^"]+)"/g)].map(m => m[1]);
+      expect(hrefs, `${key} tiles`).toEqual([
+        ...SERVICES.filter(k => k !== key).map(k => `/services/${k}/`),
+        '/menu/housewarming/', '/menu/seemantham/', '/corporate/'
+      ]);
+      expect((sec.match(/<span class="mt-desc">[^<]+<\/span>/g) || []).length, `${key} tile descriptions`).toBe(hrefs.length);
+      expect(sec).toContain('<a href="/services/">every occasion we cater</a>');
+    }
+  });
+
+  it('is described the same on the menu pages\' tiles as on its own "other occasions" tiles', () => {
+    expect(SERVICE_TILES).toEqual(
+      SERVICES.map(k => ({ href: `/services/${k}/`, label: SERVICE_META[k].label, blurb: SERVICE_META[k].blurb }))
+    );
+  });
+
+  it('/about/ keeps the button in the story column and the stats beside the quote, ordered stats-first on phones', () => {
+    const html = read('./about/index.html');
+    const story = html.match(/<div class="about-story[^"]*"[\s\S]*?<\/div>\s*<div class="about-aside">/)?.[0];
+    const aside = html.match(/<div class="about-aside">[\s\S]*?<\/ul>\s*<\/div>/)?.[0];
+    expect(story, 'no .about-story column').toBeTruthy();
+    expect(aside, 'no .about-aside column').toBeTruthy();
+    expect(story).toContain('class="btn"');
+    expect(story, 'stats belong beside the quote, not in the story').not.toContain('class="stat-row"');
+    expect(aside.indexOf('class="quote-card'), 'quote before stats in the aside').toBeLessThan(aside.indexOf('class="stat-row"'));
+    // Below 900px the columns dissolve and CSS order puts the stats before the button.
+    const css = read('./style.css');
+    expect(css).toContain('.svc-main .about-aside .stat-row{order:2;');
+    expect(css).toContain('.svc-main .about-story > .btn{order:3}');
+  });
+
+  it('/corporate/, /contact/ and /about/ share the service-page layout and end with the same occasion tiles', () => {
+    for (const page of ['corporate', 'contact', 'about']) {
+      const html = read(`./${page}/index.html`);
+      expect(html, `/${page}/ layout class`).toContain('<main id="main" class="svc-main">');
+      const sec = html.match(/<section class="svc-others-sec">[\s\S]*?<\/section>/)?.[0];
+      expect(sec, `/${page}/ has no "Other occasions" section`).toBeTruthy();
+      const hrefs = [...sec.matchAll(/<a class="menu-tile" href="([^"]+)"/g)].map(m => m[1]);
+      expect(hrefs, `/${page}/ tiles`).toEqual([...SERVICES.map(k => `/services/${k}/`), '/menu/housewarming/', '/menu/seemantham/']);
+      for (const t of SERVICE_TILES) {
+        expect(sec, `/${page}/ ${t.href} tile copy drifted`).toContain(`<span class="mt-label">${escapeHtml(t.label)}</span><span class="mt-desc">${escapeHtml(t.blurb)}</span>`);
+      }
+      expect(sec).toContain('<a href="/services/">every occasion we cater</a>');
+    }
+  });
+
+  it('/contact/ puts the WhatsApp card before the contact details, so it leads on phones', () => {
+    const grid = read('./contact/index.html').match(/<div class="contact-grid">[\s\S]*?<div class="map-embed">/)[0];
+    expect(grid.indexOf('class="wa-cta')).toBeGreaterThan(-1);
+    expect(grid.indexOf('class="wa-cta'), 'WhatsApp card after the details').toBeLessThan(grid.indexOf('class="info-list"'));
+  });
+
   it('matches /corporate/ CSP, and is in the sitemap and _redirects', () => {
     const re = /<meta http-equiv="Content-Security-Policy"[^>]*>/;
     const base = read('./corporate/index.html').match(re)[0];
@@ -184,11 +231,9 @@ describe('generated occasion service pages', () => {
     }
   });
 
-  it('lays dish lists out in two columns on service pages, and spans a lone last card', () => {
-    const css = read('./style.css');
-    expect(css).toContain('.svc-main .set-dishes{columns:2');
-    expect(css).toContain('.svc-main .set-list > .set:last-child:nth-child(odd){grid-column:1/-1}');
+  it('scopes its layout to .svc-main, so its spacing never reaches other pages', () => {
     for (const key of SERVICES) expect(pageFor(key)).toContain('<main id="main" class="svc-main">');
+    expect(read('./script.js'), 'the Quote this menu handler has no button left to serve').not.toContain('data-quote-set');
   });
 
   it('keeps meta descriptions short enough not to be cut off on a phone', () => {
@@ -198,7 +243,7 @@ describe('generated occasion service pages', () => {
     }
   });
 
-  it('shows proof just above the quote form: two Google reviews, the kitchen, the FSSAI and GST numbers', () => {
+  it('shows proof just above the quote form: two Google reviews and the FSSAI and GST numbers, and no kitchen photo', () => {
     for (const key of SERVICES) {
       const html = pageFor(key);
       const proof = html.match(/<section class="svc-proof">[\s\S]*?<\/section>/)?.[0];
@@ -212,11 +257,12 @@ describe('generated occasion service pages', () => {
       for (const r of shown) expect(proof).toContain(escapeHtml(r.text));
       expect(proof).toContain('12426008001205');
       expect(proof).toContain('33BJKPK7360P2ZL');
-      expect(proof).toContain('src="/kitchen-800.jpg"');
+      // The owner wants the kitchen photo on /about/ only (13 Sep 2026).
+      expect(html, `${key} shows the kitchen photo`).not.toMatch(/kitchen-(400|800|1600)\.(jpg|webp)|class="kitchen-shot"/);
     }
   });
 
-  it('puts the reviews beside the kitchen photo and licences on wide screens', () => {
+  it('puts the reviews beside the licence strip on wide screens', () => {
     for (const key of SERVICES) {
       const proof = pageFor(key).match(/<section class="svc-proof">[\s\S]*?<\/section>/)[0];
       const grid = proof.indexOf('class="svc-proof-grid"');
@@ -224,8 +270,7 @@ describe('generated occasion service pages', () => {
       const side = proof.indexOf('class="svc-proof-side"');
       expect(grid, `${key} proof grid`).toBeGreaterThan(-1);
       expect(reviews, `${key} reviews inside the grid`).toBeGreaterThan(grid);
-      expect(side, `${key} photo and licences beside the reviews`).toBeGreaterThan(reviews);
-      expect(proof.indexOf('class="kitchen-shot"')).toBeGreaterThan(side);
+      expect(side, `${key} licences beside the reviews`).toBeGreaterThan(reviews);
       expect(proof.indexOf('class="compliance"')).toBeGreaterThan(side);
     }
     expect(read('./style.css')).toContain('.svc-proof-grid{display:grid');
@@ -242,18 +287,13 @@ describe('generated occasion service pages', () => {
     }
   });
 
-  it('the puja page names prasadam and pooja, and every sweet it names is in a set it shows', () => {
-    const html = pageFor('puja-homam-catering');
-    const main = html.match(/<main id="main"[^>]*>[\s\S]*<\/main>/)[0];
-    expect(main).toMatch(/prasadam/i);
-    expect(main).toMatch(/pooja/i);
-    for (const dish of ['Sweet Payasam']) {
-      expect(main.match(/<section class="svc-day">[\s\S]*?<\/section>/)[0]).toContain(dish);
-      expect(
-        articles(html).some(([block]) => block.includes(`<li>${dish}</li>`)),
-        `${dish} is named on the page but is in no set the page shows`
-      ).toBe(true);
-    }
+  it('the puja page names prasadam and pooja, and no dish, since it shows no menu', () => {
+    const day = pageFor('puja-homam-catering').match(/<section class="svc-day">[\s\S]*?<\/section>/)[0];
+    expect(day).toMatch(/prasadam/i);
+    expect(day).toMatch(/pooja/i);
+    const dishes = CATS.flatMap(c => menus[c].menus.flatMap(m => m.groups.flatMap(([, d]) => d)));
+    const named = [...new Set(dishes)].filter(d => day.includes(d));
+    expect(named, 'the puja page names a dish from a menu it does not show').toEqual([]);
   });
 
   it('is linked from the homepage, /contact/, the /menu/ hub and every menu category page', () => {

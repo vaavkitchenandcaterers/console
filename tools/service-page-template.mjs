@@ -5,22 +5,22 @@
 // Both must import this same module, or the drift test proves nothing.
 //
 // A service page is the conversion page for one occasion: what the day needs,
-// the sets we cook for it, how booking works, a quote form, and the questions
-// families ask. Sets come from the occasion tags in menu-data.js, so the page
-// cannot show a set the data does not tag. Every other fact in the copy is
-// already published on the site (the /services/ cards, the /contact/ FAQ, the
-// homepage); the Tamil names await the owner's confirmation. See ADR-0011.
+// the menus on offer, how booking works, a quote form, and the questions
+// families ask. Every fact in the copy is already published on the site (the
+// /services/ cards, the /contact/ FAQ, the homepage), and the owner confirmed
+// the Tamil names. Menus follow the owner's review of 13 Sep 2026: the wedding
+// page offers every set menu (from menu-data.js), the puja page none until the
+// owner supplies a sattvic menu. See ADR-0011.
 //
 // Chrome is copied from site/corporate/index.html rather than /menu/, so the
 // nav marks no link as current: chromeSourceFor() in tools/sync-chrome.mjs.
 
-import { escapeHtml, countDishes } from '../site/menu-format.js';
+import { escapeHtml } from '../site/menu-format.js';
 import { VAAV_REVIEWS } from '../site/reviews.js';
 import {
   GENERATED_BANNER,
+  ORDER,
   buildHead,
-  renderSet,
-  setsByCategory,
   withoutDataset,
   assertNoDataset
 } from './menu-page-template.mjs';
@@ -31,24 +31,13 @@ const PHONE = '+91 96553 56333';
 
 export const SERVICES = ['wedding-reception-catering', 'puja-homam-catering'];
 
-/**
- * Dishes ordinarily cooked with onion or garlic. The puja page promises neither,
- * and the owner decided on 13 Sep 2026 to show only sattvic menus there, so a set
- * carrying any of these is left off it. Sets are judged by their dish names as
- * menu-data.js writes them; add a dish here when a newly tagged set brings one.
- */
-export const NOT_SATTVIC = [
-  'Masal Dosai', 'Masal Vadai', 'White Kuruma', 'Kadala Curry', 'Mushroom Gravy', 'Veg Biryani', 'Baby Corn 65',
-  // Confirmed by the owner on 13 Sep 2026: cooked with onion.
-  'Mint Rice', 'White Pulao'
-];
-
 export const SERVICE_META = {
   'wedding-reception-catering': {
-    occasions: ['wedding', 'reception'],
-    // 40 tagged sets would bury the form; show the largest set from each meal.
-    maxPerCategory: 1,
+    // Owner, 13 Sep 2026: no featured menus; offer every one of the set menus,
+    // as a tile per meal and a dropdown in the quote form.
+    menuChoice: true,
     label: 'Wedding & reception catering',
+    blurb: 'Muhurtham saapadu to the evening reception',
     crumb: 'Wedding & reception',
     tamil: 'நிச்சயதார்த்தம் · திருமணம் · வரவேற்பு',
     tamilLatin: ['Nichayathartham', 'Thirumanam', 'Varaverpu'],
@@ -69,9 +58,9 @@ export const SERVICE_META = {
       `The evening reception is a dinner, and a grander one. Banana-leaf, buffet or table service are all possible, whichever suits the hall.`,
       `Both meals are fully staffed by our cooks and servers, from the morning to the last reception plate, so nobody from the family has to step into the kitchen. Book as early as you can, especially for weekend and festival-season dates.`
     ],
-    menusHeading: 'Menus we cook for weddings and receptions',
+    menusHeading: 'Choose from all our set menus',
     menusIntro: total =>
-      `One set from each meal, the largest of the <b>${total}</b> we cook for weddings and receptions. Every one can be tailored, including Jain and no onion-garlic.`,
+      `Pick from all <b>${total}</b> of our set menus for the muhurtham, the reception or both. Every one can be tailored, including Jain and no onion-garlic.`,
     formHeading: 'Tell us about your wedding',
     formOccasion: 'Wedding & reception',
     waContext: 'wedding and reception catering',
@@ -85,11 +74,11 @@ export const SERVICE_META = {
     ]
   },
   'puja-homam-catering': {
-    occasions: ['puja', 'temple'],
-    // Only sattvic sets, and all of them: few enough to show every one.
-    maxPerCategory: 0,
-    excludeDishes: NOT_SATTVIC,
+    // Owner, 13 Sep 2026: no menus on this page until the owner supplies a
+    // sattvic menu, so no menu section and no menu field in the form.
+    menuChoice: false,
     label: 'Puja, homam & temple catering',
+    blurb: 'Sattvic meals, no onion or garlic',
     crumb: 'Puja, homam & temple',
     tamil: 'பூஜை · ஹோமம் · அன்னதானம்',
     tamilLatin: ['Poojai', 'Homam', 'Annadhanam'],
@@ -106,13 +95,10 @@ export const SERVICE_META = {
     dayHeading: 'Cooked for the ritual',
     day: [
       `A puja or homam meal is cooked sattvic, with no onion and no garlic, and prepared with the care the occasion deserves.`,
-      `For the prasadam, the menu below carries Sweet Payasam, and it can be tailored to what your pooja or homam calls for.`,
+      `For the prasadam and naivedyam, tell us what your pooja or homam calls for, and we plan the meal around it.`,
       `Grihapravesam, ayush homam and shradham each keep their own customs, so tell us the ritual and we agree the menu with you rather than hand you a fixed one.`,
       `Temple functions and annadhanam are a question of scale and timing: thousands of plates served hot and on time, with the planning and discipline a big function needs.`
     ],
-    menusHeading: 'What we cook for pujas and temple functions',
-    menusIntro: total =>
-      `The <b>${total}</b> sattvic ${total === 1 ? 'set' : 'sets'} we cook for pujas, homams and temple functions, without onion or garlic. ${total === 1 ? 'It' : 'Any of them'} can be cooked to suit your ritual, including Jain.`,
     formHeading: 'Tell us about your puja or function',
     formOccasion: 'Puja, homam or temple function',
     waContext: 'puja and prasadam catering',
@@ -129,15 +115,6 @@ export const SERVICE_META = {
 
 const MEALS = ['Breakfast', 'Lunch', 'Dinner', 'Evening snacks'];
 
-/** Every tagged set, or the largest `maxPerCategory` per meal. Ties keep menu order. */
-export function featuredSets(groups, maxPerCategory) {
-  return groups.flatMap(g =>
-    maxPerCategory
-      ? [...g.sets].sort((a, b) => countDishes(b.groups) - countDishes(a.groups)).slice(0, maxPerCategory)
-      : g.sets
-  );
-}
-
 /** Tamil names that wrap only between names, each keeping its separator. */
 function tamilLine(tamil) {
   const names = tamil.split(' · ');
@@ -152,13 +129,47 @@ function proofChip(p) {
     : `      <li>${escapeHtml(full)}</li>`;
 }
 
-/** A set card plus its "Quote this menu" button, which fills the form's menu field. */
-function renderServiceSet(m) {
-  const button = `        <p class="set-quote"><button type="button" class="btn" data-quote-set="${escapeHtml(m.name)}">Quote this menu</button></p>`;
-  return renderSet(m, 3).replace(/\n      <\/article>$/, `\n${button}\n      </article>`);
+/** Every set menu, as a tile per meal linking to that meal's full menu page. */
+function renderMenuChoice(meta, menus) {
+  const total = ORDER.reduce((n, c) => n + menus[c].menus.length, 0);
+  return [
+    '<section id="menus">',
+    '  <div class="wrap">',
+    '    <div class="sec-head">',
+    '      <span class="eyebrow">Menus</span>',
+    `      <h2>${escapeHtml(meta.menusHeading)}</h2>`,
+    '    </div>',
+    // menusIntro is authored HTML carrying the count in <b>; the one value inserted raw.
+    `    <p class="menu-intro">${meta.menusIntro(total)}</p>`,
+    '    <ul class="menu-tiles" role="list">',
+    ...ORDER.map(c =>
+      `      <li><a class="menu-tile" href="/menu/${c}/"><span class="mt-label">${escapeHtml(menus[c].label)}</span>` +
+      `<span class="mt-ta" lang="ta">${escapeHtml(menus[c].tamil)}</span>` +
+      `<span class="mt-count">${menus[c].menus.length} menus</span><span class="mt-go" aria-hidden="true">→</span></a></li>`
+    ),
+    '    </ul>',
+    '    <p class="set-more">Or browse them one at a time on the <a href="/menu/">menu page</a>, and pick the one you like in the form below.</p>',
+    '  </div>',
+    '</section>'
+  ].join('\n');
 }
 
-function renderQuoteForm(key, meta) {
+/** The form's menu field: a grouped dropdown of every set, or nothing on a page that offers no menus. */
+function menuField(meta, menus) {
+  if (!meta.menuChoice) return [];
+  return [
+    '      <label class="qf-field"><span>Set menu</span><select id="qf-menu">',
+    '        <option value="">Not sure yet</option>',
+    ...ORDER.map(c => [
+      `        <optgroup label="${escapeHtml(menus[c].label)}">`,
+      ...menus[c].menus.map(m => `          <option>${escapeHtml(m.name)}</option>`),
+      '        </optgroup>'
+    ].join('\n')),
+    '      </select></label>'
+  ];
+}
+
+function renderQuoteForm(key, meta, menus) {
   return [
     '<section id="quote" class="quote-sec">',
     '  <div class="wrap">',
@@ -175,17 +186,18 @@ function renderQuoteForm(key, meta) {
     '        <label class="qf-field"><span>Guests <span class="qf-req">(required)</span></span><input type="number" id="qf-guests" inputmode="numeric" min="30" step="1" required aria-describedby="qf-guests-help" placeholder="e.g. 150"><small class="qf-help" id="qf-guests-help">Minimum 30 guests</small></label>',
     '      </div>',
     '      <fieldset class="qf-field qf-meals">',
-    '        <legend>Meals</legend>',
+    '        <legend>Which meals?</legend>',
     ...MEALS.map(m => `        <label><input type="checkbox" value="${m}"> ${m}</label>`),
     '      </fieldset>',
     '      <label class="qf-field"><span>Area or venue</span><input type="text" id="qf-area" autocomplete="address-level2" placeholder="e.g. Tambaram"></label>',
-    '      <label class="qf-field"><span>Menu you liked (optional)</span><input type="text" id="qf-menu"></label>',
+    ...menuField(meta, menus),
     '      <label class="qf-field"><span>Your name</span><input type="text" id="qf-name" autocomplete="name"></label>',
     '      <button type="submit" class="wa-big">Send on WhatsApp</button>',
     // Filled by script.js after submit, so the visitor knows what happened.
     '      <p class="qf-status" role="status" aria-live="polite"></p>',
-    `      <p class="qf-alt">Rather talk? <a href="${TEL}" data-cta-position="quote_form">Call ${PHONE}</a>, 7 AM to 9 PM.</p>`,
+    // Says what the button does before the fallback, so the note reads as part of it.
     '      <p class="qf-note">This opens WhatsApp with your details filled in. Nothing is stored on this website.</p>',
+    `      <p class="qf-alt">Rather talk? <a href="${TEL}" data-cta-position="quote_form">Call ${PHONE}</a>, 7 AM to 9 PM.</p>`,
     '    </form>',
     '  </div>',
     '</section>'
@@ -196,9 +208,10 @@ function renderQuoteForm(key, meta) {
 const PROOF_REVIEWERS = ['Dhakshinamoorthi Arumugam', 'Varsha Balaraman'];
 
 /**
- * Proof just above the quote form: two Google reviews, the kitchen, and its
- * licence and GST numbers. Nothing new is claimed; the reviews are the
- * homepage's and the rest is already on /corporate/.
+ * Proof just above the quote form: two Google reviews and the kitchen's licence
+ * and GST numbers. Nothing new is claimed; the reviews are the homepage's and the
+ * numbers are already on /corporate/. No kitchen photo: the owner wants it on
+ * /about/, not here (13 Sep 2026).
  */
 function renderProof() {
   const figures = PROOF_REVIEWERS.map(name => {
@@ -219,19 +232,12 @@ function renderProof() {
     '      <span class="eyebrow">Why families book us</span>',
     '      <h2>Rated 5.0 on Google</h2>',
     '    </div>',
-    // Stacked on phones; from 900px the reviews sit beside the kitchen and licences.
+    // Stacked on phones; from 900px the reviews sit beside the licence strip.
     '    <div class="svc-proof-grid">',
     '    <div class="review-grid" role="list">',
     ...figures,
     '    </div>',
     '    <div class="svc-proof-side">',
-    '    <figure class="kitchen-shot">',
-    '      <picture>',
-    '        <source type="image/webp" srcset="/kitchen-400.webp 400w, /kitchen-800.webp 800w, /kitchen-1600.webp 1600w" sizes="(max-width: 899px) 100vw, 480px">',
-    `        <img src="/kitchen-800.jpg" srcset="/kitchen-400.jpg 400w, /kitchen-800.jpg 800w, /kitchen-1600.jpg 1600w" sizes="(max-width: 899px) 100vw, 480px" width="1600" height="900" loading="lazy" decoding="async" alt="VAAV's kitchen in Perungalathur: steel prep tables, shelves of stocked spice jars, a gas range and a tiled splashback, with a cook preparing an order.">`,
-    '      </picture>',
-    '      <figcaption>Our kitchen in Perungalathur, where every order is cooked.</figcaption>',
-    '    </figure>',
     '    <ul class="compliance" role="list">',
     '      <li><span class="cmp-k">FSSAI licence</span><span class="cmp-v">12426008001205</span></li>',
     '      <li><span class="cmp-k">GST</span><span class="cmp-v">33BJKPK7360P2ZL</span></li>',
@@ -292,22 +298,16 @@ function buildServiceSchema(key, meta) {
 export function renderServicePage(key, menus, chrome) {
   const meta = SERVICE_META[key];
   if (!meta) throw new Error(`no SERVICE_META for "${key}"`);
-  const exclude = meta.excludeDishes || [];
-  const groups = setsByCategory(menus, meta.occasions)
-    .map(g => ({ ...g, sets: g.sets.filter(m => !(m.groups || []).some(([, dishes]) => (dishes || []).some(d => exclude.includes(d)))) }))
-    .filter(g => g.sets.length > 0);
-  if (!groups.length) throw new Error(`no menu in menu-data.js is tagged ${meta.occasions.join(' or ')}`);
-  const total = groups.reduce((n, g) => n + g.sets.length, 0);
-  const sets = featuredSets(groups, meta.maxPerCategory);
   const url = `${SITE}/services/${key}/`;
   const waHref =
     "https://wa.me/919655356333?text=Hello%20VAAV%20Kitchen%2C%20I'd%20like%20to%20enquire%20about%20" +
     encodeURIComponent(meta.waContext) + '.';
+  // The other occasions, as tiles: a name to scan and one line to choose by.
   const others = [
-    ...SERVICES.filter(k => k !== key).map(k => `<a href="/services/${k}/">${escapeHtml(SERVICE_META[k].label.toLowerCase())}</a>`),
-    '<a href="/menu/housewarming/">housewarming menus</a>',
-    '<a href="/menu/seemantham/">seemantham menus</a>',
-    '<a href="/corporate/">corporate and bulk meals</a>'
+    ...SERVICES.filter(k => k !== key).map(k => ({ href: `/services/${k}/`, label: SERVICE_META[k].label, blurb: SERVICE_META[k].blurb })),
+    { href: '/menu/housewarming/', label: 'Housewarming menus', blurb: 'Set menus for a grihapravesam' },
+    { href: '/menu/seemantham/', label: 'Seemantham menus', blurb: 'Set menus for the baby shower' },
+    { href: '/corporate/', label: 'Corporate & bulk meals', blurb: 'Daily meals for offices, hostels and messes' }
   ];
 
   const main = [
@@ -342,20 +342,7 @@ export function renderServicePage(key, menus, chrome) {
     ...meta.day.map(p => `    <p>${escapeHtml(p)}</p>`),
     '  </div>',
     '</section>',
-    '<section id="menus">',
-    '  <div class="wrap">',
-    '    <div class="sec-head">',
-    '      <span class="eyebrow">Menus</span>',
-    `      <h2>${escapeHtml(meta.menusHeading)}</h2>`,
-    '    </div>',
-    // menusIntro is authored HTML carrying the count in <b>; the one value inserted raw.
-    `    <p class="menu-intro">${meta.menusIntro(total)}</p>`,
-    '    <div class="set-list">',
-    sets.map(m => renderServiceSet(m)).join('\n'),
-    '    </div>',
-    '    <p class="set-more">Every set can be tailored to your day. <a href="/menu/">Browse all 66 sets one at a time</a>.</p>',
-    '  </div>',
-    '</section>',
+    ...(meta.menuChoice ? [renderMenuChoice(meta, menus)] : []),
     '<section class="svc-steps">',
     '  <div class="wrap">',
     '    <div class="sec-head">',
@@ -370,7 +357,7 @@ export function renderServicePage(key, menus, chrome) {
     '  </div>',
     '</section>',
     renderProof(),
-    renderQuoteForm(key, meta),
+    renderQuoteForm(key, meta, menus),
     '<section class="svc-faq">',
     '  <div class="wrap">',
     '    <div class="sec-head">',
@@ -384,8 +371,17 @@ export function renderServicePage(key, menus, chrome) {
     '</section>',
     '<section class="svc-others-sec">',
     '  <div class="wrap">',
-    '    <h2 class="set-section">Other occasions we cater</h2>',
-    `    <p class="svc-others">See ${others.join(', ')}, or <a href="/services/">every service</a>.</p>`,
+    '    <div class="sec-head">',
+    '      <span class="eyebrow">Keep exploring</span>',
+    '      <h2>Other occasions we cater</h2>',
+    '    </div>',
+    '    <ul class="menu-tiles occ-tiles" role="list">',
+    ...others.map(o =>
+      `      <li><a class="menu-tile" href="${o.href}"><span class="mt-label">${escapeHtml(o.label)}</span>` +
+      `<span class="mt-desc">${escapeHtml(o.blurb)}</span><span class="mt-go" aria-hidden="true">→</span></a></li>`
+    ),
+    '    </ul>',
+    '    <p class="set-more">Planning something else? See <a href="/services/">every occasion we cater</a>.</p>',
     '  </div>',
     '</section>',
     '</main>'

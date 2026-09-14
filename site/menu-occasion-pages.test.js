@@ -136,6 +136,29 @@ describe('generated menu occasion pages', () => {
     }
   });
 
+  it('links each set group from the count line, and each group heading carries that id', () => {
+    for (const occ of OCCASIONS) {
+      const html = pageFor(occ);
+      const count = html.match(/<p class="set-count">[\s\S]*?<\/p>/)[0];
+      const targets = [...count.matchAll(/href="#([^"]+)"/g)].map(m => m[1]);
+      const ids = [...html.matchAll(/<h2 class="set-section" id="([^"]+)"/g)].map(m => m[1]);
+      expect(targets.length, `${occ} jump links`).toBeGreaterThan(1);
+      expect(targets, `${occ} jump links match the group headings, in order`).toEqual(ids);
+    }
+  });
+
+  it('ends with described tiles to the other occasion, both service pages and the menu hub', () => {
+    for (const occ of OCCASIONS) {
+      const block = pageFor(occ).match(/<div class="more-tiles">[\s\S]*?<\/ul>/)[0];
+      const hrefs = [...block.matchAll(/<a class="menu-tile" href="([^"]+)"/g)].map(m => m[1]);
+      expect(hrefs, `${occ} tiles`).toEqual([
+        ...OCCASIONS.filter(o => o !== occ).map(o => `/menu/${o}/`),
+        '/services/wedding-reception-catering/', '/services/puja-homam-catering/', '/menu/'
+      ]);
+      expect((block.match(/<span class="mt-desc">[^<]+<\/span>/g) || []).length, `${occ} tile descriptions`).toBe(hrefs.length);
+    }
+  });
+
   it('is reachable from /menu/ and /services/, and listed in the sitemap', () => {
     const hub = read('./menu/index.html');
     const services = read('./services/index.html');
