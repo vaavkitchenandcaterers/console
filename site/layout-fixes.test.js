@@ -158,3 +158,16 @@ describe('home service cards', () => {
     expect(cards).not.toContain('see all services');
   });
 });
+
+describe('home package cards', () => {
+  it('each package button opens its own meal page, and its label starts with what it says', () => {
+    const pk = HOME.match(/<ul class="pkgs"[\s\S]*?<p class="section-cta">/)[0];
+    const btns = [...pk.matchAll(/<a href="([^"]+)" class="btn" aria-label="([^"]+)">([^<]+)<\/a>/g)];
+    expect(btns.map(m => [m[1], m[3]])).toEqual([
+      ['/menu/tiffin/', 'See tiffin menus'],
+      ['/menu/lunch/', 'See lunch menus'],
+      ['/menu/dinner/', 'See dinner menus']
+    ]);
+    for (const m of btns) expect(m[2].startsWith(m[3]), `aria-label "${m[2]}"`).toBe(true);
+  });
+});
