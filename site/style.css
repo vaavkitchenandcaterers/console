@@ -641,8 +641,21 @@ body.vaav-sl-open .vaav-sl-pill,body.vaav-sl-open .wa-float,body.vaav-sl-open .m
 @media(min-width:760px){
   .set-section{font-size:2.1rem;margin-top:42px}
 }
-.menu-flat-links{font-size:.95rem;color:var(--muted);margin:-8px 0 22px;line-height:1.6}
+.menu-flat-links{font-size:.95rem;color:var(--muted);margin:0;line-height:1.6;max-width:62ch}
 .menu-flat-links a{color:var(--green-deep);font-weight:600}
+/* /menu/ first section: a hero-like top (as on the service pages) and one 8px-based
+   rhythm from breadcrumb to menu card, so the category tabs land on the first screen
+   of a 1280x590 laptop and a 375x812 phone. The browse-by links sit below the card,
+   set off by a rule, instead of between the intro and the tabs. */
+#menu{padding-top:32px}
+#menu .sec-head{margin-bottom:16px}
+#menu > .wrap > .menu-intro{margin:0 0 16px}
+#menu .feast-progress{margin:0 0 24px}
+#menu .cat-tabs{margin-bottom:24px}
+#menu .occ-filter{margin-bottom:24px}
+#menu .picker-hint{margin-bottom:24px}
+.menu-browse{display:grid;gap:8px;margin-top:40px;padding-top:24px;border-top:1px solid var(--border)}
+@media(min-width:761px){#menu{padding-top:40px}}
 
 /* ── Occasion service pages (/services/<occasion>/) and their quote form ─────
    Mobile-first, like the generated menu page block above. */
