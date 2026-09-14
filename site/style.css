@@ -711,18 +711,20 @@ body.vaav-sl-open .vaav-sl-pill,body.vaav-sl-open .wa-float,body.vaav-sl-open .m
 .mab-quote:hover,.mab-quote:active,.mab-quote:focus-visible{background:var(--yellow-deep)}
 .svc-proof .review-grid{grid-template-columns:1fr;min-height:0;margin-bottom:28px}
 @media(min-width:760px){.svc-proof .review-grid{grid-template-columns:1fr 1fr}}
-/* Service pages: one section rhythm (56px on phones, 80px above 760px) instead
-   of the site-wide 90px, and a tighter hero so its actions fit a 1280x590
-   laptop's first screen. Scoped to .svc-main; other pages keep their spacing. */
-.svc-main > section{padding:56px 0}
+/* Service pages: one section rhythm (40px a side on phones, 56px above 760px)
+   instead of the site-wide 90px, so two plain sections sit 80/112px apart, and a
+   tighter hero on 16/24px steps so its actions fit a 1280x590 laptop's first
+   screen. Scoped to .svc-main; other pages keep their spacing. */
+.svc-main > section{padding:40px 0}
 .svc-main > .svc-hero{padding-top:28px}
-.svc-hero .sec-head{margin-bottom:20px}
-.svc-hero .menu-intro{margin:0 0 22px;max-width:62ch}
-.svc-hero .proof{margin:22px 0 0}
+.svc-hero .breadcrumb{margin-bottom:16px}
+.svc-hero .sec-head{margin-bottom:16px}
+.svc-hero .menu-intro{margin:0 0 24px;max-width:62ch}
+.svc-hero .proof{margin:24px 0 0}
 .svc-tamil span{white-space:nowrap}
 .chip-short{display:none}
 @media(min-width:761px){
-  .svc-main > section{padding:80px 0}
+  .svc-main > section{padding:56px 0}
   .svc-main > .svc-hero{padding-top:36px}
 }
 @media(max-width:760px){
@@ -761,4 +763,31 @@ body.vaav-sl-open .vaav-sl-pill,body.vaav-sl-open .wa-float,body.vaav-sl-open .m
   .svc-proof-grid{display:grid;grid-template-columns:1.15fr .85fr;gap:28px;align-items:start}
   .svc-proof .review-grid{grid-template-columns:1fr;margin-bottom:0}
   .svc-proof .compliance{grid-template-columns:1fr}
+}
+/* Service pages, spacing inside sections. Placed last so it overrides the shared
+   rules above without raising their specificity.
+   - Steps takes the quote section's band, so no page runs three plain sections.
+   - Headings sit 24px (32px from 761px) above their content; the hero keeps 16px.
+   - No section ends on a stray margin, and the menus intro loses its -6px.
+   - Widths: text 62ch, headings and single-column blocks 760px, grids full,
+     everything left-aligned (the FAQ list was centred under a left heading).
+   - Card gaps: 16px in lists, 24px between reviews, 32px between proof columns. */
+.svc-main > .svc-steps{background:var(--cream-deep)}
+.svc-main > section:not(.svc-hero) .sec-head{margin-bottom:24px}
+.svc-main .sec-head{max-width:760px}
+.svc-main .sec-head h2{text-wrap:balance}
+.svc-main > section > .wrap > :last-child{margin-bottom:0}
+.svc-main > section:not(.svc-hero) .menu-intro{margin:0 0 24px;max-width:62ch}
+.svc-main .menu-tiles{margin-bottom:0;gap:16px}
+.svc-main .set-more{margin:24px 0 0;max-width:62ch}
+.svc-main .steps,.svc-main .faq-list{gap:16px;max-width:760px}
+.svc-main .faq-list{margin:0}
+.svc-main .quote-form{max-width:760px}
+.svc-main .svc-proof .review-grid{gap:24px;margin-bottom:24px}
+@media(min-width:761px){
+  .svc-main > section:not(.svc-hero) .sec-head{margin-bottom:32px}
+}
+@media(min-width:900px){
+  .svc-main .svc-proof-grid{gap:32px}
+  .svc-main .svc-proof .review-grid{margin-bottom:0}
 }
