@@ -1,7 +1,10 @@
 import { describe, it, expect } from 'vitest';
 import { readFileSync } from 'node:fs';
 import { loadMenus, loadChrome } from '../tools/build-menu-pages.mjs';
-import { renderCategoryPage, slug, GENERATED_BANNER } from '../tools/menu-page-template.mjs';
+import {
+  renderCategoryPage, slug, GENERATED_BANNER,
+  CATEGORY_META, CATEGORY_BLURB, ORDER, OCCASIONS, OCCASION_META, SERVICE_TILES
+} from '../tools/menu-page-template.mjs';
 import { escapeHtml, countDishes } from './menu-format.js';
 
 const CATS = ['tiffin', 'lunch', 'dinner'];
@@ -128,5 +131,40 @@ describe('generated menu category pages', () => {
       expect(hub, `/menu/ does not link to ${cat}`).toContain(`href="/menu/${cat}/"`);
       expect(sitemap, `sitemap missing ${cat}`).toContain(`/menu/${cat}/`);
     }
+  });
+});
+
+describe('/menu/ browse tiles', () => {
+  const hub = readFileSync(new URL('./menu/index.html', import.meta.url), 'utf8');
+  const browse = hub.match(/<div class="menu-browse">[\s\S]*?\n    <\/div>/)?.[0];
+  const tile = (href, label, desc) =>
+    `<li><a class="menu-tile" href="${href}"><span class="mt-label">${escapeHtml(label)}</span>` +
+    `<span class="mt-desc">${escapeHtml(desc)}</span><span class="mt-go" aria-hidden="true">→</span></a></li>`;
+
+  it('replaces the inline link sentences with two labelled groups of tiles', () => {
+    // The sentences held seven 25px links; "puja or homam" split across two lines on a phone.
+    expect(browse, 'no .menu-browse block').toBeTruthy();
+    expect(hub).not.toContain('menu-flat-links');
+    expect(browse.match(/<h2 class="browse-h">[^<]+<\/h2>/g)).toEqual([
+      '<h2 class="browse-h">Every set, every dish</h2>',
+      '<h2 class="browse-h">Planning a function?</h2>'
+    ]);
+  });
+
+  it('links every category, occasion and service page in the words the other pages use', () => {
+    const expected = [
+      ...ORDER.map(c => tile(`/menu/${c}/`, CATEGORY_META[c].h1, CATEGORY_BLURB[c])),
+      ...OCCASIONS.map(o => tile(`/menu/${o}/`, `${OCCASION_META[o].label} menus`, OCCASION_META[o].blurb)),
+      ...SERVICE_TILES.map(t => tile(t.href, t.label, t.blurb))
+    ];
+    const got = [...browse.matchAll(/<li><a class="menu-tile"[\s\S]*?<\/li>/g)].map(m => m[0]);
+    expect(got).toEqual(expected);
+  });
+
+  it('styles the group headings and drops the old sentence styles', () => {
+    const css = readFileSync(new URL('./style.css', import.meta.url), 'utf8');
+    expect(css).not.toContain('.menu-flat-links');
+    expect(css).toContain('.menu-browse .browse-h{font-size:1.5rem;color:var(--green-deep);margin:0 0 16px}');
+    expect(css).toContain('.menu-browse .menu-tiles + .browse-h{margin-top:32px}');
   });
 });

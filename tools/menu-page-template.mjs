@@ -61,7 +61,7 @@ export const CATEGORY_META = {
 export const ORDER = ['tiffin', 'lunch', 'dinner'];
 
 /** One line per category, for the "Keep exploring" tiles at the foot of the other menu pages. */
-const CATEGORY_BLURB = {
+export const CATEGORY_BLURB = {
   tiffin: 'Idli, dosai, pongal and vadai spreads',
   lunch: 'Banana-leaf sappadu, simple to full feast',
   dinner: 'Sweets, starters, biryani and a full main course'
