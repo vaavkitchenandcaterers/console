@@ -136,6 +136,17 @@ describe('generated menu occasion pages', () => {
     }
   });
 
+  it('links each set group from the count line, and each group heading carries that id', () => {
+    for (const occ of OCCASIONS) {
+      const html = pageFor(occ);
+      const count = html.match(/<p class="set-count">[\s\S]*?<\/p>/)[0];
+      const targets = [...count.matchAll(/href="#([^"]+)"/g)].map(m => m[1]);
+      const ids = [...html.matchAll(/<h2 class="set-section" id="([^"]+)"/g)].map(m => m[1]);
+      expect(targets.length, `${occ} jump links`).toBeGreaterThan(1);
+      expect(targets, `${occ} jump links match the group headings, in order`).toEqual(ids);
+    }
+  });
+
   it('ends with described tiles to the other occasion, both service pages and the menu hub', () => {
     for (const occ of OCCASIONS) {
       const block = pageFor(occ).match(/<div class="more-tiles">[\s\S]*?<\/ul>/)[0];

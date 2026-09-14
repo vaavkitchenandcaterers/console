@@ -791,3 +791,35 @@ body.vaav-sl-open .vaav-sl-pill,body.vaav-sl-open .wa-float,body.vaav-sl-open .m
   .svc-main .svc-proof-grid{gap:32px}
   .svc-main .svc-proof .review-grid{margin-bottom:0}
 }
+/* Generated menu pages: the five /menu/<category>/ and /menu/<occasion>/ pages are
+   the only ones with section.wrap.sec. .wrap's padding:0 24px was overriding
+   section{padding:90px 0}, so each page sat flush on the header and the footer.
+   One scale from here, with no negative margins: 8px from the intro to its count,
+   16px inside a block, 24-40px between blocks, 56px (72px) between set groups.
+   Cards keep their own height instead of stretching to the taller one beside them,
+   and the closing tiles heading takes the group-heading size, not the page title's. */
+section.sec{padding-top:24px;padding-bottom:56px}
+.sec .breadcrumb{margin-bottom:16px}
+.sec .sec-head{margin-bottom:16px}
+.sec .menu-intro{margin:0 0 8px;max-width:62ch}
+.sec .set-count{margin:0 0 24px;max-width:62ch}
+.sec .set-count a{color:var(--green-deep);font-weight:700;text-underline-offset:3px}
+.sec .set-section{margin:56px 0 8px;scroll-margin-top:96px}
+.sec .set-count + .set-section{margin-top:32px}
+.sec .set-section-more{margin:0 0 16px;max-width:62ch}
+.sec .set-list{align-items:start}
+.sec .set{padding:22px}
+.sec .set > :last-child{margin-bottom:0}
+.sec .set-more{margin:40px 0 16px;max-width:62ch}
+.sec .set-cta{margin:0}
+.sec .more-tiles .sec-head{margin-bottom:24px}
+.sec .more-tiles .sec-head h2{font-size:1.9rem}
+.sec .more-tiles .menu-tiles{margin-bottom:0}
+@media(min-width:761px){
+  section.sec{padding-top:32px;padding-bottom:80px}
+  .sec .set{padding:26px}
+  .sec .set-section{margin-top:72px}
+  .sec .set-count + .set-section{margin-top:40px}
+  .sec .more-tiles .sec-head{margin-bottom:32px}
+  .sec .more-tiles .sec-head h2{font-size:2.1rem}
+}

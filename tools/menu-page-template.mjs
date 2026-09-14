@@ -210,7 +210,7 @@ export function renderCategoryPage(catKey, data, chrome) {
     data.menus.map(m => renderSet(m, 2)).join('\n'),
     '    </div>',
     '    <p class="set-more">Mix and match across any set, and we tailor the spread to your event.</p>',
-    `    <p class="set-cta"><a class="btn" data-wa-context="${escapeHtml(data.label.toLowerCase())} catering" href="${waHref}" target="_blank" rel="noopener noreferrer">Ask for a ${escapeHtml(data.label.toLowerCase())} quote on WhatsApp</a></p>`,
+    `    <p class="set-cta"><a class="btn" data-wa-context="${escapeHtml(data.label.toLowerCase())} catering" href="${waHref}" target="_blank" rel="noopener noreferrer">Get a ${escapeHtml(data.label.toLowerCase())} quote on WhatsApp</a></p>`,
     renderMoreTiles([
       ...others.map(c => ({ href: `/menu/${c}/`, label: CATEGORY_META[c].h1, blurb: CATEGORY_BLURB[c] })),
       ...SERVICE_TILES
@@ -409,7 +409,7 @@ export function renderOccasionPage(occKey, menus, chrome) {
   const sections = groups.map(g => {
     const lower = g.label.toLowerCase();
     return [
-      `      <h2 class="set-section">${escapeHtml(g.label)} sets for a ${escapeHtml(meta.noun)}</h2>`,
+      `      <h2 class="set-section" id="${g.cat}-sets">${escapeHtml(g.label)} sets for a ${escapeHtml(meta.noun)}</h2>`,
       `      <p class="set-section-more">The ${g.sets.length} ${lower} ${g.sets.length === 1 ? 'set' : 'sets'} we cook for ${escapeHtml(meta.plural)}. <a href="/menu/${g.cat}/">See all ${g.total} ${lower} sets</a>.</p>`,
       '      <div class="set-list">',
       g.sets.map(m => renderSet(m, 3)).join('\n'),
@@ -428,10 +428,12 @@ export function renderOccasionPage(occKey, menus, chrome) {
     // meta.intro is authored HTML containing <strong>; like data.note on the
     // category pages, it is the one value inserted raw.
     `    <p class="menu-intro">${meta.intro}</p>`,
-    `    <p class="set-count"><b>${count}</b> sets &middot; every dish listed below &middot; all customisable, including Jain and no onion-garlic.</p>`,
+    // Doubles as a jump list to each group; the Jain / no onion-garlic line it used
+    // to repeat is already in meta.intro.
+    `    <p class="set-count"><b>${count}</b> sets, every dish listed: ${groups.map(g => `<a href="#${g.cat}-sets">${g.sets.length} ${g.label.toLowerCase()}</a>`).join(' &middot; ')}</p>`,
     ...sections,
     '    <p class="set-more">Not seeing the shape of your function? We tailor any set to your day.</p>',
-    `    <p class="set-cta"><a class="btn" data-wa-context="${escapeHtml(meta.noun)} catering" href="${waHref}" target="_blank" rel="noopener noreferrer">Ask for a ${escapeHtml(meta.noun)} quote on WhatsApp</a></p>`,
+    `    <p class="set-cta"><a class="btn" data-wa-context="${escapeHtml(meta.noun)} catering" href="${waHref}" target="_blank" rel="noopener noreferrer">Get a ${escapeHtml(meta.noun)} quote on WhatsApp</a></p>`,
     renderMoreTiles([
       ...others.map(o => ({ href: `/menu/${o}/`, label: OCCASION_META[o].h1, blurb: OCCASION_META[o].blurb })),
       ...SERVICE_TILES,
