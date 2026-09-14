@@ -56,3 +56,21 @@ describe('about page quote attribution', () => {
     expect(by).toMatch(/text-align:left/);
   });
 });
+
+describe('home hero rotating word', () => {
+  const lead = HOME.match(/<p class="lead[^>]*>([\s\S]*?)<\/p>/)[1];
+
+  it('carries the full stop inside each word, so no gap opens before it', () => {
+    // The track is as wide as its longest word; a stop placed after the track
+    // floated a word-width away from "wedding".
+    const words = [...lead.matchAll(/<b><span>([^<]*)<\/span>\.<\/b>/g)].map(m => m[1]);
+    expect(words).toEqual(['wedding', 'seemantham', 'housewarming', 'puja', 'reception', 'wedding']);
+    expect(lead.trimEnd().endsWith('</span>')).toBe(true);
+    expect(lead).toContain('<span class="vh"> wedding, seemantham, housewarming or puja.</span>');
+  });
+
+  it('underlines each word at its own width instead of the whole track', () => {
+    expect(rules('.cycler')[0]).not.toMatch(/border-bottom/);
+    expect(rules('.cyc-track b span')[0]).toMatch(/text-decoration:underline 2px var\(--yellow\)/);
+  });
+});
