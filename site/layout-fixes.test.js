@@ -165,11 +165,11 @@ describe('home hero', () => {
     // At 3px the underline crossed the slot edge and a stray yellow line showed over the dark photo.
     expect(rules('.cyc-track b span')[0]).toMatch(/text-underline-offset:1px/);
   });
-  it('puts the real kitchen photo under the Why VAAV claims', () => {
+  it('keeps the Why VAAV section to its four claims, with no kitchen photo (22 Sep 2026)', () => {
     const why = HOME.slice(HOME.indexOf('<section id="why">'), HOME.indexOf('<section id="reviews">'));
-    expect(why).toContain('<figure class="kitchen-shot">');
-    expect(why).toMatch(/src="\/kitchen-800\.jpg"[\s\S]*loading="lazy"/);
-    expect(why).toContain('<figcaption>Our kitchen in Perungalathur, where every order is cooked.</figcaption>');
+    expect(why).not.toContain('kitchen-shot');
+    expect(why).not.toContain('/kitchen-');
+    expect(CSS).not.toContain('#why .kitchen-shot');
   });
 });
 
