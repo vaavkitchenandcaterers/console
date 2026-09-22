@@ -211,3 +211,9 @@ describe('footer and breadcrumb tap targets', () => {
     expect(rules('.breadcrumb a::after')[0]).toMatch(/content:"";position:absolute;inset:-12px -4px/);
   });
 });
+
+describe('corporate page grounds', () => {
+  it('alternates beige and plain after the hero, without touching the about page', () => {
+    expect(CSS).toContain('.svc-main > #patterns,.svc-main > #corporate ~ #compliance,.svc-main > #corp-faq + .svc-others-sec{background:var(--cream-deep)}');
+  });
+});

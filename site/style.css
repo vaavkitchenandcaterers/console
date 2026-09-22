@@ -975,3 +975,6 @@ section.sec{padding-top:24px;padding-bottom:56px}
 .footer-links a{display:inline-flex;align-items:center;min-height:44px}
 .breadcrumb a{position:relative}
 .breadcrumb a::after{content:"";position:absolute;inset:-12px -4px}
+/* /corporate/ ran five plain sections after its hero. Beige on patterns,
+   compliance (scoped: /about/ has a #compliance too) and the closing tiles. */
+.svc-main > #patterns,.svc-main > #corporate ~ #compliance,.svc-main > #corp-faq + .svc-others-sec{background:var(--cream-deep)}
