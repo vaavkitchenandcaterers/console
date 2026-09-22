@@ -95,7 +95,7 @@ describe('generated occasion service pages', () => {
 
   it('offers the three actions in order of weight: quote, then call, then WhatsApp', () => {
     for (const key of SERVICES) {
-      const hero = pageFor(key).match(/<section class="svc-hero">[\s\S]*?<\/section>/)[0];
+      const hero = pageFor(key).match(/<section class="svc-hero[^"]*">[\s\S]*?<\/section>/)[0];
       const quote = hero.indexOf('href="#quote"');
       const call = hero.indexOf('href="tel:+919655356333" data-cta-position="hero"');
       const wa = hero.indexOf(`data-wa-context="${SERVICE_META[key].waContext}" data-cta-position="hero"`);
@@ -115,7 +115,7 @@ describe('generated occasion service pages', () => {
 
   it('puts the actions before the proof chips, and gives long chips a short form for phones', () => {
     for (const key of SERVICES) {
-      const hero = pageFor(key).match(/<section class="svc-hero">[\s\S]*?<\/section>/)[0];
+      const hero = pageFor(key).match(/<section class="svc-hero[^"]*">[\s\S]*?<\/section>/)[0];
       expect(hero.indexOf('class="svc-cta"'), `${key} actions before chips`).toBeLessThan(hero.indexOf('class="proof"'));
       for (const [full, short] of SERVICE_META[key].proof.filter(Array.isArray)) {
         expect(hero).toContain(`<span class="chip-long">${escapeHtml(full)}</span><span class="chip-short">${escapeHtml(short)}</span>`);
@@ -309,22 +309,22 @@ describe('generated occasion service pages', () => {
 
 describe('wedding hero photo', () => {
   const html = pageFor('wedding-reception-catering');
-  it('sits in the hero with every size on disk, sized to stop layout shift', () => {
-    const hero = html.slice(html.indexOf('<section class="svc-hero">'), html.indexOf('<section class="svc-day">'));
-    expect(hero).toContain('<picture class="svc-shot">');
-    expect(hero).toMatch(/width="1600" height="900"/);
+  const hero = html.slice(html.indexOf('<section class="svc-hero svc-hero-photo">'), html.indexOf('<section class="svc-day">'));
+  it('is the hero backdrop, first in the section, with every size on disk and sized to stop layout shift', () => {
+    expect(hero).toMatch(/^<section class="svc-hero svc-hero-photo">\n  <picture class="svc-bg">/);
+    expect(hero).toMatch(/width="1600" height="900" fetchpriority="high"/);
     for (const w of [400, 800, 1600]) for (const ext of ['webp', 'jpg']) {
       expect(hero).toContain(`/wedding-feast-${w}.${ext} ${w}w`);
       expect(existsSync(new URL(`./wedding-feast-${w}.${ext}`, import.meta.url)), `wedding-feast-${w}.${ext} missing`).toBe(true);
     }
   });
-  it('is not captioned or described as one of our events (it is AI-generated)', () => {
-    const shot = html.slice(html.indexOf('<picture class="svc-shot">'));
-    expect(shot.slice(0, shot.indexOf('</picture>') + 40)).not.toMatch(/<fig/);
-    const alt = html.match(/<img src="\/wedding-feast[^>]*alt="([^"]*)"/)[1];
-    expect(alt).not.toMatch(/\b(our|VAAV)\b/i);
+  it('is decorative, never captioned or described as one of our events (it is AI-generated)', () => {
+    expect(hero.match(/<img src="\/wedding-feast[^>]*>/)[0]).toMatch(/alt=""/);
+    expect(hero).not.toMatch(/<fig/);
   });
   it('the puja page has no hero photo', () => {
-    expect(pageFor('puja-homam-catering')).not.toContain('svc-shot');
+    const puja = pageFor('puja-homam-catering');
+    expect(puja).toContain('<section class="svc-hero">');
+    expect(puja).not.toContain('svc-bg');
   });
 });
