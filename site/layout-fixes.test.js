@@ -217,3 +217,10 @@ describe('corporate page grounds', () => {
     expect(CSS).toContain('.svc-main > #patterns,.svc-main > #corporate ~ #compliance,.svc-main > #corp-faq + .svc-others-sec{background:var(--cream-deep)}');
   });
 });
+
+describe('/menu/ heading order', () => {
+  it('puts a visually hidden h2 above the explorer, whose card uses h3', () => {
+    const MENU = read('./menu/index.html');
+    expect(MENU).toContain('<h2 class="vh">Browse the set menus</h2>\n    <div class="cat-tabs" id="catTabs"');
+  });
+});
