@@ -312,14 +312,15 @@ describe('wedding hero photo', () => {
   const hero = html.slice(html.indexOf('<section class="svc-hero svc-hero-photo">'), html.indexOf('<section class="svc-day">'));
   it('is the hero backdrop, first in the section, with every size on disk and sized to stop layout shift', () => {
     expect(hero).toMatch(/^<section class="svc-hero svc-hero-photo">\n  <picture class="svc-bg">/);
-    expect(hero).toMatch(/width="1600" height="900" fetchpriority="high"/);
+    // The pandhi photo is 2.5:1 (1983x793 source), not the home hero's 16:9.
+    expect(hero).toMatch(/width="1600" height="640" fetchpriority="high"/);
     for (const w of [400, 800, 1600]) for (const ext of ['webp', 'jpg']) {
-      expect(hero).toContain(`/wedding-feast-${w}.${ext} ${w}w`);
-      expect(existsSync(new URL(`./wedding-feast-${w}.${ext}`, import.meta.url)), `wedding-feast-${w}.${ext} missing`).toBe(true);
+      expect(hero).toContain(`/wedding-pandhi-${w}.${ext} ${w}w`);
+      expect(existsSync(new URL(`./wedding-pandhi-${w}.${ext}`, import.meta.url)), `wedding-pandhi-${w}.${ext} missing`).toBe(true);
     }
   });
   it('is decorative, never captioned or described as one of our events (it is AI-generated)', () => {
-    expect(hero.match(/<img src="\/wedding-feast[^>]*>/)[0]).toMatch(/alt=""/);
+    expect(hero.match(/<img src="\/wedding-pandhi[^>]*>/)[0]).toMatch(/alt=""/);
     expect(hero).not.toMatch(/<fig/);
   });
   it('the puja page has no hero photo', () => {
