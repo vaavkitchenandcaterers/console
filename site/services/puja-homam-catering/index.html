@@ -6,7 +6,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <!-- sync:chrome head-csp start | shared CSP + referrer policy, one copy in tools/chrome/head-csp.html. Do not edit this block here: edit that file, then run `npm run sync:chrome` in site/. -->
 <!-- Security: Content Security Policy (portable defense-in-depth; works on any static host) -->
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; base-uri 'self'; object-src 'none'; img-src 'self' data: https://www.googletagmanager.com https://*.google-analytics.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; script-src 'self' https://www.googletagmanager.com; frame-src https://www.google.com https://maps.google.com; connect-src 'self' https://*.google-analytics.com https://*.analytics.google.com https://*.googletagmanager.com; form-action 'self'; upgrade-insecure-requests">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; base-uri 'self'; object-src 'none'; img-src 'self' data: https://www.googletagmanager.com https://*.google-analytics.com; style-src 'self' 'unsafe-inline'; font-src 'self'; script-src 'self' https://www.googletagmanager.com; frame-src https://www.google.com https://maps.google.com; connect-src 'self' https://*.google-analytics.com https://*.analytics.google.com https://*.googletagmanager.com; form-action 'self'; upgrade-insecure-requests">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <!-- sync:chrome head-csp end -->
 <title>Puja, Homam &amp; Prasadam Catering in Chennai | VAAV</title>
@@ -37,11 +37,22 @@
 <link rel="icon" type="image/png" sizes="64x64" href="/favicon-64.png?v=2">
 <link rel="apple-touch-icon" href="/logo.png">
 <link rel="prefetch" href="/menu/"><link rel="prefetch" href="/contact/">
-<!-- sync:chrome head-assets start | shared font, stylesheet and analytics tags, one copy in tools/chrome/head-assets.html. Do not edit this block here: edit that file, then run `npm run sync:chrome` in site/. -->
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Cormorant:ital,wght@0,700;1,500;1,700&family=Mukta:wght@400;600;700&family=Catamaran:wght@600;700;800&display=swap" rel="stylesheet">
+<!-- sync:chrome head-assets start | shared font, stylesheet, module and analytics tags, one copy in tools/chrome/head-assets.html. Do not edit this block here: edit that file, then run `npm run sync:chrome` in site/. -->
+<!-- Fonts are self-hosted: the @font-face rules open /style.css. These three
+     are the Latin files the hero paints with (h1, body copy, nav and buttons);
+     every other face loads on demand through its unicode-range. -->
+<link rel="preload" href="/fonts/cormorant-700-latin.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="/fonts/mukta-400-latin.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="/fonts/catamaran-600-800-latin.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="/style.css">
+<!-- script.js's import graph, so its five imports download alongside it
+     instead of after it. site/perf-head.test.js keeps this list honest. -->
+<link rel="modulepreload" href="/script.js">
+<link rel="modulepreload" href="/shortlist.js">
+<link rel="modulepreload" href="/menu-format.js">
+<link rel="modulepreload" href="/lead-events.js">
+<link rel="modulepreload" href="/quote-form.js">
+<link rel="modulepreload" href="/reviews.js">
 <!-- Google Analytics (GA4). The loader is external; the config half lives in
      /analytics.js so script-src needs no 'unsafe-inline'. See ADR-0009. -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-4T5PCVFK2G"></script>

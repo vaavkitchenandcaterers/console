@@ -1,7 +1,18 @@
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Cormorant:ital,wght@0,700;1,500;1,700&family=Mukta:wght@400;600;700&family=Catamaran:wght@600;700;800&display=swap" rel="stylesheet">
+<!-- Fonts are self-hosted: the @font-face rules open /style.css. These three
+     are the Latin files the hero paints with (h1, body copy, nav and buttons);
+     every other face loads on demand through its unicode-range. -->
+<link rel="preload" href="/fonts/cormorant-700-latin.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="/fonts/mukta-400-latin.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="/fonts/catamaran-600-800-latin.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="/style.css">
+<!-- script.js's import graph, so its five imports download alongside it
+     instead of after it. site/perf-head.test.js keeps this list honest. -->
+<link rel="modulepreload" href="/script.js">
+<link rel="modulepreload" href="/shortlist.js">
+<link rel="modulepreload" href="/menu-format.js">
+<link rel="modulepreload" href="/lead-events.js">
+<link rel="modulepreload" href="/quote-form.js">
+<link rel="modulepreload" href="/reviews.js">
 <!-- Google Analytics (GA4). The loader is external; the config half lives in
      /analytics.js so script-src needs no 'unsafe-inline'. See ADR-0009. -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-4T5PCVFK2G"></script>

@@ -150,7 +150,7 @@ describe('the shared chrome regions', () => {
       }
       const csp = findRegion(regionNamed('head-csp'), html, page);
       const firstLoad = Math.min(
-        ...[/<link rel="icon"/, /<link rel="prefetch"/, /<link rel="preconnect"/, /<link rel="stylesheet"/, /<script /]
+        ...[/<link rel="icon"/, /<link rel="prefetch"/, /<link rel="preconnect"/, /<link rel="preload"/, /<link rel="modulepreload"/, /<link rel="stylesheet"/, /<script /]
           .map(re => html.search(re))
           .filter(i => i >= 0)
       );
