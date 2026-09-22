@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { readFileSync } from 'node:fs';
+import { readFileSync, existsSync } from 'node:fs';
 import { loadMenus, loadChrome } from '../tools/build-menu-pages.mjs';
 import { GENERATED_PAGES, chromeSourceFor } from '../tools/sync-chrome.mjs';
 import { renderServicePage, SERVICES, SERVICE_META } from '../tools/service-page-template.mjs';
@@ -304,5 +304,27 @@ describe('generated occasion service pages', () => {
         expect(read(page), `${page} does not link /services/${key}/`).toContain(`href="/services/${key}/"`);
       }
     }
+  });
+});
+
+describe('wedding hero photo', () => {
+  const html = pageFor('wedding-reception-catering');
+  it('sits in the hero with every size on disk, sized to stop layout shift', () => {
+    const hero = html.slice(html.indexOf('<section class="svc-hero">'), html.indexOf('<section class="svc-day">'));
+    expect(hero).toContain('<picture class="svc-shot">');
+    expect(hero).toMatch(/width="1600" height="900"/);
+    for (const w of [400, 800, 1600]) for (const ext of ['webp', 'jpg']) {
+      expect(hero).toContain(`/wedding-feast-${w}.${ext} ${w}w`);
+      expect(existsSync(new URL(`./wedding-feast-${w}.${ext}`, import.meta.url)), `wedding-feast-${w}.${ext} missing`).toBe(true);
+    }
+  });
+  it('is not captioned or described as one of our events (it is AI-generated)', () => {
+    const shot = html.slice(html.indexOf('<picture class="svc-shot">'));
+    expect(shot.slice(0, shot.indexOf('</picture>') + 40)).not.toMatch(/<fig/);
+    const alt = html.match(/<img src="\/wedding-feast[^>]*alt="([^"]*)"/)[1];
+    expect(alt).not.toMatch(/\b(our|VAAV)\b/i);
+  });
+  it('the puja page has no hero photo', () => {
+    expect(pageFor('puja-homam-catering')).not.toContain('svc-shot');
   });
 });

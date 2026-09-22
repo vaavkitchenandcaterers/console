@@ -985,3 +985,7 @@ section.sec{padding-top:24px;padding-bottom:56px}
    inset is larger because it measures from the padding box, above the 2px underline. */
 #notfound .nf-actions .ghost{position:relative}
 #notfound .nf-actions .ghost::after{content:"";position:absolute;inset:-8px -4px -12px}
+/* Wedding hero photo. Phones crop to 4:3 and wide screens to 21:9, both held on the ladle and the rice. */
+.svc-shot{display:block;margin-top:24px}
+.svc-shot img{display:block;width:100%;height:auto;aspect-ratio:4/3;object-fit:cover;object-position:62% 75%;border-radius:14px;border:1px solid var(--border);background:var(--cream-deep)}
+@media(min-width:761px){.svc-shot{margin-top:32px}.svc-shot img{aspect-ratio:21/9}}

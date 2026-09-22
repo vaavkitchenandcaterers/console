@@ -51,6 +51,12 @@ export const SERVICE_META = {
     intro: `From the nichayathartham and the morning muhurtham saapadu to the evening reception, one pure-vegetarian kitchen cooks the whole day and our own cooks and servers run it, so your family can be guests at your own wedding.`,
     // [full wording, phone wording]: the owner approved shorter chips on phones only.
     proof: ['5.0 on Google', ['From 50 guests for a full sappadu', 'From 50 guests'], ['Cooks and servers included', 'Cooks & servers'], ['Cooked fresh the same day', 'Cooked fresh']],
+    // An AI-generated mood image, not one of our events: no caption, and the alt
+    // describes the scene without claiming it as our work.
+    heroImage: {
+      base: 'wedding-feast',
+      alt: 'A banana-leaf wedding meal being served: sambar ladled onto rice, with poriyals, kootu, paruppu, payasam and appalam around it, and guests seated along the tables.'
+    },
     dayEyebrow: 'The day',
     dayHeading: 'Two meals, fully staffed',
     day: [
@@ -295,6 +301,18 @@ function buildServiceSchema(key, meta) {
     .join('\n');
 }
 
+/** The hero photo, 16:9 source at 400/800/1600 in webp and jpg; the stylesheet crops it. */
+function heroShot({ base, alt }) {
+  const set = ext => [400, 800, 1600].map(w => `/${base}-${w}.${ext} ${w}w`).join(', ');
+  const sizes = '(max-width: 760px) 100vw, 1140px';
+  return [
+    '    <picture class="svc-shot">',
+    `      <source type="image/webp" srcset="${set('webp')}" sizes="${sizes}">`,
+    `      <img src="/${base}-800.jpg" srcset="${set('jpg')}" sizes="${sizes}" width="1600" height="900" decoding="async" alt="${escapeHtml(alt)}">`,
+    '    </picture>'
+  ].join('\n');
+}
+
 export function renderServicePage(key, menus, chrome) {
   const meta = SERVICE_META[key];
   if (!meta) throw new Error(`no SERVICE_META for "${key}"`);
@@ -331,6 +349,7 @@ export function renderServicePage(key, menus, chrome) {
     '    <ul class="proof" role="list">',
     ...meta.proof.map(proofChip),
     '    </ul>',
+    ...(meta.heroImage ? [heroShot(meta.heroImage)] : []),
     '  </div>',
     '</section>',
     '<section class="svc-day">',
