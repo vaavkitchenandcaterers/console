@@ -76,7 +76,7 @@ nav.scrolled{box-shadow:0 8px 26px -16px rgba(20,61,29,.45);background:rgba(247,
 .nav-links a:not(.nav-wa):hover::after{transform:scaleX(1)}
 .nav-links a.active:not(.nav-wa),.nav-links a[aria-current="page"]:not(.nav-wa){color:var(--green-deep)}
 .nav-links a.active:not(.nav-wa)::after,.nav-links a[aria-current="page"]:not(.nav-wa)::after{transform:scaleX(1)}
-.menu-toggle{display:none;background:none;border:none;cursor:pointer;color:var(--green-deep);padding:6px}
+.menu-toggle{display:none;background:none;border:none;cursor:pointer;color:var(--green-deep);padding:8px}
 .menu-toggle svg{width:28px;height:28px}
 
 .btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;background:var(--green);color:var(--white);text-decoration:none;
@@ -981,3 +981,7 @@ section.sec{padding-top:24px;padding-bottom:56px}
 /* Wedding and puja pages: the closing tiles after the FAQ, and on the wedding page
    the day section above its menus, so neighbours alternate after the hero. */
 .svc-main > .svc-day:has(+ #menus),.svc-main > .svc-faq + .svc-others-sec{background:var(--cream-deep)}
+/* 404: "Go to Homepage" was 30px tall; an invisible extension makes it 48px. The bottom
+   inset is larger because it measures from the padding box, above the 2px underline. */
+#notfound .nf-actions .ghost{position:relative}
+#notfound .nf-actions .ghost::after{content:"";position:absolute;inset:-8px -4px -12px}

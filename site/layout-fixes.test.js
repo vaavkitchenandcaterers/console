@@ -230,3 +230,10 @@ describe('wedding and puja grounds', () => {
     expect(CSS).toContain('.svc-main > .svc-day:has(+ #menus),.svc-main > .svc-faq + .svc-others-sec{background:var(--cream-deep)}');
   });
 });
+
+describe('404 link and phone menu button', () => {
+  it('reach 44px', () => {
+    expect(rules('.menu-toggle')[0]).toMatch(/padding:8px/);
+    expect(rules('#notfound .nf-actions .ghost::after')[0]).toMatch(/content:"";position:absolute;inset:-8px -4px/);
+  });
+});
