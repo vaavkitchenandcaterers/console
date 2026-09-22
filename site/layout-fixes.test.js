@@ -192,3 +192,14 @@ describe('/menu/ section rhythm', () => {
     expect(rules('.menu-main #packages .menu-intro')[0]).toMatch(/margin:0 0 24px/);
   });
 });
+
+describe('/menu/ package buttons', () => {
+  it('each opens its own meal page, as on the home page', () => {
+    const pk = read('./menu/index.html').match(/<ul class="pkgs"[\s\S]*?<\/ul>\s*<\/div>\s*<\/section>/)[0];
+    const btns = [...pk.matchAll(/<a href="([^"]+)" class="btn" aria-label="([^"]+)">([^<]+)<\/a>/g)];
+    expect(btns.map(m => [m[1], m[3]])).toEqual([
+      ['/menu/tiffin/', 'See tiffin menus'], ['/menu/lunch/', 'See lunch menus'], ['/menu/dinner/', 'See dinner menus']
+    ]);
+    for (const m of btns) expect(m[2].startsWith(m[3]), `aria-label "${m[2]}"`).toBe(true);
+  });
+});
