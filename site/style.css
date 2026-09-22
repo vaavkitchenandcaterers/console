@@ -954,3 +954,17 @@ section.sec{padding-top:24px;padding-bottom:56px}
    above and below makes each a 44px+ tap target without moving the underline. */
 .home-main .section-cta .ghost{position:relative}
 .home-main .section-cta .ghost::after{content:"";position:absolute;inset:-12px -4px}
+/* /menu/: the service-page rhythm (40px a side on phones, 56px from 761px) in
+   place of the site-wide 90px. The explorer keeps its tighter top and heading
+   gap from the #menu rules above; its beige ground and the green closing band
+   already alternate with the plain packages section. */
+.menu-main > section{padding:40px 0}
+.menu-main .sec-head{margin-bottom:24px}
+.menu-main .sec-head h2{text-wrap:balance}
+.menu-main #packages .menu-intro{margin:0 0 24px;max-width:62ch}
+.menu-main #home-cta .eyebrow{display:block}
+.menu-main #home-cta h2{margin-top:0}
+@media(min-width:761px){
+  .menu-main > section{padding:56px 0}
+  .menu-main .sec-head{margin-bottom:32px}
+}

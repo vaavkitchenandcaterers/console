@@ -178,3 +178,17 @@ describe('home section links', () => {
     expect(rules('.home-main .section-cta .ghost::after')[0]).toMatch(/content:"";position:absolute;inset:-12px -4px/);
   });
 });
+
+describe('/menu/ section rhythm', () => {
+  const MENU = read('./menu/index.html');
+  it('scopes the service-page spacing to main.menu-main', () => {
+    expect(MENU).toContain('<main id="main" class="menu-main">');
+    const pad = rules('.menu-main > section');
+    expect(pad[0]).toMatch(/padding:40px 0/);
+    expect(pad[1]).toMatch(/padding:56px 0/);
+    const head = rules('.menu-main .sec-head');
+    expect(head[0]).toMatch(/margin-bottom:24px/);
+    expect(head[1]).toMatch(/margin-bottom:32px/);
+    expect(rules('.menu-main #packages .menu-intro')[0]).toMatch(/margin:0 0 24px/);
+  });
+});
