@@ -165,6 +165,15 @@ describe('home hero', () => {
     // At 3px the underline crossed the slot edge and a stray yellow line showed over the dark photo.
     expect(rules('.cyc-track b span')[0]).toMatch(/text-underline-offset:1px/);
   });
+  it('grades the phone photo into the ground with a warm filter, an amber tint and a valid eased fade', () => {
+    // One empty rgba() stop makes the whole gradient invalid, and the browser drops the fade.
+    expect(CSS).not.toMatch(/rgba\([^)]*,\s*\)/);
+    for (const bg of ['.hero-bg', '.svc-bg']) {
+      expect(CSS).toContain(`${bg} img{object-position:`);
+      expect(CSS).toMatch(new RegExp(`\\${bg} img\\{object-position:[^}]*filter:brightness\\(\\.78\\) saturate\\(1\\.16\\) contrast\\(1\\.06\\) sepia\\(\\.24\\)`));
+      expect(CSS).toContain(`${bg}::before{content:"";position:absolute;inset:0;z-index:1;pointer-events:none;background:rgba(150,82,28,.2);mix-blend-mode:multiply}`);
+    }
+  });
   it('puts the real kitchen photo under the Why VAAV claims', () => {
     const why = HOME.slice(HOME.indexOf('<section id="why">'), HOME.indexOf('<section id="reviews">'));
     expect(why).toContain('<figure class="kitchen-shot">');
