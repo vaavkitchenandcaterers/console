@@ -968,3 +968,10 @@ section.sec{padding-top:24px;padding-bottom:56px}
   .menu-main > section{padding:56px 0}
   .menu-main .sec-head{margin-bottom:32px}
 }
+/* Footer links were 23px tall and breadcrumb links 21px. Footer links take a 44px
+   row each (row gap dropped so the rows do not double up); breadcrumb links get an
+   invisible 12px extension above and below, which moves nothing. */
+.footer-links ul{gap:0 20px}
+.footer-links a{display:inline-flex;align-items:center;min-height:44px}
+.breadcrumb a{position:relative}
+.breadcrumb a::after{content:"";position:absolute;inset:-12px -4px}

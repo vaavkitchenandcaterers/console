@@ -203,3 +203,11 @@ describe('/menu/ package buttons', () => {
     for (const m of btns) expect(m[2].startsWith(m[3]), `aria-label "${m[2]}"`).toBe(true);
   });
 });
+
+describe('footer and breadcrumb tap targets', () => {
+  it('gives footer links a 44px row and breadcrumb links a 12px invisible extension', () => {
+    expect(CSS).toContain('.footer-links ul{gap:0 20px}');
+    expect(CSS).toContain('.footer-links a{display:inline-flex;align-items:center;min-height:44px}');
+    expect(rules('.breadcrumb a::after')[0]).toMatch(/content:"";position:absolute;inset:-12px -4px/);
+  });
+});
