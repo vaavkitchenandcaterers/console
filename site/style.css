@@ -995,8 +995,7 @@ section.sec{padding-top:24px;padding-bottom:56px}
 .home-main #why .kitchen-shot{margin-top:32px}
 /* Wedding hero: the home hero's treatment. The feast photo is the backdrop, edge to edge, with a
    warm dark wash behind the copy (kept to 620px, and the wash measured from the copy's real edge, not a percentage) clearing towards the
-   server and the banana-leaf row (the photo is 2.5:1 and its subject sits right, hence the 86%
-   focal point on phones). Once the grid stacks the copy keeps its place, so "Get a quote" stays on
+   ladle and the rice. Once the grid stacks the copy keeps its place, so "Get a quote" stays on
    the first screen, and the photo rises out of the dark below the proof chips. */
 .svc-hero-photo{position:relative;overflow:hidden;background:#2a1a0c;display:flex;flex-direction:column;justify-content:center;min-height:min(calc(100svh - 117px),860px)}
 .svc-hero-photo > .wrap{position:relative;z-index:2;width:100%}
@@ -1016,4 +1015,4 @@ section.sec{padding-top:24px;padding-bottom:56px}
 .svc-hero-photo .btn{text-shadow:none}
 .svc-hero-photo .btn.svc-call{color:var(--cream);box-shadow:inset 0 0 0 2px rgba(250,246,236,.85)}
 .svc-hero-photo .btn.svc-call:hover,.svc-hero-photo .btn.svc-call:focus-visible{background:var(--cream);color:var(--green-ink)}
-@media(max-width:900px){.svc-hero-photo{justify-content:flex-start;min-height:0}.svc-main > .svc-hero-photo{padding-bottom:300px}.svc-hero-photo > .wrap > *{max-width:none}.svc-bg{top:auto;height:330px}.svc-bg img{object-position:86% 72%;filter:brightness(.78) saturate(1.16) contrast(1.06) sepia(.24)}.svc-bg::before{content:"";position:absolute;inset:0;z-index:1;pointer-events:none;background:rgba(150,82,28,.2);mix-blend-mode:multiply}.svc-bg::after{z-index:2;background:linear-gradient(180deg,#2a1a0c 0%,#2a1a0c 10%,rgba(42,26,12,.94) 20%,rgba(42,26,12,.8) 30%,rgba(42,26,12,.62) 40%,rgba(42,26,12,.44) 50%,rgba(42,26,12,.28) 60%,rgba(42,26,12,.15) 70%,rgba(42,26,12,.06) 80%,rgba(42,26,12,.01) 90%,rgba(42,26,12,0) 100%)}}
+@media(max-width:900px){.svc-hero-photo{justify-content:flex-start;min-height:0}.svc-main > .svc-hero-photo{padding-bottom:300px}.svc-hero-photo > .wrap > *{max-width:none}.svc-bg{top:auto;height:330px}.svc-bg img{object-position:66% 72%;filter:brightness(.78) saturate(1.16) contrast(1.06) sepia(.24)}.svc-bg::before{content:"";position:absolute;inset:0;z-index:1;pointer-events:none;background:rgba(150,82,28,.2);mix-blend-mode:multiply}.svc-bg::after{z-index:2;background:linear-gradient(180deg,#2a1a0c 0%,#2a1a0c 10%,rgba(42,26,12,.94) 20%,rgba(42,26,12,.8) 30%,rgba(42,26,12,.62) 40%,rgba(42,26,12,.44) 50%,rgba(42,26,12,.28) 60%,rgba(42,26,12,.15) 70%,rgba(42,26,12,.06) 80%,rgba(42,26,12,.01) 90%,rgba(42,26,12,0) 100%)}}
