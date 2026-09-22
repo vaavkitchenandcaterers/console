@@ -666,9 +666,13 @@ body.vaav-sl-open .vaav-sl-pill,body.vaav-sl-open .wa-float,body.vaav-sl-open .m
 /* /menu/: the explorer ends on two labelled tile groups (every set; occasions and
    services) in the same .menu-tile pattern the other pages use for these links. */
 .menu-browse{margin-top:40px;padding-top:24px;border-top:1px solid var(--border)}
-.menu-browse .browse-h{font-size:1.5rem;color:var(--green-deep);margin:0 0 16px}
+.menu-browse .browse-h{font-size:1.9rem;color:var(--green-deep);margin:0 0 16px}
 .menu-browse .menu-tiles{margin:0;gap:16px}
+.menu-browse .menu-tile{height:100%}
 .menu-browse .menu-tiles + .browse-h{margin-top:32px}
+/* Three category tiles only fit side by side from 900px; between 620 and 900px each label wrapped. */
+@media(min-width:620px) and (max-width:899.98px){.menu-browse .menu-tiles:not(.occ-tiles){grid-template-columns:1fr}}
+@media(min-width:761px){.menu-browse .browse-h{font-size:2.1rem}}
 @media(min-width:761px){#menu{padding-top:40px}}
 
 /* ── Occasion service pages (/services/<occasion>/) and their quote form ─────

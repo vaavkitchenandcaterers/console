@@ -164,7 +164,13 @@ describe('/menu/ browse tiles', () => {
   it('styles the group headings and drops the old sentence styles', () => {
     const css = readFileSync(new URL('./style.css', import.meta.url), 'utf8');
     expect(css).not.toContain('.menu-flat-links');
-    expect(css).toContain('.menu-browse .browse-h{font-size:1.5rem;color:var(--green-deep);margin:0 0 16px}');
+    // Headings sit above the 1.6rem tile labels, as on the generated pages' "More menus and occasions".
+    expect(css).toContain('.menu-browse .browse-h{font-size:1.9rem;color:var(--green-deep);margin:0 0 16px}');
+    expect(css).toContain('@media(min-width:761px){.menu-browse .browse-h{font-size:2.1rem}}');
     expect(css).toContain('.menu-browse .menu-tiles + .browse-h{margin-top:32px}');
+    expect(css, 'category tiles share a row height').toContain('.menu-browse .menu-tile{height:100%}');
+    expect(css, 'no cramped three-across row on tablets').toContain(
+      '@media(min-width:620px) and (max-width:899.98px){.menu-browse .menu-tiles:not(.occ-tiles){grid-template-columns:1fr}}'
+    );
   });
 });
