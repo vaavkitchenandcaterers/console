@@ -20,9 +20,16 @@ describe('/services/ hub', () => {
     expect(description).not.toMatch(/upanayanam/i);
   });
 
-  it('keeps WhatsApp as a secondary route on cards that have a page to go to', () => {
-    const buttons = list.match(/<a class="btn"[^>]*data-wa-context=/g) || [];
-    expect(buttons.length, 'only the birthday card, which has no page yet, keeps a WhatsApp button').toBe(1);
+  it('makes WhatsApp the main button only on cards with no page to go to', () => {
+    // Birthday has no page yet; temple and community events became an enquiry
+    // rather than a link to the puja page. Every other card leads with its page.
+    const cards = list.match(/<li class="svc-item[\s\S]*?<\/li>/g) || [];
+    const enquiryOnly = cards.filter(c => /<a class="btn"[^>]*data-wa-context=/.test(c));
+    expect(enquiryOnly.map(c => c.match(/<h2>([^<]*)<\/h2>/)[1])).toEqual([
+      'Birthday &amp; anniversary catering',
+      'Temple &amp; community event catering'
+    ]);
+    for (const c of enquiryOnly) expect(c, 'a WhatsApp-only card also links a page').not.toMatch(/href="\/(services|menu|corporate)\//);
   });
 
   it('names occasions in Tamil, marked as Tamil', () => {

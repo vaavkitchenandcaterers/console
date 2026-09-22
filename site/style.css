@@ -51,6 +51,7 @@ a{color:inherit}
 .tb-left,.tb-right{display:flex;align-items:center;gap:22px}
 .tb-item{display:inline-flex;align-items:center;gap:7px;color:inherit;text-decoration:none;font-weight:600;white-space:nowrap}
 .tb-item svg{width:15px;height:15px;opacity:.85;flex-shrink:0}
+a.tb-item{min-height:38px}
 a.tb-item:hover{color:var(--yellow)}
 .tb-rating{color:var(--yellow);font-weight:700}
 .tb-rating .tb-star{color:#fbbc04;font-size:.95rem}
@@ -67,7 +68,7 @@ nav.scrolled{box-shadow:0 8px 26px -16px rgba(20,61,29,.45);background:rgba(247,
 .brand .logo-tile img{width:100%;height:100%;object-fit:contain;border-radius:11px}
 .brand:hover .logo-tile{transform:translateY(-1px);box-shadow:0 10px 24px -8px rgba(20,61,29,.55)}
 .brand .bt{font-family:'Catamaran',sans-serif;font-weight:800;font-size:1.45rem;color:var(--green-deep);letter-spacing:.05em;line-height:1;text-transform:uppercase}
-.brand .bt small{display:block;font-size:.6rem;letter-spacing:.24em;color:var(--green);font-weight:700;opacity:.9;margin-top:3px}
+.brand .bt small{display:block;font-size:.7rem;letter-spacing:.2em;color:var(--green);font-weight:700;opacity:.9;margin-top:3px}
 .nav-links{display:flex;gap:30px;align-items:center}
 .nav-links a{text-decoration:none;color:var(--ink);font-weight:500;font-size:.95rem;position:relative;transition:color .15s}
 .nav-links a:not(.nav-wa)::after{content:"";position:absolute;left:0;right:0;bottom:-6px;height:2px;background:var(--yellow-deep);transform:scaleX(0);transform-origin:left;transition:transform .2s}
@@ -75,7 +76,7 @@ nav.scrolled{box-shadow:0 8px 26px -16px rgba(20,61,29,.45);background:rgba(247,
 .nav-links a:not(.nav-wa):hover::after{transform:scaleX(1)}
 .nav-links a.active:not(.nav-wa),.nav-links a[aria-current="page"]:not(.nav-wa){color:var(--green-deep)}
 .nav-links a.active:not(.nav-wa)::after,.nav-links a[aria-current="page"]:not(.nav-wa)::after{transform:scaleX(1)}
-.menu-toggle{display:none;background:none;border:none;cursor:pointer;color:var(--green-deep);padding:6px}
+.menu-toggle{display:none;background:none;border:none;cursor:pointer;color:var(--green-deep);padding:8px}
 .menu-toggle svg{width:28px;height:28px}
 
 .btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;background:var(--green);color:var(--white);text-decoration:none;
@@ -90,7 +91,7 @@ nav.scrolled{box-shadow:0 8px 26px -16px rgba(20,61,29,.45);background:rgba(247,
 .nav-wa svg{width:18px;height:18px;flex-shrink:0}
 
 /* ---------- Hero ---------- */
-.hero{position:relative;padding:76px 0 90px;overflow:hidden;
+.hero{position:relative;padding:76px 0 56px;overflow:hidden;
   background:
     radial-gradient(1050px 520px at 90% -10%, rgba(254,228,5,.22), transparent 60%),
     radial-gradient(820px 560px at -8% 112%, rgba(179,51,31,.09), transparent 55%)}
@@ -105,7 +106,7 @@ nav.scrolled{box-shadow:0 8px 26px -16px rgba(20,61,29,.45);background:rgba(247,
 .hd-anise{top:8%;right:3.5%;width:44px;color:var(--yellow-deep);opacity:.55}
 .hd-anise svg{animation-delay:.6s;animation-duration:9s}
 @keyframes floaty{0%,100%{transform:translateY(0)}50%{transform:translateY(-13px)}}
-@media(max-width:760px){.hd-leaf2,.hd-anise{display:none}.hd-leaf1{width:46px;opacity:.4}}
+@media(max-width:760px){.hd-leaf2,.hd-anise{display:none}.hd-leaf1{top:10px;width:46px;opacity:.4}}
 .hero-grid{display:grid;grid-template-columns:1.05fr .95fr;gap:56px;align-items:center}
 .hero h1{font-size:clamp(1.75rem,0.964rem + 3.929vw,4.5rem);color:var(--green-deep);letter-spacing:-.01em}
 .hero h1 em{font-style:italic;color:var(--kumkum)}
@@ -147,9 +148,10 @@ nav.scrolled{box-shadow:0 8px 26px -16px rgba(20,61,29,.45);background:rgba(247,
 @keyframes wordRise{to{opacity:1;transform:none}}
 .reveal{opacity:0;transform:translateY(12px);animation:revealUp .55s cubic-bezier(.2,.7,.2,1) forwards;animation-delay:var(--d,0s)}
 @keyframes revealUp{to{opacity:1;transform:none}}
-.cycler{display:inline-grid;height:1.25em;overflow:hidden;vertical-align:bottom;position:relative;color:var(--green-deep);font-weight:700;border-bottom:2px solid var(--yellow)}
+.cycler{display:inline-grid;height:1.25em;overflow:hidden;vertical-align:bottom;position:relative;color:var(--green-deep);font-weight:700}
 .cyc-track{display:flex;flex-direction:column;animation:cyc 10s cubic-bezier(.7,0,.3,1) infinite;animation-delay:1.4s}
 .cyc-track b{height:1.25em;line-height:1.25em;font-weight:700;white-space:nowrap}
+.cyc-track b span{text-decoration:underline 2px var(--yellow);text-underline-offset:3px}
 @keyframes cyc{0%,15%{transform:translateY(0)}20%,35%{transform:translateY(-1.25em)}40%,55%{transform:translateY(-2.5em)}60%,75%{transform:translateY(-3.75em)}80%,95%{transform:translateY(-5em)}100%{transform:translateY(-6.25em)}}
 .medallion .ring{animation:breathe 6s ease-in-out infinite}
 @keyframes breathe{0%,100%{box-shadow:0 34px 70px -24px rgba(20,61,29,.55)}50%{box-shadow:0 34px 90px -18px rgba(40,98,44,.7)}}
@@ -159,7 +161,9 @@ nav.scrolled{box-shadow:0 8px 26px -16px rgba(20,61,29,.45);background:rgba(247,
 /* ---------- Sections ---------- */
 section{padding:90px 0}
 .sec-head{max-width:34rem;margin-bottom:48px}
-.sec-head h2{font-size:clamp(1.5rem,1.1rem + 2vw,2.9rem);color:var(--green-deep);margin-top:10px}
+/* The h1 too: inner pages put their page title in .sec-head, and without it the
+   title fell back to the browser's 32px ink, smaller than the h2s below it. */
+.sec-head h1,.sec-head h2{font-size:clamp(1.5rem,1.1rem + 2vw,2.9rem);color:var(--green-deep);margin-top:10px}
 
 /* services */
 .cards{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;list-style:none;margin:0;padding:0}
@@ -191,7 +195,7 @@ section{padding:90px 0}
 .cat-tab{font-family:'Catamaran',sans-serif;cursor:pointer;transition:.2s ease;display:inline-flex;align-items:center;gap:9px;padding:11px 22px;border-radius:40px;border:0;background:transparent;color:var(--green-deep)}
 .cat-tab .en{font-weight:800;font-size:1rem;letter-spacing:.01em}
 .cat-tab .ta{font-weight:600;font-size:.82rem;opacity:.85}
-.cat-tab .ct{font-weight:700;font-size:.66rem;letter-spacing:.06em;color:var(--muted);background:var(--cream-deep);padding:3px 8px;border-radius:20px;transition:.2s}
+.cat-tab .ct{font-weight:700;font-size:.75rem;letter-spacing:.06em;color:var(--muted);background:var(--cream-deep);padding:3px 8px;border-radius:20px;transition:.2s}
 .cat-tab:hover{background:var(--cream)}
 .cat-tab:focus-visible{border-radius:40px;outline-offset:2px}
 .cat-tab.active{background:var(--green-deep);color:var(--white)}
@@ -262,7 +266,7 @@ section{padding:90px 0}
 .pkg.feature .price small{color:rgba(247,243,231,.8)}
 .pkg.feature li{color:rgba(247,243,231,.92);border-bottom-color:rgba(247,243,231,.14)}
 .pkg.feature li .dot{background:var(--yellow)}
-.pkg.feature .tag{position:absolute;top:-13px;left:30px;background:var(--yellow);color:var(--green-ink);font-family:'Catamaran',sans-serif;font-weight:800;font-size:.68rem;letter-spacing:.1em;padding:6px 14px;border-radius:30px}
+.pkg.feature .tag{position:absolute;top:-13px;left:30px;background:var(--yellow);color:var(--green-ink);font-family:'Catamaran',sans-serif;font-weight:800;font-size:.75rem;letter-spacing:.1em;padding:6px 14px;border-radius:30px}
 .pkg.feature .btn{background:var(--yellow);color:var(--green-ink)}
 .pkg.feature .btn:hover,.pkg.feature .btn:focus-visible{background:var(--yellow-deep)}
 
@@ -307,7 +311,7 @@ section{padding:90px 0}
 .stat .l{font-size:.85rem;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;margin-top:6px}
 .quote-card{background:var(--green-deep);color:var(--cream);border-radius:24px;padding:44px;font-family:'Cormorant',serif;font-size:1.5rem;font-style:italic;font-weight:500;position:relative}
 .quote-card p{margin:0}
-.quote-card .by{display:block;font-family:'Mukta',sans-serif;font-style:normal;font-size:.95rem;margin-top:20px;color:var(--yellow);font-weight:600}
+.quote-card .by{display:block;font-family:'Mukta',sans-serif;font-style:normal;font-size:.95rem;margin-top:20px;color:var(--yellow);font-weight:600;background:none;padding:0;text-align:left}
 
 /* reviews / testimonials */
 #reviews{background:var(--cream-deep)}
@@ -505,9 +509,10 @@ footer .fb{font-family:'Catamaran',sans-serif;font-weight:800;color:var(--yellow
 body.vaav-sl-open .vaav-sl-pill,body.vaav-sl-open .wa-float,body.vaav-sl-open .mobile-actionbar{display:none !important}
 .vaav-sl-backdrop{position:fixed;inset:0;z-index:150;background:rgba(20,61,29,.45);opacity:0;visibility:hidden;transition:opacity .25s}
 .vaav-sl-backdrop.open{opacity:1;visibility:visible}
+/* Closed: hidden (drops out of the tab order) once the slide-out finishes, and shadowless, since an off-canvas box-shadow still paints into the viewport. */
 .vaav-sl-drawer{position:fixed;top:0;right:0;z-index:151;width:min(380px,92vw);height:100%;background:var(--cream);
-  display:flex;flex-direction:column;transform:translateX(100%);transition:transform .28s ease;box-shadow:-16px 0 40px rgba(0,0,0,.22)}
-.vaav-sl-drawer.open{transform:translateX(0)}
+  display:flex;flex-direction:column;transform:translateX(100%);visibility:hidden;transition:transform .28s ease,visibility 0s linear .28s}
+.vaav-sl-drawer.open{transform:translateX(0);visibility:visible;transition:transform .28s ease;box-shadow:-16px 0 40px rgba(0,0,0,.22)}
 .vaav-sl-head{display:flex;align-items:center;justify-content:space-between;padding:18px 20px;border-bottom:1px solid var(--cream-deep)}
 .vaav-sl-head h2{font-family:'Cormorant',serif;font-size:1.6rem;color:var(--green-ink)}
 .vaav-sl-close{width:44px;height:44px;display:flex;align-items:center;justify-content:center;background:transparent;border:0;cursor:pointer;color:var(--muted)}
@@ -516,8 +521,7 @@ body.vaav-sl-open .vaav-sl-pill,body.vaav-sl-open .wa-float,body.vaav-sl-open .m
 @media(max-width:760px){
   .vaav-sl-drawer{top:auto;bottom:0;right:0;left:0;width:100%;height:auto;max-height:88vh;border-radius:18px 18px 0 0;
     transform:translateY(100%)}
-  .vaav-sl-drawer.open{transform:translateY(0)}
-  .vaav-sl-drawer{box-shadow:0 -16px 40px rgba(0,0,0,.24)}
+  .vaav-sl-drawer.open{transform:translateY(0);box-shadow:0 -16px 40px rgba(0,0,0,.24)}
 }
 @media(prefers-reduced-motion:reduce){
   .vaav-sl-drawer,.vaav-sl-backdrop{transition:none}
@@ -625,6 +629,15 @@ body.vaav-sl-open .vaav-sl-pill,body.vaav-sl-open .wa-float,body.vaav-sl-open .m
 .set-dishes li:last-child{border-bottom:0}
 .set-more{color:var(--muted);font-size:.98rem;line-height:1.65;margin:30px 0 18px;max-width:60ch}
 .set-cta{margin:0 0 10px}
+/* Jump list + back links on the long category menu pages (menu-page-template.mjs) */
+.set-jump{position:static;top:auto;z-index:auto;background:transparent;backdrop-filter:none;border:0;box-shadow:none;display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin:0 0 28px;scroll-margin-top:96px}
+.set-jump-label{flex-basis:100%;font-family:'Catamaran',sans-serif;font-weight:800;font-size:.8rem;letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
+.set-jump a{display:inline-flex;align-items:center;justify-content:center;min-width:44px;min-height:44px;padding:0 10px;border:1px solid var(--border);border-radius:22px;background:var(--white);color:var(--green-deep);font-family:'Catamaran',sans-serif;font-weight:700;text-decoration:none;transition:background .15s,color .15s}
+.set-jump a:hover,.set-jump a:focus-visible{background:var(--green);border-color:var(--green);color:var(--white)}
+.sec .set{scroll-margin-top:96px}
+.set-back{margin:0 0 6px}
+.set-top{display:inline-flex;align-items:center;gap:6px;min-height:44px;color:var(--green-deep);font-family:'Catamaran',sans-serif;font-weight:700;font-size:.88rem;text-decoration:none}
+.set-top:hover{text-decoration:underline}
 @media(min-width:760px){
   .set-list{grid-template-columns:1fr 1fr;gap:24px}
   .set{padding:26px 26px 10px}
@@ -639,8 +652,28 @@ body.vaav-sl-open .vaav-sl-pill,body.vaav-sl-open .wa-float,body.vaav-sl-open .m
 @media(min-width:760px){
   .set-section{font-size:2.1rem;margin-top:42px}
 }
-.menu-flat-links{font-size:.95rem;color:var(--muted);margin:-8px 0 22px;line-height:1.6}
-.menu-flat-links a{color:var(--green-deep);font-weight:600}
+/* /menu/ first section: a hero-like top (as on the service pages) and one 8px-based
+   rhythm from breadcrumb to menu card, so the category tabs land on the first screen
+   of a 1280x590 laptop and a 375x812 phone. The browse-by links sit below the card,
+   set off by a rule, instead of between the intro and the tabs. */
+#menu{padding-top:32px}
+#menu .sec-head{margin-bottom:16px}
+#menu > .wrap > .menu-intro{margin:0 0 16px}
+#menu .feast-progress{margin:0 0 24px}
+#menu .cat-tabs{margin-bottom:24px}
+#menu .occ-filter{margin-bottom:24px}
+#menu .picker-hint{margin-bottom:24px}
+/* /menu/: the explorer ends on two labelled tile groups (every set; occasions and
+   services) in the same .menu-tile pattern the other pages use for these links. */
+.menu-browse{margin-top:40px;padding-top:24px;border-top:1px solid var(--border)}
+.menu-browse .browse-h{font-size:1.9rem;color:var(--green-deep);margin:0 0 16px}
+.menu-browse .menu-tiles{margin:0;gap:16px}
+.menu-browse .menu-tile{height:100%}
+.menu-browse .menu-tiles + .browse-h{margin-top:32px}
+/* Three category tiles only fit side by side from 900px; between 620 and 900px each label wrapped. */
+@media(min-width:620px) and (max-width:899.98px){.menu-browse .menu-tiles:not(.occ-tiles){grid-template-columns:1fr}}
+@media(min-width:761px){.menu-browse .browse-h{font-size:2.1rem}}
+@media(min-width:761px){#menu{padding-top:40px}}
 
 /* ── Occasion service pages (/services/<occasion>/) and their quote form ─────
    Mobile-first, like the generated menu page block above. */
@@ -655,15 +688,15 @@ body.vaav-sl-open .vaav-sl-pill,body.vaav-sl-open .wa-float,body.vaav-sl-open .m
 .svc-quick{margin:14px 0 0;font-size:.95rem}
 .svc-quick a{color:var(--green-deep);font-weight:600;text-underline-offset:3px}
 .svc-day p{max-width:62ch;line-height:1.7;margin:0 0 16px}
-.set-quote{margin:4px 0 18px}
-.set-quote .btn{min-height:44px;font-size:.92rem;border:0;cursor:pointer}
 .steps{list-style:none;margin:0;padding:0;display:grid;gap:14px;counter-reset:step;max-width:760px}
 .steps li{counter-increment:step;position:relative;background:var(--white);border:1px solid var(--border);border-radius:14px;padding:16px 18px 16px 58px;line-height:1.6}
 .steps li::before{content:counter(step);position:absolute;left:20px;top:12px;font-family:'Cormorant',Georgia,serif;font-weight:700;font-size:1.6rem;color:var(--gold-text)}
 .quote-sec{background:var(--cream-deep)}
 .quote-form{max-width:640px;display:grid;gap:16px;background:var(--white);border:1px solid var(--border);border-radius:20px;padding:22px}
 .qf-row{display:grid;grid-template-columns:1fr;gap:16px}
-.qf-field{display:grid;gap:6px;border:0;padding:0;margin:0;min-width:0}
+/* align-content:start: in the two-column row the Guests cell is taller (its help
+   line), and a stretched Date cell would grow its input to match. */
+.qf-field{display:grid;gap:6px;align-content:start;border:0;padding:0;margin:0;min-width:0}
 .qf-field > span,.qf-field legend{font-family:'Catamaran',sans-serif;font-weight:700;font-size:.9rem;color:var(--green-deep)}
 .qf-field input[type=text],.qf-field input[type=date],.qf-field input[type=number]{font:inherit;width:100%;min-height:46px;padding:8px 12px;border:1px solid var(--border-track);border-radius:10px;background:var(--cream);color:var(--ink)}
 .qf-field input:focus-visible,.qf-meals input:focus-visible{outline:3px solid var(--green-ink);outline-offset:1px;box-shadow:none}
@@ -673,8 +706,18 @@ body.vaav-sl-open .vaav-sl-pill,body.vaav-sl-open .wa-float,body.vaav-sl-open .m
 .quote-form .wa-big{border:0;cursor:pointer}
 .qf-alt,.qf-note{font-size:.92rem;color:var(--muted);margin:0}
 .qf-alt a{color:var(--green-deep);font-weight:700}
-.svc-others{color:var(--muted);line-height:1.7;max-width:62ch}
-.svc-others a{color:var(--green-deep);font-weight:600}
+/* "Other occasions we cater": the menu tiles again, a one-line description in place
+   of the count, two across so four tiles make a square. The "every occasion" text
+   link is padded to a 44px tap target. */
+.mt-desc{font-size:.95rem;line-height:1.45;color:var(--muted)}
+@media(min-width:620px){.menu-tiles.occ-tiles{grid-template-columns:repeat(2,1fr)}}
+.occ-tiles .menu-tile{height:100%}
+/* The same tiles closing the generated menu pages, after the WhatsApp button. */
+.more-tiles{margin-top:56px}
+@media(min-width:761px){.more-tiles{margin-top:72px}}
+/* Scoped: elsewhere .set-more links sit mid-sentence, where the padding would
+   push the paragraph's lines apart. */
+.svc-others-sec .set-more a{display:inline-block;padding:10px 0;color:var(--green-deep);font-weight:700;text-underline-offset:3px}
 @media(min-width:620px){
   .qf-row{grid-template-columns:1fr 1fr}
   .quote-form{padding:30px}
@@ -685,20 +728,21 @@ body.vaav-sl-open .vaav-sl-pill,body.vaav-sl-open .wa-float,body.vaav-sl-open .m
 .mab-quote{background:var(--yellow);color:var(--green-ink)}
 .mab-quote:hover,.mab-quote:active,.mab-quote:focus-visible{background:var(--yellow-deep)}
 .svc-proof .review-grid{grid-template-columns:1fr;min-height:0;margin-bottom:28px}
-.svc-proof .kitchen-shot{margin:0 0 20px}
 @media(min-width:760px){.svc-proof .review-grid{grid-template-columns:1fr 1fr}}
-/* Service pages: one section rhythm (56px on phones, 80px above 760px) instead
-   of the site-wide 90px, and a tighter hero so its actions fit a 1280x590
-   laptop's first screen. Scoped to .svc-main; other pages keep their spacing. */
-.svc-main > section{padding:56px 0}
+/* Service pages: one section rhythm (40px a side on phones, 56px above 760px)
+   instead of the site-wide 90px, so two plain sections sit 80/112px apart, and a
+   tighter hero on 16/24px steps so its actions fit a 1280x590 laptop's first
+   screen. Scoped to .svc-main; other pages keep their spacing. */
+.svc-main > section{padding:40px 0}
 .svc-main > .svc-hero{padding-top:28px}
-.svc-hero .sec-head{margin-bottom:20px}
-.svc-hero .menu-intro{margin:0 0 22px;max-width:62ch}
-.svc-hero .proof{margin:22px 0 0}
+.svc-hero .breadcrumb{margin-bottom:16px}
+.svc-hero .sec-head{margin-bottom:16px}
+.svc-hero .menu-intro{margin:0 0 24px;max-width:62ch}
+.svc-hero .proof{margin:24px 0 0}
 .svc-tamil span{white-space:nowrap}
 .chip-short{display:none}
 @media(min-width:761px){
-  .svc-main > section{padding:80px 0}
+  .svc-main > section{padding:56px 0}
   .svc-main > .svc-hero{padding-top:36px}
 }
 @media(max-width:760px){
@@ -706,33 +750,242 @@ body.vaav-sl-open .vaav-sl-pill,body.vaav-sl-open .wa-float,body.vaav-sl-open .m
   .proof .chip-long{display:none}
   .proof .chip-short{display:inline}
 }
-/* Service pages: dish lists in two columns with every dish still visible (owner,
-   13 Sep 2026: columns rather than collapsed lists). A last card left alone on
-   its row spans the full width and takes three columns. */
-.svc-main .set-dishes{columns:2;column-gap:22px}
-.svc-main .set-dishes li{break-inside:avoid;padding:6px 0;border-bottom:0;line-height:1.35}
-@media(min-width:760px){
-  .svc-main .set-list > .set:last-child:nth-child(odd){grid-column:1/-1}
-  .svc-main .set-list > .set:last-child:nth-child(odd) .set-dishes{columns:3}
-}
 /* Quote form: required markers, the minimum-guests note, the after-send status
    line, brand-coloured 20px checkboxes, and text links tall enough to tap. The
    empty status line stays rendered (a live region that is display:none can go
-   unannounced), so it cancels the form's grid gap instead. */
+   unannounced), but out of the grid flow, so it adds no second gap. */
 .qf-req{font-weight:600;font-size:.8rem;color:var(--muted)}
 .qf-help{font-size:.85rem;color:var(--muted)}
 .qf-status{margin:0;font-size:.95rem;font-weight:600;color:var(--green-deep)}
-.qf-status:empty{margin-top:-16px}
+.qf-status:empty{position:absolute}
 .qf-status a{color:var(--green-deep)}
 .qf-meals input{width:20px;height:20px;margin:0;accent-color:var(--green)}
 .svc-quick a,.qf-alt a{display:inline-block;padding:10px 0}
 .svc-hero .svc-quick{margin-top:4px}
-/* Proof block: from 900px the reviews sit beside the kitchen photo and the
-   licence strip, and the photo is capped, so the block no longer outgrows a
-   1280x590 laptop screen. Placed after the 760px review-grid rule it overrides. */
+/* Service pages: the "choose from all our set menus" tiles, one per meal, and the
+   quote form's menu dropdown (16px so iOS does not zoom into it). */
+.menu-tiles{list-style:none;margin:0 0 18px;padding:0;display:grid;grid-template-columns:1fr;gap:14px}
+.menu-tile{display:grid;grid-template-columns:1fr auto;align-items:center;gap:2px 12px;padding:18px 20px;background:var(--white);border:1px solid var(--border);border-radius:16px;text-decoration:none;color:var(--ink);transition:border-color .2s ease,transform .2s ease}
+.menu-tile:hover,.menu-tile:focus-visible{border-color:var(--green);transform:translateY(-2px)}
+.mt-label{font-family:'Cormorant',Georgia,serif;font-weight:700;font-size:1.6rem;line-height:1.1;color:var(--green-deep)}
+.mt-ta{font-family:'Catamaran',sans-serif;font-weight:700;font-size:.95rem;color:var(--gold-text)}
+.mt-count{font-family:'Catamaran',sans-serif;font-weight:700;font-size:.9rem;color:var(--muted)}
+.mt-go{grid-column:2;grid-row:1 / span 3;font-size:1.4rem;color:var(--green-deep)}
+@media(min-width:620px){.menu-tiles{grid-template-columns:repeat(3,1fr)}}
+@media(prefers-reduced-motion:reduce){.menu-tile{transition:none}}
+.qf-field select{font:inherit;font-size:16px;width:100%;min-height:46px;padding:8px 12px;border:1px solid var(--border-track);border-radius:10px;background:var(--cream);color:var(--ink)}
+.qf-field select:focus-visible{outline:3px solid var(--green-ink);outline-offset:1px;box-shadow:none}
+/* Proof block: from 900px the reviews sit beside the licence strip. Placed after
+   the 760px review-grid rule it overrides. */
 @media(min-width:900px){
   .svc-proof-grid{display:grid;grid-template-columns:1.15fr .85fr;gap:28px;align-items:start}
   .svc-proof .review-grid{grid-template-columns:1fr;margin-bottom:0}
-  .svc-proof .kitchen-shot img{aspect-ratio:4/3;max-height:340px}
   .svc-proof .compliance{grid-template-columns:1fr}
 }
+/* Service pages, spacing inside sections. Placed last so it overrides the shared
+   rules above without raising their specificity.
+   - Steps takes the quote section's band, so no page runs three plain sections.
+   - Headings sit 24px (32px from 761px) above their content; the hero keeps 16px.
+   - No section ends on a stray margin, and the menus intro loses its -6px.
+   - Widths: text 62ch, headings and single-column blocks 760px, grids full,
+     everything left-aligned (the FAQ list was centred under a left heading).
+   - Card gaps: 16px in lists, 24px between reviews, 32px between proof columns. */
+.svc-main > .svc-steps{background:var(--cream-deep)}
+.svc-main > section:not(.svc-hero) .sec-head{margin-bottom:24px}
+.svc-main .sec-head{max-width:760px}
+.svc-main .sec-head h2{text-wrap:balance}
+.svc-main > section > .wrap > :last-child{margin-bottom:0}
+.svc-main > section:not(.svc-hero) .menu-intro{margin:0 0 24px;max-width:62ch}
+.svc-main .menu-tiles{margin-bottom:0;gap:16px}
+.svc-main .set-more{margin:24px 0 0;max-width:62ch}
+.svc-main .steps,.svc-main .faq-list{gap:16px;max-width:760px}
+.svc-main .faq-list{margin:0}
+.svc-main .quote-form{max-width:760px}
+.svc-main .svc-proof .review-grid{gap:24px;margin-bottom:24px}
+@media(min-width:761px){
+  .svc-main > section:not(.svc-hero) .sec-head{margin-bottom:32px}
+}
+@media(min-width:900px){
+  .svc-main .svc-proof-grid{gap:32px}
+  .svc-main .svc-proof .review-grid{margin-bottom:0}
+}
+/* /corporate/ uses this layout too: its licence strip and kitchen photo share one
+   headless section, the photo a block-gap below the strip. */
+.svc-main .compliance + .kitchen-shot{margin-top:24px}
+@media(min-width:761px){.svc-main .compliance + .kitchen-shot{margin-top:32px}}
+/* Its hero ends on a bare .btn: as a block it drops the 4px line strut an inline
+   button sits on. Its closing band's h2 loses the 10px top margin that pushed the
+   band's content below centre. */
+.svc-hero > .wrap > .btn{display:flex;width:fit-content}
+.svc-main #home-cta h2{margin-top:0}
+/* /services/ uses this layout too: its service cards sit 32px (40px) below the
+   hero's button, 16px apart and two across from 900px, descriptions held to 62ch.
+   Each card's second link is padded to a 44px tap target; on phones it drops under
+   the button with no extra margin, the padding making the gap. */
+.svc-main .svc-list{margin-top:32px;gap:16px}
+.svc-main .svc-item p{margin-bottom:16px;max-width:62ch}
+.svc-main .svc-more{display:block;width:fit-content;margin:0;padding:10px 0}
+/* Its closing band opens on a small eyebrow: as a block it drops the taller line
+   strut an inline span sits on, which set the band's content 5px below centre. */
+.svc-main #home-cta .eyebrow{display:block}
+/* /contact/ uses this layout too. Its hero has no .sec-head: the eyebrow is a block
+   16px under the breadcrumb and 8px over the h1, the intro 16px under that, the grid
+   32px (40px) below. The WhatsApp card leads the grid (first on phones, the left
+   column on laptops) and sits at the top of its cell instead of centred beside the
+   details, with one scale inside: 16px badge to heading, 8px heading to text, 24px
+   to the button, 8px to the call link, 16px to the reviews badge. */
+.svc-main #contact .eyebrow{display:block}
+.svc-main #contact h1{margin:8px 0 16px}
+.svc-main .contact-intro{margin-bottom:0}
+.svc-main .contact-grid{margin-top:32px}
+.svc-main .wa-cta{align-items:flex-start}
+.svc-main #contact .wa-cta-inner h2{margin:0 0 8px}
+.svc-main .wa-cta-inner .wa-call{margin-top:8px}
+.svc-main .wa-cta-inner .g-reviews-dark{margin-top:16px}
+@media(min-width:761px){.svc-main .contact-grid{margin-top:40px}}
+/* /about/ uses this layout too. The eyebrow is a block 8px over the h1, the h1 16px
+   over the story, the two story paragraphs 16px apart (they had no gap). The markup
+   is two columns: .about-story (text, then the button) and .about-aside (the quote
+   card, then the stats). From 900px they sit side by side, top-aligned, the stats
+   24px under the quote and the button 16px under the story, so it lands on a
+   1280x590 laptop's first screen. Below 900px both wrappers dissolve into one flex
+   column ordered story, stats, button, quote, so on phones the button still
+   finishes the story. Stats sit 24px apart so the three fit one row on a phone.
+   The reviews run 24px from the rating pill to the cards and 24px between cards. */
+.svc-main #about .eyebrow{display:block}
+.svc-main #about h1{margin:8px 0 16px}
+.svc-main .about-lede{margin:0}
+.svc-main .about-lede + .about-lede{margin-top:16px}
+.svc-main .stat-row{margin:0;gap:24px}
+/* Phones: three equal columns, and the stat type scaled so each figure and label
+   holds one line. At 2.2rem "Pure Veg" is 124px and "COOKED FRESH" 102px against
+   75-112px cells on a 375px phone, so both broke in two. The home page's trust band
+   keeps its own stat sizes; this is scoped to .svc-main (the About page). */
+@media(max-width:519.98px){
+  .svc-main .stat-row{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+  .svc-main .stat .n{font-size:clamp(1.35rem,0.7rem + 3.2vw,1.6rem)}
+  .svc-main .stat .l{font-size:.7rem;letter-spacing:.04em}
+}
+.svc-main .about-story > .btn{display:flex;width:fit-content;margin-top:24px}
+.svc-main #about .about-grid{align-items:start}
+.svc-main .about-aside{display:grid;gap:24px;align-content:start}
+@media(max-width:899.98px){
+  .svc-main #about .about-grid{display:flex;flex-direction:column;align-items:stretch;gap:0}
+  .svc-main .about-story,.svc-main .about-aside{display:contents}
+  .svc-main .about-story > *{order:1}
+  .svc-main .about-aside .stat-row{order:2;margin-top:24px}
+  .svc-main .about-story > .btn{order:3}
+  .svc-main .about-aside .quote-card{order:4;margin-top:40px}
+}
+@media(min-width:761px){.svc-main > #about.svc-hero{padding-top:28px}}
+@media(min-width:900px){.svc-main .about-story > .btn{margin-top:16px}}
+.svc-main .reviews-summary{margin-bottom:24px}
+.svc-main .reviews-summary + .review-grid{gap:24px}
+/* Laptops, the short 1280x590 screen included: a tighter contact hero so the whole
+   WhatsApp button lands on the first screen. 28px top, the grid 24px under the
+   intro, the card padded 24px with 16px from its text to the button. */
+@media(min-width:761px){
+  .svc-main > #contact.svc-hero{padding-top:28px}
+  .svc-main .contact-grid{margin-top:24px}
+  .svc-main .wa-cta-inner{padding:24px}
+  .svc-main .wa-cta-inner p{margin-bottom:16px}
+}
+@media(min-width:761px){.svc-main .svc-list{margin-top:40px}}
+@media(min-width:900px){.svc-main .svc-list{grid-template-columns:1fr 1fr}}
+/* Generated menu pages: the five /menu/<category>/ and /menu/<occasion>/ pages are
+   the only ones with section.wrap.sec. .wrap's padding:0 24px was overriding
+   section{padding:90px 0}, so each page sat flush on the header and the footer.
+   One scale from here, with no negative margins: 8px from the intro to its count,
+   16px inside a block, 24-40px between blocks, 56px (72px) between set groups.
+   Cards keep their own height instead of stretching to the taller one beside them,
+   and the closing tiles heading takes the group-heading size, not the page title's. */
+section.sec{padding-top:24px;padding-bottom:56px}
+.sec .breadcrumb{margin-bottom:16px}
+.sec .sec-head{margin-bottom:16px}
+.sec .menu-intro{margin:0 0 8px;max-width:62ch}
+.sec .set-count{margin:0 0 24px;max-width:62ch}
+.sec .set-count a{color:var(--green-deep);font-weight:700;text-underline-offset:3px}
+.sec .set-section{margin:56px 0 8px;scroll-margin-top:96px}
+.sec .set-count + .set-section{margin-top:32px}
+.sec .set-section-more{margin:0 0 16px;max-width:62ch}
+.sec .set-list{align-items:start}
+.sec .set{padding:22px}
+.sec .set > :last-child{margin-bottom:0}
+.sec .set-more{margin:40px 0 16px;max-width:62ch}
+.sec .set-cta{margin:0}
+.sec .more-tiles .sec-head{margin-bottom:24px}
+.sec .more-tiles .sec-head h2{font-size:1.9rem}
+.sec .more-tiles .menu-tiles{margin-bottom:0}
+@media(min-width:761px){
+  section.sec{padding-top:32px;padding-bottom:80px}
+  .sec .set{padding:26px}
+  .sec .set-section{margin-top:72px}
+  .sec .set-count + .set-section{margin-top:40px}
+  .sec .more-tiles .sec-head{margin-bottom:32px}
+  .sec .more-tiles .sec-head h2{font-size:2.1rem}
+}
+/* Home page: the service-page rhythm, in its own scope. Sections 40px a side on
+   phones and 56px from 761px (the site-wide 90px left 180px between blocks),
+   headings 24px (32px) above their content, the intro without its -6px, and
+   grounds that alternate so no two neighbouring sections share one (Why, Reviews
+   and FAQ ran as one beige band). Not .svc-main: its About rules turn .stat-row
+   into a three-column grid on phones, which would break the four-stat trust band.
+   The FAQ list keeps its centred 760px column (owner, 14 Sep 2026). */
+.home-main > section:not(.trust-band){padding:40px 0}
+.home-main .sec-head{max-width:760px;margin-bottom:24px}
+.home-main .sec-head h2{text-wrap:balance}
+.home-main .menu-intro{margin:0 0 24px;max-width:62ch}
+.home-main .reviews-summary{margin-bottom:24px}
+.home-main .section-cta{margin-top:24px}
+.home-main > #packages{background:var(--cream-deep)}
+.home-main > #why,.home-main > #faq{background:transparent}
+.home-main #home-cta .eyebrow{display:block}
+.home-main #home-cta h2{margin-top:0}
+@media(min-width:761px){
+  .home-main > section:not(.trust-band){padding:56px 0}
+  .home-main .sec-head{margin-bottom:32px}
+  .home-main .section-cta{margin-top:32px}
+}
+/* Home hero on phones: the logo medallion repeated the header logo and its badges
+   repeated the trust band, 400px of it before any content (owner, 14 Sep 2026:
+   hide it). The hero closes 40px under its buttons; the 76px top stays for the leaf. */
+@media(max-width:760px){.hero{padding-bottom:40px}.hero .medallion{display:none}}
+/* Home: the underlined section links were 31px tall; an invisible 12px extension
+   above and below makes each a 44px+ tap target without moving the underline. */
+.home-main .section-cta .ghost{position:relative}
+.home-main .section-cta .ghost::after{content:"";position:absolute;inset:-12px -4px}
+/* /menu/: the service-page rhythm (40px a side on phones, 56px from 761px) in
+   place of the site-wide 90px. The explorer keeps its tighter top and heading
+   gap from the #menu rules above; its beige ground and the green closing band
+   already alternate with the plain packages section. */
+.menu-main > section{padding:40px 0}
+.menu-main .sec-head{margin-bottom:24px}
+.menu-main .sec-head h2{text-wrap:balance}
+.menu-main #packages .menu-intro{margin:0 0 24px;max-width:62ch}
+.menu-main #home-cta .eyebrow{display:block}
+.menu-main #home-cta h2{margin-top:0}
+@media(min-width:761px){
+  .menu-main > section{padding:56px 0}
+  .menu-main .sec-head{margin-bottom:32px}
+}
+/* Footer links were 23px tall and breadcrumb links 21px. Footer links take a 44px
+   row each (row gap dropped so the rows do not double up); breadcrumb links get an
+   invisible 12px extension above and below, which moves nothing. */
+.footer-links ul{gap:0 20px}
+.footer-links a{display:inline-flex;align-items:center;min-height:44px}
+.breadcrumb a{position:relative}
+.breadcrumb a::after{content:"";position:absolute;inset:-12px -4px}
+/* /corporate/ ran five plain sections after its hero. Beige on patterns,
+   compliance (scoped: /about/ has a #compliance too) and the closing tiles. */
+.svc-main > #patterns,.svc-main > #corporate ~ #compliance,.svc-main > #corp-faq + .svc-others-sec{background:var(--cream-deep)}
+/* Wedding and puja pages: the closing tiles after the FAQ, and on the wedding page
+   the day section above its menus, so neighbours alternate after the hero. */
+.svc-main > .svc-day:has(+ #menus),.svc-main > .svc-faq + .svc-others-sec{background:var(--cream-deep)}
+/* 404: "Go to Homepage" was 30px tall; an invisible extension makes it 48px. The bottom
+   inset is larger because it measures from the padding box, above the 2px underline. */
+#notfound .nf-actions .ghost{position:relative}
+#notfound .nf-actions .ghost::after{content:"";position:absolute;inset:-8px -4px -12px}
+/* Wedding hero photo. Phones crop to 4:3 and wide screens to 21:9, both held on the ladle and the rice. */
+.svc-shot{display:block;margin-top:24px}
+.svc-shot img{display:block;width:100%;height:auto;aspect-ratio:4/3;object-fit:cover;object-position:62% 75%;border-radius:14px;border:1px solid var(--border);background:var(--cream-deep)}
+@media(min-width:761px){.svc-shot{margin-top:32px}.svc-shot img{aspect-ratio:21/9}}

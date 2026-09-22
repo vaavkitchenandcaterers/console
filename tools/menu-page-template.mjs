@@ -58,7 +58,40 @@ export const CATEGORY_META = {
   }
 };
 
-const ORDER = ['tiffin', 'lunch', 'dinner'];
+export const ORDER = ['tiffin', 'lunch', 'dinner'];
+
+/** One line per category, for the "Keep exploring" tiles at the foot of the other menu pages. */
+export const CATEGORY_BLURB = {
+  tiffin: 'Idli, dosai, pongal and vadai spreads',
+  lunch: 'Banana-leaf sappadu, simple to full feast',
+  dinner: 'Sweets, starters, biryani and a full main course'
+};
+
+// The two occasion service pages, as tiles. service-page-template.mjs imports
+// this module, so its SERVICE_META cannot be imported back here;
+// site/service-pages.test.js pins these to it instead.
+export const SERVICE_TILES = [
+  { href: '/services/wedding-reception-catering/', label: 'Wedding & reception catering', blurb: 'Muhurtham saapadu to the evening reception' },
+  { href: '/services/puja-homam-catering/', label: 'Puja, homam & temple catering', blurb: 'Sattvic meals, no onion or garlic' }
+];
+
+/** The "Keep exploring" tile row that ends a menu page: a name to scan and one line to choose by. */
+function renderMoreTiles(tiles) {
+  return [
+    '    <div class="more-tiles">',
+    '      <div class="sec-head">',
+    '        <p class="eyebrow">Keep exploring</p>',
+    '        <h2>More menus and occasions</h2>',
+    '      </div>',
+    '      <ul class="menu-tiles occ-tiles" role="list">',
+    ...tiles.map(t =>
+      `        <li><a class="menu-tile" href="${t.href}"><span class="mt-label">${escapeHtml(t.label)}</span>` +
+      `<span class="mt-desc">${escapeHtml(t.blurb)}</span><span class="mt-go" aria-hidden="true">→</span></a></li>`
+    ),
+    '      </ul>',
+    '    </div>'
+  ].join('\n');
+}
 
 /** Rebuild the head: keep the source chrome byte-for-byte, swap only the per-page meta. */
 export function buildHead(sourceHead, url, meta) {
@@ -126,8 +159,10 @@ function buildSchema(catKey, data) {
  * h2, so 3. The group label always sits one level below the name, and the
  * stylesheet keys off .set-name / .set-group rather than the element, because
  * the element is no longer fixed.
+ *
+ * `backHref`, when given, ends the set with a "Back to all sets" link to it.
  */
-export function renderSet(m, level = 2) {
+export function renderSet(m, level = 2, backHref = '') {
   const occ = (m.occasions || []).map(o => escapeHtml(titleCase(o))).join(', ');
   const total = countDishes(m.groups);
   const parts = [];
@@ -143,6 +178,9 @@ export function renderSet(m, level = 2) {
     for (const dish of items || []) parts.push(`          <li>${escapeHtml(dish)}</li>`);
     parts.push('        </ul>');
   }
+  // Category pages run to 30,000px on a phone; each set links back to the jump
+  // list at the top. Occasion pages pass nothing: they have no list to return to.
+  if (backHref) parts.push(`        <p class="set-back"><a class="set-top" href="${backHref}">Back to all sets <span aria-hidden="true">↑</span></a></p>`);
   parts.push('      </article>');
   return parts.join('\n');
 }
@@ -171,15 +209,23 @@ export function renderCategoryPage(catKey, data, chrome) {
     // data.note is authored HTML containing <strong>; it is the one value inserted raw.
     `    <p class="menu-intro">${data.note}</p>`,
     `    <p class="set-count"><b>${data.menus.length}</b> sets &middot; every dish listed below &middot; all customisable, including Jain and no onion-garlic.</p>`,
+    // Numbers, not names, so 26 links fit a phone in a few rows; the aria-label
+    // carries the full set name for screen readers.
+    `    <nav class="set-jump" id="set-jump" aria-label="Jump to a set"><span class="set-jump-label">Jump to a set</span>${data.menus.map(m => {
+      const short = m.name.startsWith(`${data.label} `) ? m.name.slice(data.label.length + 1) : m.name;
+      return `<a href="#${slug(m.name)}" aria-label="${escapeHtml(m.name)}">${escapeHtml(short)}</a>`;
+    }).join('')}</nav>`,
     '    <div class="set-list">',
     // Arrow, not a bare reference: Array#map passes the index as the second
     // argument, which would land in renderSet's `level` and emit <h0>, <h1>…
-    data.menus.map(m => renderSet(m, 2)).join('\n'),
+    data.menus.map(m => renderSet(m, 2, '#set-jump')).join('\n'),
     '    </div>',
-    '    <p class="set-more">Mix and match across any set, and we tailor the spread to your event. <a href="/menu/">Browse the menus one at a time</a>, or see every ' +
-      others.map(c => `<a href="/menu/${c}/">${escapeHtml(CATEGORY_META[c].h1.replace(' set menus', ''))} set</a>`).join(' and every ') +
-      '. Planning a wedding or a puja? See how we cater a <a href="/services/wedding-reception-catering/">wedding and reception</a> or a <a href="/services/puja-homam-catering/">puja or homam</a>.</p>',
-    `    <p class="set-cta"><a class="btn" data-wa-context="${escapeHtml(data.label.toLowerCase())} catering" href="${waHref}" target="_blank" rel="noopener noreferrer">Ask for a ${escapeHtml(data.label.toLowerCase())} quote on WhatsApp</a></p>`,
+    '    <p class="set-more">Mix and match across any set, and we tailor the spread to your event.</p>',
+    `    <p class="set-cta"><a class="btn" data-wa-context="${escapeHtml(data.label.toLowerCase())} catering" href="${waHref}" target="_blank" rel="noopener noreferrer">Get a ${escapeHtml(data.label.toLowerCase())} quote on WhatsApp</a></p>`,
+    renderMoreTiles([
+      ...others.map(c => ({ href: `/menu/${c}/`, label: CATEGORY_META[c].h1, blurb: CATEGORY_BLURB[c] })),
+      ...SERVICE_TILES
+    ]),
     '  </section>',
     '</main>'
   ].join('\n');
@@ -261,6 +307,7 @@ export const OCCASION_META = {
     label: 'Housewarming',
     noun: 'housewarming',
     plural: 'housewarmings',
+    blurb: 'Set menus for a grihapravesam',
     h1: 'Housewarming catering menus',
     eyebrow: 'By occasion &middot; Housewarming',
     title: n => `Housewarming Catering Menu: ${n} Pure Veg Sets | VAAV Kitchen`,
@@ -276,6 +323,7 @@ export const OCCASION_META = {
     label: 'Seemantham',
     noun: 'seemantham',
     plural: 'seemanthams',
+    blurb: 'Set menus for the baby shower',
     h1: 'Seemantham catering menus',
     eyebrow: 'By occasion &middot; Seemantham',
     title: n => `Seemantham Catering Menu: ${n} Pure Veg Sets | VAAV Kitchen`,
@@ -372,7 +420,7 @@ export function renderOccasionPage(occKey, menus, chrome) {
   const sections = groups.map(g => {
     const lower = g.label.toLowerCase();
     return [
-      `      <h2 class="set-section">${escapeHtml(g.label)} sets for a ${escapeHtml(meta.noun)}</h2>`,
+      `      <h2 class="set-section" id="${g.cat}-sets">${escapeHtml(g.label)} sets for a ${escapeHtml(meta.noun)}</h2>`,
       `      <p class="set-section-more">The ${g.sets.length} ${lower} ${g.sets.length === 1 ? 'set' : 'sets'} we cook for ${escapeHtml(meta.plural)}. <a href="/menu/${g.cat}/">See all ${g.total} ${lower} sets</a>.</p>`,
       '      <div class="set-list">',
       g.sets.map(m => renderSet(m, 3)).join('\n'),
@@ -391,12 +439,17 @@ export function renderOccasionPage(occKey, menus, chrome) {
     // meta.intro is authored HTML containing <strong>; like data.note on the
     // category pages, it is the one value inserted raw.
     `    <p class="menu-intro">${meta.intro}</p>`,
-    `    <p class="set-count"><b>${count}</b> sets &middot; every dish listed below &middot; all customisable, including Jain and no onion-garlic.</p>`,
+    // Doubles as a jump list to each group; the Jain / no onion-garlic line it used
+    // to repeat is already in meta.intro.
+    `    <p class="set-count"><b>${count}</b> sets, every dish listed: ${groups.map(g => `<a href="#${g.cat}-sets">${g.sets.length} ${g.label.toLowerCase()}</a>`).join(' &middot; ')}</p>`,
     ...sections,
-    '    <p class="set-more">Not seeing the shape of your function? <a href="/menu/">Browse all 66 sets one at a time</a>' +
-      others.map(o => `, or see the sets we cook for a <a href="/menu/${o}/">${escapeHtml(OCCASION_META[o].noun)}</a>`).join('') +
-      '. We tailor any set to your day.</p>',
-    `    <p class="set-cta"><a class="btn" data-wa-context="${escapeHtml(meta.noun)} catering" href="${waHref}" target="_blank" rel="noopener noreferrer">Ask for a ${escapeHtml(meta.noun)} quote on WhatsApp</a></p>`,
+    '    <p class="set-more">Not seeing the shape of your function? We tailor any set to your day.</p>',
+    `    <p class="set-cta"><a class="btn" data-wa-context="${escapeHtml(meta.noun)} catering" href="${waHref}" target="_blank" rel="noopener noreferrer">Get a ${escapeHtml(meta.noun)} quote on WhatsApp</a></p>`,
+    renderMoreTiles([
+      ...others.map(o => ({ href: `/menu/${o}/`, label: OCCASION_META[o].h1, blurb: OCCASION_META[o].blurb })),
+      ...SERVICE_TILES,
+      { href: '/menu/', label: 'Every set menu', blurb: 'Browse them one at a time and build your feast' }
+    ]),
     '  </section>',
     '</main>'
   ].join('\n');
