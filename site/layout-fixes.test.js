@@ -144,9 +144,28 @@ describe('home page section rhythm', () => {
 });
 
 describe('home hero', () => {
-  it('closes on the section rhythm, and drops the logo medallion on phones (owner, 14 Sep 2026)', () => {
+  it('closes on the section rhythm, 40px under the phone buttons', () => {
     expect(rules('.hero')[0]).toMatch(/padding:76px 0 56px/);
-    expect(CSS).toContain('@media(max-width:760px){.hero{padding-bottom:40px}.hero .medallion{display:none}}');
+    expect(CSS).toContain('@media(max-width:760px){.hero{padding-bottom:40px}}');
+  });
+  it('uses the feast photo as a decorative background (AI-generated, 22 Sep 2026)', () => {
+    const hero = HOME.slice(HOME.indexOf('<header class="hero"'), HOME.indexOf('</header>'));
+    expect(hero).not.toContain('medallion');
+    expect(hero).toContain('<picture class="hero-bg">');
+    const img = hero.match(/<img src="\/wedding-feast-800\.jpg"[^>]*>/)[0];
+    expect(img).toMatch(/width="1600" height="900"/);
+    expect(img).toMatch(/fetchpriority="high"/);
+    expect(img).not.toMatch(/loading="lazy"/);
+    expect(img).toMatch(/alt=""/);
+    expect(hero).not.toMatch(/<fig/);
+    expect(rules('.hero-bg')[0]).toMatch(/position:absolute;inset:0;z-index:0/);
+    expect(CSS).not.toContain('.medallion');
+  });
+  it('puts the real kitchen photo under the Why VAAV claims', () => {
+    const why = HOME.slice(HOME.indexOf('<section id="why">'), HOME.indexOf('<section id="reviews">'));
+    expect(why).toContain('<figure class="kitchen-shot">');
+    expect(why).toMatch(/src="\/kitchen-800\.jpg"[\s\S]*loading="lazy"/);
+    expect(why).toContain('<figcaption>Our kitchen in Perungalathur, where every order is cooked.</figcaption>');
   });
 });
 
