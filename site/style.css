@@ -978,3 +978,6 @@ section.sec{padding-top:24px;padding-bottom:56px}
 /* /corporate/ ran five plain sections after its hero. Beige on patterns,
    compliance (scoped: /about/ has a #compliance too) and the closing tiles. */
 .svc-main > #patterns,.svc-main > #corporate ~ #compliance,.svc-main > #corp-faq + .svc-others-sec{background:var(--cream-deep)}
+/* Wedding and puja pages: the closing tiles after the FAQ, and on the wedding page
+   the day section above its menus, so neighbours alternate after the hero. */
+.svc-main > .svc-day:has(+ #menus),.svc-main > .svc-faq + .svc-others-sec{background:var(--cream-deep)}

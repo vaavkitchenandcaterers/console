@@ -224,3 +224,9 @@ describe('/menu/ heading order', () => {
     expect(MENU).toContain('<h2 class="vh">Browse the set menus</h2>\n    <div class="cat-tabs" id="catTabs"');
   });
 });
+
+describe('wedding and puja grounds', () => {
+  it('alternates the day section (wedding) and the closing tiles (both)', () => {
+    expect(CSS).toContain('.svc-main > .svc-day:has(+ #menus),.svc-main > .svc-faq + .svc-others-sec{background:var(--cream-deep)}');
+  });
+});
