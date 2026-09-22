@@ -161,6 +161,10 @@ describe('home hero', () => {
     expect(rules('.hero-bg')[0]).toMatch(/position:absolute;inset:0;z-index:0/);
     expect(CSS).not.toContain('.medallion');
   });
+  it('keeps the rotating word underline inside its 1.25em slot, so it never shows above the next word', () => {
+    // At 3px the underline crossed the slot edge and a stray yellow line showed over the dark photo.
+    expect(rules('.cyc-track b span')[0]).toMatch(/text-underline-offset:1px/);
+  });
   it('puts the real kitchen photo under the Why VAAV claims', () => {
     const why = HOME.slice(HOME.indexOf('<section id="why">'), HOME.indexOf('<section id="reviews">'));
     expect(why).toContain('<figure class="kitchen-shot">');
