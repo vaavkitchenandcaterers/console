@@ -53,7 +53,8 @@ export const SERVICE_META = {
     proof: ['5.0 on Google', ['From 50 guests for a full sappadu', 'From 50 guests'], ['Cooks and servers included', 'Cooks & servers'], ['Cooked fresh the same day', 'Cooked fresh']],
     // An AI-generated mood image, not one of our events: the hero's backdrop, with
     // no caption and an empty alt, so nothing claims it as our work.
-    heroImage: { base: 'wedding-feast' },
+    // 2.5:1 (1983x793 source); the stylesheet sets its phone focal point to the server on the right.
+    heroImage: { base: 'wedding-pandhi', height: 640 },
     dayEyebrow: 'The day',
     dayHeading: 'Two meals, fully staffed',
     day: [
@@ -298,14 +299,17 @@ function buildServiceSchema(key, meta) {
     .join('\n');
 }
 
-/** The hero photo as the section's backdrop: 16:9 source at 400/800/1600 in webp and jpg. It is
- *  AI-generated, so it is decorative (empty alt); the stylesheet crops it and lays the wash over it. */
-function heroBackdrop({ base }) {
+/** The hero photo as the section's backdrop, at 400/800/1600 wide in webp and jpg; `height` is the
+ *  1600 file's, for the layout-shift box. It is AI-generated, so it is decorative (empty alt); the
+ *  stylesheet crops it and lays the wash over it. Under 900px it fills a short band at cover, which
+ *  draws a wide photo at about 900px across whatever the phone's width, hence the sizes hint. */
+function heroBackdrop({ base, height }) {
+  const sizes = '(max-width:900px) 900px, 100vw';
   const set = ext => [400, 800, 1600].map(w => `/${base}-${w}.${ext} ${w}w`).join(', ');
   return [
     '  <picture class="svc-bg">',
-    `    <source type="image/webp" srcset="${set('webp')}" sizes="100vw">`,
-    `    <img src="/${base}-800.jpg" srcset="${set('jpg')}" sizes="100vw" width="1600" height="900" fetchpriority="high" decoding="async" alt="">`,
+    `    <source type="image/webp" srcset="${set('webp')}" sizes="${sizes}">`,
+    `    <img src="/${base}-800.jpg" srcset="${set('jpg')}" sizes="${sizes}" width="1600" height="${height}" fetchpriority="high" decoding="async" alt="">`,
     '  </picture>'
   ].join('\n');
 }
