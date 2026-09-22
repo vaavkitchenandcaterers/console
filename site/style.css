@@ -195,7 +195,7 @@ section{padding:90px 0}
 .cat-tab{font-family:'Catamaran',sans-serif;cursor:pointer;transition:.2s ease;display:inline-flex;align-items:center;gap:9px;padding:11px 22px;border-radius:40px;border:0;background:transparent;color:var(--green-deep)}
 .cat-tab .en{font-weight:800;font-size:1rem;letter-spacing:.01em}
 .cat-tab .ta{font-weight:600;font-size:.82rem;opacity:.85}
-.cat-tab .ct{font-weight:700;font-size:.66rem;letter-spacing:.06em;color:var(--muted);background:var(--cream-deep);padding:3px 8px;border-radius:20px;transition:.2s}
+.cat-tab .ct{font-weight:700;font-size:.75rem;letter-spacing:.06em;color:var(--muted);background:var(--cream-deep);padding:3px 8px;border-radius:20px;transition:.2s}
 .cat-tab:hover{background:var(--cream)}
 .cat-tab:focus-visible{border-radius:40px;outline-offset:2px}
 .cat-tab.active{background:var(--green-deep);color:var(--white)}
@@ -266,7 +266,7 @@ section{padding:90px 0}
 .pkg.feature .price small{color:rgba(247,243,231,.8)}
 .pkg.feature li{color:rgba(247,243,231,.92);border-bottom-color:rgba(247,243,231,.14)}
 .pkg.feature li .dot{background:var(--yellow)}
-.pkg.feature .tag{position:absolute;top:-13px;left:30px;background:var(--yellow);color:var(--green-ink);font-family:'Catamaran',sans-serif;font-weight:800;font-size:.68rem;letter-spacing:.1em;padding:6px 14px;border-radius:30px}
+.pkg.feature .tag{position:absolute;top:-13px;left:30px;background:var(--yellow);color:var(--green-ink);font-family:'Catamaran',sans-serif;font-weight:800;font-size:.75rem;letter-spacing:.1em;padding:6px 14px;border-radius:30px}
 .pkg.feature .btn{background:var(--yellow);color:var(--green-ink)}
 .pkg.feature .btn:hover,.pkg.feature .btn:focus-visible{background:var(--yellow-deep)}
 

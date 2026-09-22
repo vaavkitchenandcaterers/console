@@ -237,3 +237,10 @@ describe('404 link and phone menu button', () => {
     expect(rules('#notfound .nf-actions .ghost::after')[0]).toMatch(/content:"";position:absolute;inset:-8px -4px/);
   });
 });
+
+describe('small labels', () => {
+  it('meal-tab counts and the MOST BOOKED tag are 12px', () => {
+    expect(rules('.cat-tab .ct')[0]).toMatch(/font-size:\.75rem/);
+    expect(rules('.pkg.feature .tag')[0]).toMatch(/font-size:\.75rem/);
+  });
+});
