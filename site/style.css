@@ -984,9 +984,14 @@ section.sec{padding-top:24px;padding-bottom:56px}
 .hero-cta .btn:not(.y){background:rgba(250,246,236,.12);color:var(--cream);box-shadow:inset 0 0 0 2px rgba(250,246,236,.85);text-shadow:none}
 .hero-cta .btn:not(.y):hover,.hero-cta .btn:not(.y):focus-visible{background:var(--cream);color:var(--green-ink)}
 .hero-cta .btn.y{text-shadow:none}
-@media(max-width:900px){.hero{justify-content:flex-end}.hero-bg{bottom:auto;height:max(280px,calc(100% - 360px))}.hero-bg img{object-position:70% 80%}.hero-bg::after{background:linear-gradient(0deg,#2a1a0c 0%,rgba(42,26,12,.88) 24%,rgba(42,26,12,0) 62%)}}
-/* Short phones (SE, landscape): the words fill the hero, so the photo becomes a warm backdrop. */
-@media(max-width:900px) and (max-height:700px){.hero-bg::after{background:linear-gradient(0deg,#2a1a0c 0%,rgba(42,26,12,.8) 50%,rgba(42,26,12,.62) 100%)}}
+/* Phones and tablets: the photo is graded into the ground rather than washed with it. Laying
+   translucent brown over its whites and greens read grey and olive at the seam; darkening and
+   warming the photo itself, plus a multiply amber tint, keeps it rich, and the fade follows an
+   ease curve over the whole band so no edge shows. The wedding hero uses the same grade. */
+@media(max-width:900px){.hero{justify-content:flex-end}.hero-bg{bottom:auto;height:max(280px,calc(100% - 360px))}.hero-bg img{object-position:70% 80%;filter:brightness(.78) saturate(1.16) contrast(1.06) sepia(.24)}.hero-bg::before{content:"";position:absolute;inset:0;z-index:1;pointer-events:none;background:rgba(150,82,28,.2);mix-blend-mode:multiply}.hero-bg::after{z-index:2;background:linear-gradient(0deg,#2a1a0c 0%,#2a1a0c 8%,rgba(42,26,12,.96) 17%,rgba(42,26,12,.88) 27%,rgba(42,26,12,.75) 37%,rgba(42,26,12,.59) 47%,rgba(42,26,12,.42) 57%,rgba(42,26,12,.27) 67%,rgba(42,26,12,.14) 77%,rgba(42,26,12,.05) 88%,rgba(42,26,12,0) 100%)}}
+/* Short phones (SE, landscape): the words fill the hero, so the photo becomes a warm backdrop,
+   darkened by the grade rather than a flat brown layer, which turned it grey. */
+@media(max-width:900px) and (max-height:700px){.hero-bg img{filter:brightness(.62) saturate(1.2) contrast(1.05) sepia(.18)}.hero-bg::after{background:linear-gradient(0deg,#2a1a0c 0%,rgba(42,26,12,.9) 30%,rgba(42,26,12,.72) 60%,rgba(42,26,12,.55) 100%)}}
 .home-main #why .kitchen-shot{margin-top:32px}
 /* Wedding hero: the home hero's treatment. The feast photo is the backdrop, edge to edge, with a
    warm dark wash behind the copy (kept to 620px, and the wash measured from the copy's real edge, not a percentage) clearing towards the
@@ -1010,4 +1015,4 @@ section.sec{padding-top:24px;padding-bottom:56px}
 .svc-hero-photo .btn{text-shadow:none}
 .svc-hero-photo .btn.svc-call{color:var(--cream);box-shadow:inset 0 0 0 2px rgba(250,246,236,.85)}
 .svc-hero-photo .btn.svc-call:hover,.svc-hero-photo .btn.svc-call:focus-visible{background:var(--cream);color:var(--green-ink)}
-@media(max-width:900px){.svc-hero-photo{justify-content:flex-start;min-height:0}.svc-main > .svc-hero-photo{padding-bottom:300px}.svc-hero-photo > .wrap > *{max-width:none}.svc-bg{top:auto;height:330px}.svc-bg img{object-position:66% 72%}.svc-bg::after{background:linear-gradient(180deg,#2a1a0c 0%,#2a1a0c 12%,rgba(42,26,12,.7) 26%,rgba(42,26,12,0) 56%)}}
+@media(max-width:900px){.svc-hero-photo{justify-content:flex-start;min-height:0}.svc-main > .svc-hero-photo{padding-bottom:300px}.svc-hero-photo > .wrap > *{max-width:none}.svc-bg{top:auto;height:330px}.svc-bg img{object-position:66% 72%;filter:brightness(.78) saturate(1.16) contrast(1.06) sepia(.24)}.svc-bg::before{content:"";position:absolute;inset:0;z-index:1;pointer-events:none;background:rgba(150,82,28,.2);mix-blend-mode:multiply}.svc-bg::after{z-index:2;background:linear-gradient(180deg,#2a1a0c 0%,#2a1a0c 10%,rgba(42,26,12,.94) 20%,rgba(42,26,12,.8) 30%,rgba(42,26,12,.62) 40%,rgba(42,26,12,.44) 50%,rgba(42,26,12,.28) 60%,rgba(42,26,12,.15) 70%,rgba(42,26,12,.06) 80%,rgba(42,26,12,.01) 90%,rgba(42,26,12,0) 100%)}}
