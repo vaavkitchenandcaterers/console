@@ -180,6 +180,11 @@
 <!-- sync:chrome end -->
 
 <header class="hero" id="top">
+  <!-- AI-generated mood image, not one of our events, so it is decorative: no caption, empty alt. -->
+  <picture class="hero-bg">
+    <source type="image/webp" srcset="/wedding-feast-400.webp 400w, /wedding-feast-800.webp 800w, /wedding-feast-1600.webp 1600w" sizes="100vw">
+    <img src="/wedding-feast-800.jpg" srcset="/wedding-feast-400.jpg 400w, /wedding-feast-800.jpg 800w, /wedding-feast-1600.jpg 1600w" sizes="100vw" width="1600" height="900" fetchpriority="high" decoding="async" alt="">
+  </picture>
   <div class="hero-decor" aria-hidden="true">
     <span class="hd hd-leaf1"><svg viewBox="0 0 64 70" fill="none"><path d="M32 68 Q32 34 32 8" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/><path d="M32 20 Q16 15 9 28 Q25 33 32 20Z" fill="currentColor"/><path d="M32 32 Q48 27 55 40 Q39 45 32 32Z" fill="currentColor"/><path d="M32 44 Q18 41 12 52 Q27 57 32 44Z" fill="currentColor"/></svg></span>
     <span class="hd hd-anise"><svg viewBox="0 0 48 48" fill="currentColor"><path d="M24 2l3.2 12.2L39 9.6l-5.4 10.8L45 24l-11.4 3.6L39 38.4l-11.8-4.6L24 46l-3.2-12.2L9 38.4l5.4-10.8L3 24l11.4-3.6L9 9.6l11.8 4.6z"/><circle cx="24" cy="24" r="4.2" fill="#7a1f12"/></svg></span>
@@ -204,14 +209,6 @@
         <a href="https://wa.me/919655356333?text=Hello%20VAAV%20Kitchen%2C%20I'd%20like%20to%20enquire%20about%20catering%20for%20my%20event." class="btn y" data-wa-context="catering for my event" target="_blank" rel="noopener noreferrer">Get a quote on WhatsApp</a>
         <a href="/menu/" class="btn">Explore 66 menus</a>
       </div>
-    </div>
-    <div class="medallion">
-      <div class="ring"></div>
-      <div class="logo">
-        <img src="/logo.png" width="280" height="280" decoding="async" alt="VAAV Kitchen and Caterers emblem">
-      </div>
-      <span class="badge b1 reveal" style="--d:1.0s">100% Fresh</span>
-      <span class="badge b2 reveal" style="--d:1.12s">Pure Veg</span>
     </div>
   </div>
 </header>
@@ -370,6 +367,20 @@
         <p>Fully customisable pure veg spreads, shaped to your guest count, budget and family traditions.</p>
       </li>
     </ul>
+    <figure class="kitchen-shot">
+      <picture>
+        <source type="image/webp"
+                srcset="/kitchen-400.webp 400w, /kitchen-800.webp 800w, /kitchen-1600.webp 1600w"
+                sizes="(max-width: 760px) 100vw, 1140px">
+        <img src="/kitchen-800.jpg"
+             srcset="/kitchen-400.jpg 400w, /kitchen-800.jpg 800w, /kitchen-1600.jpg 1600w"
+             sizes="(max-width: 760px) 100vw, 1140px"
+             width="1600" height="900"
+             loading="lazy" decoding="async"
+             alt="VAAV's kitchen in Perungalathur: steel prep tables, shelves of stocked spice jars, a gas range and a tiled splashback, with a cook preparing an order.">
+      </picture>
+      <figcaption>Our kitchen in Perungalathur, where every order is cooked.</figcaption>
+    </figure>
   </div>
 </section>
 
