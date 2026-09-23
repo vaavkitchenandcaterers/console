@@ -161,7 +161,11 @@ window.VaavShortlist = createShortlist(localStorage);
   if (!nav) return;
   const onScroll = () => nav.classList.toggle('scrolled', window.scrollY > 8);
   window.addEventListener('scroll', onScroll, { passive: true });
-  onScroll();
+  // Not called directly: reading scrollY here, while the module is still
+  // evaluating, forces the page's first full layout inside the script and
+  // holds back first paint (and the hero, the LCP element) until it is done.
+  // In a frame callback it rides the layout that paint needs anyway.
+  requestAnimationFrame(onScroll);
 })();
 
 // --- mobile menu toggle (with aria-expanded) ---

@@ -203,13 +203,15 @@ export const REGIONS = [
     name: 'head-assets',
     marker: 'sync:chrome head-assets',
     sourceFile: 'head-assets.html',
-    what: 'shared font, stylesheet and analytics tags',
-    wraps: 'preconnect, stylesheet and analytics tags',
-    // The largest contiguous shared run in the head: both preconnects, the
-    // Google Fonts stylesheet, /style.css, and the two halves of the GA4
-    // snippet with the comment that explains why they are split (ADR-0009).
+    what: 'shared font, stylesheet, module and analytics tags',
+    wraps: 'preload, stylesheet and analytics tags',
+    // The largest contiguous shared run in the head: the font preloads,
+    // /style.css, the module preloads for script.js's imports, and the two
+    // halves of the GA4 snippet with the comment that explains why they are
+    // split (ADR-0009).
     requires: [
-      ['a fonts preconnect', '<link rel="preconnect" href="https://fonts.googleapis.com">'],
+      ['a font preload', '<link rel="preload" href="/fonts/'],
+      ['a module preload for script.js', '<link rel="modulepreload" href="/script.js">'],
       ['the site stylesheet', '<link rel="stylesheet" href="/style.css">'],
       ['the analytics config script', '<script src="/analytics.js" defer></script>'],
     ],

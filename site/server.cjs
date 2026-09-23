@@ -5,7 +5,8 @@ const path = require('path');
 
 const root = path.resolve(__dirname);
 const types = { '.html':'text/html', '.css':'text/css', '.js':'text/javascript', '.svg':'image/svg+xml',
-                '.png':'image/png', '.jpg':'image/jpeg', '.webp':'image/webp', '.ico':'image/x-icon' };
+                '.png':'image/png', '.jpg':'image/jpeg', '.webp':'image/webp', '.ico':'image/x-icon',
+                '.woff2':'font/woff2', '.txt':'text/plain' };
 
 // Security headers applied to every response (mirrors the production intent in _headers).
 function secureHeaders(extra) {
