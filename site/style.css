@@ -592,9 +592,6 @@ body.vaav-sl-open .vaav-sl-pill,body.vaav-sl-open .wa-float,body.vaav-sl-open .m
 @media(max-width:520px){.svc-more{display:block;margin:10px 0 0}}
 
 /* kitchen photograph: shared by /corporate/ and /about/ */
-.kitchen-shot{margin:0}
-.kitchen-shot img{width:100%;height:auto;aspect-ratio:16/9;object-fit:cover;border-radius:14px;border:1px solid var(--border);background:var(--cream-deep)}
-.kitchen-shot figcaption{margin-top:10px;font-size:.88rem;color:var(--muted);text-align:center}
 
 /* ── Generated menu category pages (/menu/tiffin|lunch|dinner/) ──────────────
    Written mobile-first with a min-width query: the stylesheet is otherwise 18
@@ -793,8 +790,6 @@ body.vaav-sl-open .vaav-sl-pill,body.vaav-sl-open .wa-float,body.vaav-sl-open .m
 }
 /* /corporate/ uses this layout too: its licence strip and kitchen photo share one
    headless section, the photo a block-gap below the strip. */
-.svc-main .compliance + .kitchen-shot{margin-top:24px}
-@media(min-width:761px){.svc-main .compliance + .kitchen-shot{margin-top:32px}}
 /* Its hero ends on a bare .btn: as a block it drops the 4px line strut an inline
    button sits on. Its closing band's h2 loses the 10px top margin that pushed the
    band's content below centre. */
@@ -992,7 +987,6 @@ section.sec{padding-top:24px;padding-bottom:56px}
 /* Short phones (SE, landscape): the words fill the hero, so the photo becomes a warm backdrop,
    darkened by the grade rather than a flat brown layer, which turned it grey. */
 @media(max-width:900px) and (max-height:700px){.hero-bg img{filter:brightness(.62) saturate(1.2) contrast(1.05) sepia(.18)}.hero-bg::after{background:linear-gradient(0deg,#2a1a0c 0%,rgba(42,26,12,.9) 30%,rgba(42,26,12,.72) 60%,rgba(42,26,12,.55) 100%)}}
-.home-main #why .kitchen-shot{margin-top:32px}
 /* Wedding hero: the home hero's treatment. The feast photo is the backdrop, edge to edge, with a
    warm dark wash behind the copy (kept to 620px, and the wash measured from the copy's real edge, not a percentage) clearing towards the
    server and the banana-leaf row (the photo is 2.5:1 and its subject sits right, hence the 86%

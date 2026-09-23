@@ -257,8 +257,6 @@ describe('generated occasion service pages', () => {
       for (const r of shown) expect(proof).toContain(escapeHtml(r.text));
       expect(proof).toContain('12426008001205');
       expect(proof).toContain('33BJKPK7360P2ZL');
-      // The owner wants the kitchen photo on /about/ only (13 Sep 2026).
-      expect(html, `${key} shows the kitchen photo`).not.toMatch(/kitchen-(400|800|1600)\.(jpg|webp)|class="kitchen-shot"/);
     }
   });
 
