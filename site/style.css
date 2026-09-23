@@ -592,9 +592,6 @@ body.vaav-sl-open .vaav-sl-pill,body.vaav-sl-open .wa-float,body.vaav-sl-open .m
 @media(max-width:520px){.svc-more{display:block;margin:10px 0 0}}
 
 /* kitchen photograph: shared by /corporate/ and /about/ */
-.kitchen-shot{margin:0}
-.kitchen-shot img{width:100%;height:auto;aspect-ratio:16/9;object-fit:cover;border-radius:14px;border:1px solid var(--border);background:var(--cream-deep)}
-.kitchen-shot figcaption{margin-top:10px;font-size:.88rem;color:var(--muted);text-align:center}
 
 /* ── Generated menu category pages (/menu/tiffin|lunch|dinner/) ──────────────
    Written mobile-first with a min-width query: the stylesheet is otherwise 18
@@ -793,8 +790,6 @@ body.vaav-sl-open .vaav-sl-pill,body.vaav-sl-open .wa-float,body.vaav-sl-open .m
 }
 /* /corporate/ uses this layout too: its licence strip and kitchen photo share one
    headless section, the photo a block-gap below the strip. */
-.svc-main .compliance + .kitchen-shot{margin-top:24px}
-@media(min-width:761px){.svc-main .compliance + .kitchen-shot{margin-top:32px}}
 /* Its hero ends on a bare .btn: as a block it drops the 4px line strut an inline
    button sits on. Its closing band's h2 loses the 10px top margin that pushed the
    band's content below centre. */

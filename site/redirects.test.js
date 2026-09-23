@@ -58,8 +58,6 @@ const RUNTIME_CRITICAL = [
   '/menu-data.js', '/menu-format.js', '/analytics.js', '/lead-events.js', '/quote-form.js', '/reviews.js',
   '/robots.txt', '/sitemap.xml', '/_headers', '/_redirects',
   '/favicon-64.png', '/logo.png', '/og-card.jpg',
-  '/kitchen-400.jpg', '/kitchen-800.jpg', '/kitchen-1600.jpg',
-  '/kitchen-400.webp', '/kitchen-800.webp', '/kitchen-1600.webp',
 ];
 
 /** Rules as [from, to, flag], ignoring comments and blank lines. */

@@ -1,5 +1,6 @@
 import { describe, it, expect } from 'vitest';
-import { readFileSync } from 'node:fs';
+import { readFileSync, existsSync } from 'node:fs';
+import { PAGES, GENERATED_PAGES } from '../tools/sync-chrome.mjs';
 
 // Guards for the fixes from the 14 Sep 2026 Playwright review of deploy
 // preview 11. Each block names the defect it keeps from coming back.
@@ -179,6 +180,27 @@ describe('home hero', () => {
     expect(why).not.toContain('kitchen-shot');
     expect(why).not.toContain('/kitchen-');
     expect(CSS).not.toContain('#why .kitchen-shot');
+  });
+});
+
+// The owner asked for the kitchen photo off the site entirely (23 Sep 2026).
+// It came off the service pages first, then the home page, then About and
+// Corporate, so the guard is written once against every page rather than per
+// page: a figure reintroduced anywhere fails here.
+describe('the kitchen photo is gone from the site', () => {
+  it('no page references it and no style is left behind', () => {
+    for (const page of [...PAGES, ...GENERATED_PAGES]) {
+      expect(read(`./${page}`), page).not.toMatch(/kitchen-(400|800|1600)\.(jpg|webp)|kitchen-shot/);
+    }
+    expect(CSS).not.toContain('kitchen-shot');
+  });
+
+  it('its image files are deleted, not just unreferenced', () => {
+    for (const size of [400, 800, 1600]) {
+      for (const ext of ['jpg', 'webp']) {
+        expect(existsSync(new URL(`./kitchen-${size}.${ext}`, import.meta.url)), `kitchen-${size}.${ext}`).toBe(false);
+      }
+    }
   });
 });
 
