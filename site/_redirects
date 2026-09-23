@@ -97,3 +97,4 @@ https://vaavkitchenandcaterers.netlify.app/*  https://vaavkitchenandcaterers.com
 /perf-head.test.js      /404.html   404!
 /label-in-name.test.js  /404.html   404!
 /contrast.test.js       /404.html   404!
+/analytics-defer.test.js  /404.html   404!

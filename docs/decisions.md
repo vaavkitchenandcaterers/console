@@ -570,3 +570,63 @@ Birthday: பிறந்தநாள். The Phase 2 housewarming and seemantha
 and `/menu/seemantham/` show impressions in Search Console (ADR-0007's gate).
 Birthday, Upanayanam and prices wait on the owner. The homepage service cards
 still link to `/services/`.
+
+---
+
+## ADR-0012 — Fetch the GA4 loader after paint, not from the `<head>`
+
+**Date:** 2026-09-23
+**Status:** accepted
+
+**Context.** The 22 Sep Lighthouse review of the deploy preview put the
+homepage at 39 on mobile. Self-hosting the fonts and untangling the module
+waterfall (PR #17) took first paint from 4.0 s to 2.4 s and left one item
+dominating what remained: the GA4 loader. As an `async` tag in the `<head>` it
+is 172 KiB, about 1.1 s of main-thread work on Lighthouse's mid-range phone,
+and roughly 70 KiB of that bytes the page never executes. It spends all of it
+while the hero is still competing for the same network and main thread.
+
+The obvious objection to deferring analytics is lost pageviews: a visitor who
+leaves before the loader arrives is a visit that never reaches GA. That is a
+real cost and the reason this was left alone in PR #17 rather than folded in.
+
+**Decision.** The loader tag comes out of `tools/chrome/head-assets.html`, and
+`site/analytics.js` fetches it — after the page has painted, or the moment the
+visitor interacts, whichever comes first:
+
+- `pointerdown`, `keydown`, `touchstart`, `scroll` or `wheel` (passive and
+  capturing) fetch it immediately;
+- otherwise `load` schedules a `requestIdleCallback` with a 3 s ceiling;
+- `visibilitychange` to hidden fetches it too, a best-effort attempt to catch a
+  visitor leaving before either of the above.
+
+The `js` and `config` commands are **not** deferred. `dataLayer` is a queue, so
+they are issued as early as they ever were, and the lead events `script.js`
+fires queue the same way. The library drains the queue in order when it
+arrives — the same mechanism that already covered an `async` loader arriving
+after the page.
+
+**Consequence.** Measured locally, Lighthouse mobile, seven interleaved pairs
+against the same build with the loader in the head: performance 50 → 64
+(median), LCP 5.37 s → 3.82 s, TBT 1,440 ms → ~970 ms. Verified with Chrome
+DevTools Protocol, with Google's collection endpoints blocked at the network
+stack so no test hit reached the property: the `page_view` still arrives on
+every run, and a `generate_lead` fired before the library loads is sent with it.
+
+The 3 s is a ceiling, not a delay. `requestIdleCallback` fires as soon as the
+main thread is free, which on a quick device is right after the paint; the
+ceiling only applies while the thread is still busy, which is exactly when
+another 172 KiB would hurt. It was 1.5 s first, and at that value two runs in
+seven landed the fetch on a hero still painting and cost ~1.9 s of LCP.
+
+**What this costs.** A visitor who opens the page, does not scroll or tap, and
+leaves before the idle callback runs is not counted. The `visibilitychange`
+hook catches some of them — a backgrounded or navigated-away page usually
+finishes the fetch; a closed tab does not. Bounce-heavy sessions of under a
+second or two will be under-reported relative to the old behaviour, and the
+step down will show in the property on the day this is published. It is a
+deliberate trade: the page is measurably faster for every visitor, and the
+visits being lost are the ones that saw the least of the site.
+
+The CSP is unchanged. `script-src` still names `www.googletagmanager.com`,
+which is what lets `analytics.js` inject the loader at all.

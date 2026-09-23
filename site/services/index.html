@@ -52,9 +52,10 @@
 <link rel="modulepreload" href="/lead-events.js">
 <link rel="modulepreload" href="/quote-form.js">
 <link rel="modulepreload" href="/reviews.js">
-<!-- Google Analytics (GA4). The loader is external; the config half lives in
-     /analytics.js so script-src needs no 'unsafe-inline'. See ADR-0009. -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-4T5PCVFK2G"></script>
+<!-- Google Analytics (GA4). Both halves are in /analytics.js now: the config
+     so script-src needs no 'unsafe-inline' (ADR-0009), and the loader, which
+     that file fetches after paint or on first interaction rather than racing
+     the hero from here (ADR-0012). -->
 <script src="/analytics.js" defer></script>
 <!-- sync:chrome head-assets end -->
 <script type="application/ld+json">
