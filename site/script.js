@@ -254,8 +254,12 @@ window.VaavShortlist = createShortlist(localStorage);
     b.id = `cattab-${cat}`;
     b.setAttribute('role', 'tab');
     b.setAttribute('aria-controls', 'catPanel');
-    b.innerHTML = `<span class="en">${M[cat].label}</span><span class="ta">${M[cat].tamil}</span><span class="ct">${M[cat].menus.length} MENUS</span>`;
-    b.setAttribute('aria-label', `${M[cat].label}, ${M[cat].menus.length} menus`);
+    // The spaces between the spans are not decoration: a flex container drops
+    // whitespace-only nodes from the layout, so they cost nothing visually,
+    // but without them the tab reads as one word ("Tiffinடிபன்20 MENUS") to a
+    // screen reader. With them the button's own text is its name, which is
+    // what WCAG 2.5.3 asks for, so it carries no aria-label rephrasing it.
+    b.innerHTML = `<span class="en">${M[cat].label}</span> <span class="ta">${M[cat].tamil}</span> <span class="ct">${M[cat].menus.length} MENUS</span>`;
     b.dataset.cat = cat;
     b.onclick = () => { curCat = cat; curIdx = 0; render(); };
     tabsEl.appendChild(b);
@@ -310,8 +314,9 @@ window.VaavShortlist = createShortlist(localStorage);
     const txt = addBtn.querySelector('.mc-add-txt');
     if (txt) txt.textContent = full ? 'Feast is full (20)' : (has ? '✓ In your feast' : '+ Add to my feast');
     addBtn.setAttribute('aria-label',
-      full ? 'Feast is full. Remove a menu from your feast to add another'
-           : (has ? 'Remove ' : 'Add ') + nm + (has ? ' from your feast' : ' to your feast'));
+      full ? 'Feast is full (20). Remove a menu from your feast to add another'
+           : (has ? '✓ In your feast: ' + nm + '. Select to remove it'
+                  : '+ Add to my feast: ' + nm));
   }
 
   // Sets shown in the current category, narrowed by the selected occasion.
@@ -389,7 +394,7 @@ window.VaavShortlist = createShortlist(localStorage);
       const sig = (m.groups && m.groups[0] && m.groups[0][1] && m.groups[0][1][0]) ? m.groups[0][1][0] : '';
       const nm = m.name;
       const meta = sig ? `${dishes} dishes · ${sig}` : `${dishes} dishes`;
-      p.innerHTML = `<span class="mp-txt"><span class="mp-name">${nm}</span><span class="mp-meta">${meta}</span></span>`;
+      p.innerHTML = `<span class="mp-txt"><span class="mp-name">${nm}</span> <span class="mp-meta">${meta}</span></span>`;
       p.setAttribute('aria-label', `${nm}, ${meta}`);
       p.setAttribute('aria-selected', String(active));
       p.onclick = () => { curIdx = i; render(); };
@@ -499,7 +504,8 @@ window.VaavShortlist = createShortlist(localStorage);
     pill.style.display = n > 0 ? 'inline-flex' : 'none';
     justAppeared = n > 0 && !wasVisible;
     pill.querySelector('.vaav-sl-pill-label').textContent = 'My feast (' + n + ')';
-    pill.setAttribute('aria-label', 'Review your feast, ' + n + (n === 1 ? ' menu' : ' menus'));
+    pill.setAttribute('aria-label',
+      'My feast (' + n + '): review the ' + (n === 1 ? 'menu' : 'menus') + ' you picked');
     live.textContent = n > 0 ? (n + (n === 1 ? ' menu' : ' menus') + ' in your feast') : '';
   }
   pill.addEventListener('click', function () {
