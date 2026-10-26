@@ -53,11 +53,24 @@ describe('business schema', () => {
     it(`${page} links the Google Business Profile with sameAs`, () => {
       expect(businessOn(page).sameAs).toContain(MAPS_PROFILE);
     });
+
+    it(`${page} makes no self-serving rating claims`, () => {
+      // Google ignores ratings a business marks up about itself, and these are
+      // copied from Google Maps, which its review-snippet policy forbids.
+      expect(businessOn(page).aggregateRating).toBeUndefined();
+      expect(businessOn(page).review).toBeUndefined();
+    });
   }
 
   it('every page states the same service area', () => {
     const areas = PAGES_WITH_BUSINESS.map(p => JSON.stringify(businessOn(p).areaServed));
     expect(new Set(areas).size).toBe(1);
+  });
+
+  it('every page states the same opening hours', () => {
+    const hours = PAGES_WITH_BUSINESS.map(p => JSON.stringify(businessOn(p).openingHoursSpecification));
+    expect(hours[0]).toBeDefined();
+    expect(new Set(hours).size).toBe(1);
   });
 });
 
